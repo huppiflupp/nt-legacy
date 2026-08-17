@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="188" height="100" viewBox="0 0 188 100">
+  <!-- radiobutton.svg — Auswahlknoepfe -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-Background { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-Highlight { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-ViewText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ViewBackground { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ViewHover { color:#c8a83a; stop-color:#c8a83a; }
+      .ColorScheme-ViewFocus { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-ButtonText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ButtonBackground { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-ButtonHover { color:#c8a83a; stop-color:#c8a83a; }
+      .ColorScheme-ButtonFocus { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-HighlightedText { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ComplementaryBackground { color:#2b2833; stop-color:#2b2833; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+    <g id="normal">
+      <circle cx="28" cy="28" r="10.88" fill="none" stroke="#2a3234" stroke-width="3.84"/>
+    </g>
+    <g id="hover">
+      <circle cx="72" cy="28" r="10.88" fill="none" stroke="#c8a83a" stroke-width="3.84"/>
+    </g>
+    <g id="focus">
+      <circle cx="116" cy="28" r="10.88" fill="none" stroke="#6b5590" stroke-width="3.84"/>
+    </g>
+    <g id="checked">
+      <circle cx="160" cy="28" r="5.44" fill="#0a1012"/>
+    </g>
+    <g id="shadow">
+      <circle cx="28" cy="72" r="10.88" fill="none" stroke="#0e1416" stroke-width="3.84"/>
+    </g>
+</svg>

@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "huppiflupp",
+                "Email": "huppiflupp@users.noreply.github.com"
+            }
+        ],
+        "Description": "Lilac instead of petrol, after NT's Lilac scheme",
+        "Description[de]": "Flieder statt Petrol, nach NTs Schema Lilac",
+        "EnabledByDefault": true,
+        "Id": "nt-legacy-lilac",
+        "License": "GPL-2.0-or-later",
+        "Name": "NT Legacy Flieder",
+        "Version": "0.2.8",
+        "Website": "https://github.com/huppiflupp/nt-legacy"
+    },
+    "X-Plasma-API": "5.0"
+}

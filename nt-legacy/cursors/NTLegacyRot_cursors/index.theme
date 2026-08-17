@@ -1,0 +1,4 @@
+[Icon Theme]
+Name=NT Legacy (roter Zeiger)
+Comment=Mauszeiger im Stil von Windows NT 4.0
+Inherits=breeze_cursors

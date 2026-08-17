@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="188" height="232" viewBox="0 0 188 232">
+  <!-- actionbutton.svg — Runde Knoepfe -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-Background { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-Highlight { color:#287f8c; stop-color:#287f8c; }
+      .ColorScheme-ViewText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ViewBackground { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ViewHover { color:#d6a23a; stop-color:#d6a23a; }
+      .ColorScheme-ViewFocus { color:#287f8c; stop-color:#287f8c; }
+      .ColorScheme-ButtonText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ButtonBackground { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-ButtonHover { color:#d6a23a; stop-color:#d6a23a; }
+      .ColorScheme-ButtonFocus { color:#287f8c; stop-color:#287f8c; }
+      .ColorScheme-HighlightedText { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ComplementaryBackground { color:#232b2d; stop-color:#232b2d; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+    <g id="16-16-normal">
+      <circle cx="28" cy="28" r="10.88" fill="#2a3234" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="16-16-hover">
+      <circle cx="72" cy="28" r="10.88" fill="#d6a23a" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="16-16-pressed">
+      <circle cx="116" cy="28" r="10.88" fill="#0e1416" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="16-16-focus">
+      <circle cx="160" cy="28" r="10.88" fill="#287f8c" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="22-22-normal">
+      <circle cx="28" cy="72" r="10.88" fill="#2a3234" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="22-22-hover">
+      <circle cx="72" cy="72" r="10.88" fill="#d6a23a" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="22-22-pressed">
+      <circle cx="116" cy="72" r="10.88" fill="#0e1416" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="22-22-focus">
+      <circle cx="160" cy="72" r="10.88" fill="#287f8c" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="24-24-normal">
+      <circle cx="28" cy="116" r="10.88" fill="#2a3234" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="24-24-hover">
+      <circle cx="72" cy="116" r="10.88" fill="#d6a23a" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="24-24-pressed">
+      <circle cx="116" cy="116" r="10.88" fill="#0e1416" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="24-24-focus">
+      <circle cx="160" cy="116" r="10.88" fill="#287f8c" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="32-32-normal">
+      <circle cx="28" cy="160" r="10.88" fill="#2a3234" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="32-32-hover">
+      <circle cx="72" cy="160" r="10.88" fill="#d6a23a" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="32-32-pressed">
+      <circle cx="116" cy="160" r="10.88" fill="#0e1416" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="32-32-focus">
+      <circle cx="160" cy="160" r="10.88" fill="#287f8c" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="normal">
+      <circle cx="28" cy="204" r="10.88" fill="#2a3234" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="hover">
+      <circle cx="72" cy="204" r="10.88" fill="#d6a23a" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="pressed">
+      <circle cx="116" cy="204" r="10.88" fill="#0e1416" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="focus">
+      <circle cx="160" cy="204" r="10.88" fill="#287f8c" stroke="#0a1012" stroke-width="1"/>
+    </g>
+</svg>

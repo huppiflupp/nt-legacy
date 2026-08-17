@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="56" viewBox="0 0 144 56">
+  <!-- action-overlays.svg — Ueberlagerungen in der Ordner-Ansicht -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#000000; stop-color:#000000; }
+      .ColorScheme-Background { color:#d4d0c8; stop-color:#d4d0c8; }
+      .ColorScheme-Highlight { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-ViewText { color:#000000; stop-color:#000000; }
+      .ColorScheme-ViewBackground { color:#ffffff; stop-color:#ffffff; }
+      .ColorScheme-ViewHover { color:#316ac5; stop-color:#316ac5; }
+      .ColorScheme-ViewFocus { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-ButtonText { color:#000000; stop-color:#000000; }
+      .ColorScheme-ButtonBackground { color:#d4d0c8; stop-color:#d4d0c8; }
+      .ColorScheme-ButtonHover { color:#316ac5; stop-color:#316ac5; }
+      .ColorScheme-ButtonFocus { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-HighlightedText { color:#ffffff; stop-color:#ffffff; }
+      .ColorScheme-ComplementaryBackground { color:#d4d0c8; stop-color:#d4d0c8; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+    <g id="add-normal">
+      <path d="M28,17.12 V38.88 M17.12,28 H38.88" stroke="#000000" stroke-width="3.84"/>
+    </g>
+    <g id="add-hover">
+      <path d="M72,17.12 V38.88 M61.12,28 H82.88" stroke="#316ac5" stroke-width="3.84"/>
+    </g>
+    <g id="add-pressed">
+      <path d="M116,17.12 V38.88 M105.12,28 H126.88" stroke="#808080" stroke-width="3.84"/>
+    </g>
+</svg>

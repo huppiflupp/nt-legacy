@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "huppiflupp"
+            }
+        ],
+        "Id": "ntlegacy-desert-nacht-flaeche",
+        "License": "GPL-2.0-or-later",
+        "Name": "NT Legacy Wueste Nacht (Flaeche)"
+    }
+}

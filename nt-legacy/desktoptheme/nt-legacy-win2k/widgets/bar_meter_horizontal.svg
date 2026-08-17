@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="56" viewBox="0 0 100 56">
+  <!-- bar_meter_horizontal.svg — Fortschritts- und Pegelbalken -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#000000; stop-color:#000000; }
+      .ColorScheme-Background { color:#d4d0c8; stop-color:#d4d0c8; }
+      .ColorScheme-Highlight { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-ViewText { color:#000000; stop-color:#000000; }
+      .ColorScheme-ViewBackground { color:#ffffff; stop-color:#ffffff; }
+      .ColorScheme-ViewHover { color:#316ac5; stop-color:#316ac5; }
+      .ColorScheme-ViewFocus { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-ButtonText { color:#000000; stop-color:#000000; }
+      .ColorScheme-ButtonBackground { color:#d4d0c8; stop-color:#d4d0c8; }
+      .ColorScheme-ButtonHover { color:#316ac5; stop-color:#316ac5; }
+      .ColorScheme-ButtonFocus { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-HighlightedText { color:#ffffff; stop-color:#ffffff; }
+      .ColorScheme-ComplementaryBackground { color:#d4d0c8; stop-color:#d4d0c8; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+  <!-- bar-inactive -->
+    <g id="bar-inactive-topleft">
+      <rect x="12" y="12" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="12" width="3" height="1" fill="#000000"/>
+      <rect x="13" y="13" width="2" height="1" fill="#ffffff"/>
+      <rect x="12" y="12" width="1" height="3" fill="#000000"/>
+      <rect x="13" y="13" width="1" height="2" fill="#ffffff"/>
+    </g>
+    <g id="bar-inactive-top">
+      <rect x="15" y="12" width="26" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="15" y="12" width="26" height="1" fill="#000000"/>
+      <rect x="15" y="13" width="26" height="1" fill="#ffffff"/>
+    </g>
+    <g id="bar-inactive-topright">
+      <rect x="41" y="12" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="41" y="12" width="3" height="1" fill="#000000"/>
+      <rect x="41" y="13" width="2" height="1" fill="#ffffff"/>
+      <rect x="43" y="12" width="1" height="3" fill="#000000"/>
+      <rect x="42" y="13" width="1" height="2" fill="#808080"/>
+    </g>
+    <g id="bar-inactive-left">
+      <rect x="12" y="15" width="3" height="26" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="15" width="1" height="26" fill="#000000"/>
+      <rect x="13" y="15" width="1" height="26" fill="#ffffff"/>
+    </g>
+    <g id="bar-inactive-center">
+      <rect x="15" y="15" width="26" height="26" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="bar-inactive-right">
+      <rect x="41" y="15" width="3" height="26" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="43" y="15" width="1" height="26" fill="#000000"/>
+      <rect x="42" y="15" width="1" height="26" fill="#808080"/>
+    </g>
+    <g id="bar-inactive-bottomleft">
+      <rect x="12" y="41" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="43" width="3" height="1" fill="#000000"/>
+      <rect x="13" y="42" width="2" height="1" fill="#808080"/>
+      <rect x="12" y="41" width="1" height="3" fill="#000000"/>
+      <rect x="13" y="41" width="1" height="2" fill="#ffffff"/>
+    </g>
+    <g id="bar-inactive-bottom">
+      <rect x="15" y="41" width="26" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="15" y="43" width="26" height="1" fill="#000000"/>
+      <rect x="15" y="42" width="26" height="1" fill="#808080"/>
+    </g>
+    <g id="bar-inactive-bottomright">
+      <rect x="41" y="41" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="41" y="43" width="3" height="1" fill="#000000"/>
+      <rect x="41" y="42" width="2" height="1" fill="#808080"/>
+      <rect x="43" y="41" width="1" height="3" fill="#000000"/>
+      <rect x="42" y="41" width="1" height="2" fill="#808080"/>
+    </g>
+    <rect id="bar-inactive-hint-top-margin" x="28" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="bar-inactive-hint-bottom-margin" x="28" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="bar-inactive-hint-left-margin" x="12" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="bar-inactive-hint-right-margin" x="40" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+  <!-- bar-active -->
+    <g id="bar-active-topleft">
+      <rect x="56" y="12" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="12" width="3" height="1" fill="#000000"/>
+      <rect x="57" y="13" width="2" height="1" fill="#ffffff"/>
+      <rect x="56" y="12" width="1" height="3" fill="#000000"/>
+      <rect x="57" y="13" width="1" height="2" fill="#ffffff"/>
+    </g>
+    <g id="bar-active-top">
+      <rect x="59" y="12" width="26" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="59" y="12" width="26" height="1" fill="#000000"/>
+      <rect x="59" y="13" width="26" height="1" fill="#ffffff"/>
+    </g>
+    <g id="bar-active-topright">
+      <rect x="85" y="12" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="85" y="12" width="3" height="1" fill="#000000"/>
+      <rect x="85" y="13" width="2" height="1" fill="#ffffff"/>
+      <rect x="87" y="12" width="1" height="3" fill="#000000"/>
+      <rect x="86" y="13" width="1" height="2" fill="#808080"/>
+    </g>
+    <g id="bar-active-left">
+      <rect x="56" y="15" width="3" height="26" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="15" width="1" height="26" fill="#000000"/>
+      <rect x="57" y="15" width="1" height="26" fill="#ffffff"/>
+    </g>
+    <g id="bar-active-center">
+      <rect x="59" y="15" width="26" height="26" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="bar-active-right">
+      <rect x="85" y="15" width="3" height="26" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="87" y="15" width="1" height="26" fill="#000000"/>
+      <rect x="86" y="15" width="1" height="26" fill="#808080"/>
+    </g>
+    <g id="bar-active-bottomleft">
+      <rect x="56" y="41" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="43" width="3" height="1" fill="#000000"/>
+      <rect x="57" y="42" width="2" height="1" fill="#808080"/>
+      <rect x="56" y="41" width="1" height="3" fill="#000000"/>
+      <rect x="57" y="41" width="1" height="2" fill="#ffffff"/>
+    </g>
+    <g id="bar-active-bottom">
+      <rect x="59" y="41" width="26" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="59" y="43" width="26" height="1" fill="#000000"/>
+      <rect x="59" y="42" width="26" height="1" fill="#808080"/>
+    </g>
+    <g id="bar-active-bottomright">
+      <rect x="85" y="41" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="85" y="43" width="3" height="1" fill="#000000"/>
+      <rect x="85" y="42" width="2" height="1" fill="#808080"/>
+      <rect x="87" y="41" width="1" height="3" fill="#000000"/>
+      <rect x="86" y="41" width="1" height="2" fill="#808080"/>
+    </g>
+    <rect id="bar-active-hint-top-margin" x="72" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="bar-active-hint-bottom-margin" x="72" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="bar-active-hint-left-margin" x="56" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="bar-active-hint-right-margin" x="84" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+</svg>

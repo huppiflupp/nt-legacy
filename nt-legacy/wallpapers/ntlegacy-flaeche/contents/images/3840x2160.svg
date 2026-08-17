@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160"
+     viewBox="0 0 3840 2160">
+  <defs>
+    <linearGradient id="grund" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#60777a"/>
+      <stop offset="1" stop-color="#899a9a"/>
+    </linearGradient>
+    <pattern id="raster" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="1" height="1" fill="#f0f0e8" opacity="0.045"/>
+    </pattern>
+  </defs>
+  <rect width="3840" height="2160" fill="url(#grund)"/>
+  <rect width="3840" height="2160" fill="url(#raster)"/>
+</svg>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="188" height="56" viewBox="0 0 188 56">
+  <!-- viewitem.svg — Eintraege in Ansichten -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-Background { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-Highlight { color:#000080; stop-color:#000080; }
+      .ColorScheme-ViewText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ViewBackground { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ViewHover { color:#dcdcdc; stop-color:#dcdcdc; }
+      .ColorScheme-ViewFocus { color:#000080; stop-color:#000080; }
+      .ColorScheme-ButtonText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ButtonBackground { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-ButtonHover { color:#dcdcdc; stop-color:#dcdcdc; }
+      .ColorScheme-ButtonFocus { color:#000080; stop-color:#000080; }
+      .ColorScheme-HighlightedText { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ComplementaryBackground { color:#232b2d; stop-color:#232b2d; }
+      .ColorScheme-NegativeText { color:#800000; stop-color:#800000; }
+      .ColorScheme-NeutralText { color:#808000; stop-color:#808000; }
+      .ColorScheme-PositiveText { color:#008000; stop-color:#008000; }
+    </style>
+  </defs>
+  <!-- normal -->
+    <g id="normal-topleft">
+      <rect x="12" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="12" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="normal-top">
+      <rect x="18" y="12" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="normal-topright">
+      <rect x="38" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="43" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="normal-left">
+      <rect x="12" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="13" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="normal-center">
+      <rect x="18" y="18" width="20" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="normal-right">
+      <rect x="38" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="43" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="42" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="normal-bottomleft">
+      <rect x="12" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="12" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="normal-bottom">
+      <rect x="18" y="38" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="normal-bottomright">
+      <rect x="38" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="43" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <rect id="normal-hint-top-margin" x="28" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="normal-hint-bottom-margin" x="28" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="normal-hint-left-margin" x="12" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="normal-hint-right-margin" x="40" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+  <!-- hover -->
+    <g id="hover-topleft">
+      <rect x="56" y="12" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="56" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="hover-top">
+      <rect x="62" y="12" width="20" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="hover-topright">
+      <rect x="82" y="12" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="87" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="hover-left">
+      <rect x="56" y="18" width="6" height="20" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="57" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="hover-center">
+      <rect x="62" y="18" width="20" height="20" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="hover-right">
+      <rect x="82" y="18" width="6" height="20" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="87" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="86" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="hover-bottomleft">
+      <rect x="56" y="38" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="56" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="hover-bottom">
+      <rect x="62" y="38" width="20" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="hover-bottomright">
+      <rect x="82" y="38" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="87" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <rect id="hover-hint-top-margin" x="72" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="hover-hint-bottom-margin" x="72" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="hover-hint-left-margin" x="56" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="hover-hint-right-margin" x="84" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+  <!-- selected -->
+    <g id="selected-topleft">
+      <rect x="100" y="12" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="100" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="101" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="100" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="101" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="selected-top">
+      <rect x="106" y="12" width="20" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="106" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="106" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="selected-topright">
+      <rect x="126" y="12" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="126" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="126" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="131" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="130" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="selected-left">
+      <rect x="100" y="18" width="6" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="100" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="101" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="selected-center">
+      <rect x="106" y="18" width="20" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="selected-right">
+      <rect x="126" y="18" width="6" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="131" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="130" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="selected-bottomleft">
+      <rect x="100" y="38" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="100" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="101" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="100" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="101" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="selected-bottom">
+      <rect x="106" y="38" width="20" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="106" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="106" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="selected-bottomright">
+      <rect x="126" y="38" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="126" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="126" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="131" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="130" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <rect id="selected-hint-top-margin" x="116" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="selected-hint-bottom-margin" x="116" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="selected-hint-left-margin" x="100" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="selected-hint-right-margin" x="128" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+  <!-- selected+hover -->
+    <g id="selected+hover-topleft">
+      <rect x="144" y="12" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="144" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="145" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="144" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="145" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="selected+hover-top">
+      <rect x="150" y="12" width="20" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="150" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="150" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="selected+hover-topright">
+      <rect x="170" y="12" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="170" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="170" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="175" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="174" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="selected+hover-left">
+      <rect x="144" y="18" width="6" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="144" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="145" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="selected+hover-center">
+      <rect x="150" y="18" width="20" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="selected+hover-right">
+      <rect x="170" y="18" width="6" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="175" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="174" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="selected+hover-bottomleft">
+      <rect x="144" y="38" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="144" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="145" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="144" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="145" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="selected+hover-bottom">
+      <rect x="150" y="38" width="20" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="150" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="150" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="selected+hover-bottomright">
+      <rect x="170" y="38" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="170" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="170" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="175" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="174" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <rect id="selected+hover-hint-top-margin" x="160" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="selected+hover-hint-bottom-margin" x="160" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="selected+hover-hint-left-margin" x="144" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="selected+hover-hint-right-margin" x="172" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+</svg>

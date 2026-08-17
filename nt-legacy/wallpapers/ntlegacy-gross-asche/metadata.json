@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "huppiflupp"
+            }
+        ],
+        "Id": "ntlegacy-gross-asche",
+        "License": "GPL-2.0-or-later",
+        "Name": "NT Legacy - Asche"
+    }
+}

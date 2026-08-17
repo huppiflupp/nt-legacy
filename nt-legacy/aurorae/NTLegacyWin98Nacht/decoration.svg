@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="388" viewBox="0 0 240 388">
+  <!-- Erzeugt von tools/gen-aurorae.py.
+       Die IDs sind der Vertrag mit KWin - nicht umbenennen. -->
+  <g id="decoration-topleft">
+    <rect x="20" y="20" width="4" height="24" fill="#000080"/>
+    <rect x="20" y="20" width="4" height="1" fill="#0a1012"/>
+    <rect x="20" y="20" width="1" height="24" fill="#0a1012"/>
+    <rect x="21" y="21" width="3" height="1" fill="#4a5456"/>
+    <rect x="21" y="21" width="1" height="23" fill="#4a5456"/>
+  </g>
+  <g id="decoration-top">
+    <rect x="24" y="20" width="192" height="24" fill="#000080"/>
+    <rect x="24" y="20" width="192" height="1" fill="#0a1012"/>
+    <rect x="24" y="21" width="192" height="1" fill="#4a5456"/>
+  </g>
+  <g id="decoration-topright">
+    <rect x="216" y="20" width="4" height="24" fill="#000080"/>
+    <rect x="216" y="20" width="4" height="1" fill="#0a1012"/>
+    <rect x="219" y="20" width="1" height="24" fill="#0a1012"/>
+    <rect x="216" y="21" width="3" height="1" fill="#4a5456"/>
+    <rect x="218" y="21" width="1" height="23" fill="#0e1416"/>
+  </g>
+  <g id="decoration-left">
+    <rect x="20" y="44" width="4" height="92" fill="#2a3234"/>
+    <rect x="20" y="44" width="1" height="92" fill="#0a1012"/>
+    <rect x="21" y="44" width="1" height="92" fill="#4a5456"/>
+  </g>
+  <g id="decoration-center">
+    <rect x="24" y="44" width="192" height="92" fill="#2a3234"/>
+  </g>
+  <g id="decoration-right">
+    <rect x="216" y="44" width="4" height="92" fill="#2a3234"/>
+    <rect x="219" y="44" width="1" height="92" fill="#0a1012"/>
+    <rect x="218" y="44" width="1" height="92" fill="#0e1416"/>
+  </g>
+  <g id="decoration-bottomleft">
+    <rect x="20" y="136" width="4" height="4" fill="#2a3234"/>
+    <rect x="20" y="139" width="4" height="1" fill="#0a1012"/>
+    <rect x="20" y="136" width="1" height="4" fill="#0a1012"/>
+    <rect x="21" y="136" width="1" height="3" fill="#4a5456"/>
+    <rect x="21" y="138" width="3" height="1" fill="#0e1416"/>
+  </g>
+  <g id="decoration-bottom">
+    <rect x="24" y="136" width="192" height="4" fill="#2a3234"/>
+    <rect x="24" y="139" width="192" height="1" fill="#0a1012"/>
+    <rect x="24" y="138" width="192" height="1" fill="#0e1416"/>
+  </g>
+  <g id="decoration-bottomright">
+    <rect x="216" y="136" width="4" height="4" fill="#2a3234"/>
+    <rect x="216" y="139" width="4" height="1" fill="#0a1012"/>
+    <rect x="219" y="136" width="1" height="4" fill="#0a1012"/>
+    <rect x="216" y="138" width="3" height="1" fill="#0e1416"/>
+    <rect x="218" y="136" width="1" height="3" fill="#0e1416"/>
+  </g>
+  <g id="decoration-inactive-topleft">
+    <rect x="20" y="160" width="4" height="24" fill="#3c4648"/>
+    <rect x="20" y="160" width="4" height="1" fill="#0a1012"/>
+    <rect x="20" y="160" width="1" height="24" fill="#0a1012"/>
+    <rect x="21" y="161" width="3" height="1" fill="#4a5456"/>
+    <rect x="21" y="161" width="1" height="23" fill="#4a5456"/>
+  </g>
+  <g id="decoration-inactive-top">
+    <rect x="24" y="160" width="192" height="24" fill="#3c4648"/>
+    <rect x="24" y="160" width="192" height="1" fill="#0a1012"/>
+    <rect x="24" y="161" width="192" height="1" fill="#4a5456"/>
+  </g>
+  <g id="decoration-inactive-topright">
+    <rect x="216" y="160" width="4" height="24" fill="#3c4648"/>
+    <rect x="216" y="160" width="4" height="1" fill="#0a1012"/>
+    <rect x="219" y="160" width="1" height="24" fill="#0a1012"/>
+    <rect x="216" y="161" width="3" height="1" fill="#4a5456"/>
+    <rect x="218" y="161" width="1" height="23" fill="#0e1416"/>
+  </g>
+  <g id="decoration-inactive-left">
+    <rect x="20" y="184" width="4" height="92" fill="#2a3234"/>
+    <rect x="20" y="184" width="1" height="92" fill="#0a1012"/>
+    <rect x="21" y="184" width="1" height="92" fill="#4a5456"/>
+  </g>
+  <g id="decoration-inactive-center">
+    <rect x="24" y="184" width="192" height="92" fill="#2a3234"/>
+  </g>
+  <g id="decoration-inactive-right">
+    <rect x="216" y="184" width="4" height="92" fill="#2a3234"/>
+    <rect x="219" y="184" width="1" height="92" fill="#0a1012"/>
+    <rect x="218" y="184" width="1" height="92" fill="#0e1416"/>
+  </g>
+  <g id="decoration-inactive-bottomleft">
+    <rect x="20" y="276" width="4" height="4" fill="#2a3234"/>
+    <rect x="20" y="279" width="4" height="1" fill="#0a1012"/>
+    <rect x="20" y="276" width="1" height="4" fill="#0a1012"/>
+    <rect x="21" y="276" width="1" height="3" fill="#4a5456"/>
+    <rect x="21" y="278" width="3" height="1" fill="#0e1416"/>
+  </g>
+  <g id="decoration-inactive-bottom">
+    <rect x="24" y="276" width="192" height="4" fill="#2a3234"/>
+    <rect x="24" y="279" width="192" height="1" fill="#0a1012"/>
+    <rect x="24" y="278" width="192" height="1" fill="#0e1416"/>
+  </g>
+  <g id="decoration-inactive-bottomright">
+    <rect x="216" y="276" width="4" height="4" fill="#2a3234"/>
+    <rect x="216" y="279" width="4" height="1" fill="#0a1012"/>
+    <rect x="219" y="276" width="1" height="4" fill="#0a1012"/>
+    <rect x="216" y="278" width="3" height="1" fill="#0e1416"/>
+    <rect x="218" y="276" width="1" height="3" fill="#0e1416"/>
+  </g>
+  <g id="decoration-maximized-center">
+    <rect x="20" y="300" width="200" height="24" fill="#000080"/>
+    <rect x="20" y="323" width="200" height="1" fill="#0a1012"/>
+  </g>
+  <g id="decoration-maximized-inactive-center">
+    <rect x="20" y="344" width="200" height="24" fill="#3c4648"/>
+    <rect x="20" y="367" width="200" height="1" fill="#0a1012"/>
+  </g>
+</svg>

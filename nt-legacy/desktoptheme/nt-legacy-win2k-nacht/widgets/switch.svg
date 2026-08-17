@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="188" height="100" viewBox="0 0 188 100">
+  <!-- switch.svg — Umschalter (Systemabschnitt, Benachrichtigungen) -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-Background { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-Highlight { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-ViewText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ViewBackground { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ViewHover { color:#316ac5; stop-color:#316ac5; }
+      .ColorScheme-ViewFocus { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-ButtonText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ButtonBackground { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-ButtonHover { color:#316ac5; stop-color:#316ac5; }
+      .ColorScheme-ButtonFocus { color:#0a246a; stop-color:#0a246a; }
+      .ColorScheme-HighlightedText { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ComplementaryBackground { color:#232b2d; stop-color:#232b2d; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+  <!-- inactive -->
+    <g id="inactive-topleft">
+      <rect x="12" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="12" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="inactive-top">
+      <rect x="18" y="12" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="inactive-topright">
+      <rect x="38" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="43" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="inactive-left">
+      <rect x="12" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="13" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="inactive-center">
+      <rect x="18" y="18" width="20" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="inactive-right">
+      <rect x="38" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="43" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="42" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="inactive-bottomleft">
+      <rect x="12" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="12" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="inactive-bottom">
+      <rect x="18" y="38" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="inactive-bottomright">
+      <rect x="38" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="43" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+  <!-- active -->
+    <g id="active-topleft">
+      <rect x="56" y="12" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="56" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="active-top">
+      <rect x="62" y="12" width="20" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="active-topright">
+      <rect x="82" y="12" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="87" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="active-left">
+      <rect x="56" y="18" width="6" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="57" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="active-center">
+      <rect x="62" y="18" width="20" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="active-right">
+      <rect x="82" y="18" width="6" height="20" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="87" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="86" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="active-bottomleft">
+      <rect x="56" y="38" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="56" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="active-bottom">
+      <rect x="62" y="38" width="20" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="active-bottomright">
+      <rect x="82" y="38" width="6" height="6" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="87" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="handle">
+      <circle cx="116" cy="28" r="10.88" fill="#2a3234" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="handle-hover">
+      <circle cx="160" cy="28" r="10.88" fill="#316ac5" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="handle-pressed">
+      <circle cx="28" cy="72" r="10.88" fill="#0e1416" stroke="#0a1012" stroke-width="1"/>
+    </g>
+    <g id="handle-focus">
+      <circle cx="72" cy="72" r="10.88" fill="#0a246a" stroke="#0a1012" stroke-width="1"/>
+    </g>
+</svg>

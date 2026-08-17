@@ -1,0 +1,16 @@
+# Chicago95. Wird von fetch-icons.sh geholt und darf NIE ins Repository
+# oder in ein Archiv: keine LICENSE-Datei, Herkunft der Bitmaps
+# ungeklaert. Siehe nt-legacy/ATTRIBUTION.md.
+nt-legacy/icons/
+
+# Die Nachtfassung des Symbolsatzes ist eine Ableitung und entsteht in
+# build.py (tools/mach-nacht-symbole.py).
+nt-legacy/icons-nt/NTLegacyIconsNacht/
+
+# Die Archive fuer den Store. Reproduzierbar mit tools/mach-paket.sh -
+# Binaerdateien blaehen nur die Historie auf.
+dist/
+
+__pycache__/
+*.pyc
+.directory

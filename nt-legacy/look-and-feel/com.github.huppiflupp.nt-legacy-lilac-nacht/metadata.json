@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "huppiflupp",
+                "Email": "huppiflupp@users.noreply.github.com"
+            }
+        ],
+        "Description": "Lilac instead of petrol as a night version - dark surfaces, same accents",
+        "Description[de]": "Flieder statt Petrol als Nachtfassung - dunkle Flaechen, gleiche Akzente",
+        "Id": "com.github.huppiflupp.nt-legacy-lilac-nacht",
+        "License": "GPL-2.0-or-later",
+        "Name": "NT Legacy Flieder Nacht",
+        "Version": "0.2.8",
+        "Website": "https://github.com/huppiflupp/nt-legacy"
+    },
+    "Keywords": "Desktop;Workspace;Appearance;Look and Feel;",
+    "X-Plasma-APIVersion": "2"
+}

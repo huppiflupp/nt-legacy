@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=NT Legacy 2000
+Comment=Windows NT 4.0 in Petrol - eckige Rahmen, quadratische Knoepfe
+Type=Service
+X-KDE-ServiceTypes=KWin/Decoration
+X-KDE-Library=kwin3_aurorae
+X-KDE-PluginInfo-Name=__aurorae__svg__NTLegacyWin2k
+X-KDE-PluginInfo-Author=huppiflupp
+X-KDE-PluginInfo-License=GPL-2.0-or-later
+X-KDE-PluginInfo-Version=0.2.8

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="56" viewBox="0 0 100 56">
+  <!-- plasmoidheading.svg — Kopfzeilen in Plasmoids -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-Background { color:#32302a; stop-color:#32302a; }
+      .ColorScheme-Highlight { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-ViewText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ViewBackground { color:#26241e; stop-color:#26241e; }
+      .ColorScheme-ViewHover { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-ViewFocus { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-ButtonText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ButtonBackground { color:#32302a; stop-color:#32302a; }
+      .ColorScheme-ButtonHover { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-ButtonFocus { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-HighlightedText { color:#26241e; stop-color:#26241e; }
+      .ColorScheme-ComplementaryBackground { color:#2b2822; stop-color:#2b2822; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+  <!-- header -->
+    <g id="header-topleft">
+      <rect x="12" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="13" width="5" height="1" fill="#544e42"/>
+      <rect x="12" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="13" width="1" height="5" fill="#544e42"/>
+    </g>
+    <g id="header-top">
+      <rect x="18" y="12" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="13" width="20" height="1" fill="#544e42"/>
+    </g>
+    <g id="header-topright">
+      <rect x="38" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="13" width="5" height="1" fill="#544e42"/>
+      <rect x="43" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="13" width="1" height="5" fill="#16130e"/>
+    </g>
+    <g id="header-left">
+      <rect x="12" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="13" y="18" width="1" height="20" fill="#544e42"/>
+    </g>
+    <g id="header-center">
+      <rect x="18" y="18" width="20" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="header-right">
+      <rect x="38" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="43" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="42" y="18" width="1" height="20" fill="#16130e"/>
+    </g>
+    <g id="header-bottomleft">
+      <rect x="12" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="42" width="5" height="1" fill="#16130e"/>
+      <rect x="12" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="38" width="1" height="5" fill="#544e42"/>
+    </g>
+    <g id="header-bottom">
+      <rect x="18" y="38" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="42" width="20" height="1" fill="#16130e"/>
+    </g>
+    <g id="header-bottomright">
+      <rect x="38" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="42" width="5" height="1" fill="#16130e"/>
+      <rect x="43" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="38" width="1" height="5" fill="#16130e"/>
+    </g>
+    <rect id="header-hint-top-margin" x="28" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="header-hint-bottom-margin" x="28" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="header-hint-left-margin" x="12" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="header-hint-right-margin" x="40" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+  <!-- footer -->
+    <g id="footer-topleft">
+      <rect x="56" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="13" width="5" height="1" fill="#544e42"/>
+      <rect x="56" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="13" width="1" height="5" fill="#544e42"/>
+    </g>
+    <g id="footer-top">
+      <rect x="62" y="12" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="13" width="20" height="1" fill="#544e42"/>
+    </g>
+    <g id="footer-topright">
+      <rect x="82" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="13" width="5" height="1" fill="#544e42"/>
+      <rect x="87" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="13" width="1" height="5" fill="#16130e"/>
+    </g>
+    <g id="footer-left">
+      <rect x="56" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="57" y="18" width="1" height="20" fill="#544e42"/>
+    </g>
+    <g id="footer-center">
+      <rect x="62" y="18" width="20" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="footer-right">
+      <rect x="82" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="87" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="86" y="18" width="1" height="20" fill="#16130e"/>
+    </g>
+    <g id="footer-bottomleft">
+      <rect x="56" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="42" width="5" height="1" fill="#16130e"/>
+      <rect x="56" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="38" width="1" height="5" fill="#544e42"/>
+    </g>
+    <g id="footer-bottom">
+      <rect x="62" y="38" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="42" width="20" height="1" fill="#16130e"/>
+    </g>
+    <g id="footer-bottomright">
+      <rect x="82" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="42" width="5" height="1" fill="#16130e"/>
+      <rect x="87" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="38" width="1" height="5" fill="#16130e"/>
+    </g>
+    <rect id="footer-hint-top-margin" x="72" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="footer-hint-bottom-margin" x="72" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="footer-hint-left-margin" x="56" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="footer-hint-right-margin" x="84" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+</svg>

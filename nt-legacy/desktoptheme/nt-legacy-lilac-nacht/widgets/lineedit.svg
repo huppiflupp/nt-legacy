@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="56" viewBox="0 0 144 56">
+  <!-- lineedit.svg — Eingabefelder -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-Background { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-Highlight { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-ViewText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ViewBackground { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ViewHover { color:#c8a83a; stop-color:#c8a83a; }
+      .ColorScheme-ViewFocus { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-ButtonText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ButtonBackground { color:#2a3234; stop-color:#2a3234; }
+      .ColorScheme-ButtonHover { color:#c8a83a; stop-color:#c8a83a; }
+      .ColorScheme-ButtonFocus { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-HighlightedText { color:#1e2628; stop-color:#1e2628; }
+      .ColorScheme-ComplementaryBackground { color:#2b2833; stop-color:#2b2833; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+  <!-- base -->
+    <g id="base-topleft">
+      <rect x="12" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="12" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="base-top">
+      <rect x="18" y="12" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="base-topright">
+      <rect x="38" y="12" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="43" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="base-left">
+      <rect x="12" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="13" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="base-center">
+      <rect x="18" y="18" width="20" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="base-right">
+      <rect x="38" y="18" width="6" height="20" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="43" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="42" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="base-bottomleft">
+      <rect x="12" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="13" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="12" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="13" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="base-bottom">
+      <rect x="18" y="38" width="20" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="18" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="18" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="base-bottomright">
+      <rect x="38" y="38" width="6" height="6" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="38" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="38" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="43" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="42" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <rect id="base-hint-top-margin" x="28" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="base-hint-bottom-margin" x="28" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="base-hint-left-margin" x="12" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="base-hint-right-margin" x="40" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="base-hint-focus-over-base" x="17" y="13" width="1" height="1" fill="#00ff00" opacity="0"/>
+  <!-- focus -->
+    <g id="focus-topleft">
+      <rect x="56" y="12" width="6" height="6" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="56" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="focus-top">
+      <rect x="62" y="12" width="20" height="6" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="focus-topright">
+      <rect x="82" y="12" width="6" height="6" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="87" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="focus-left">
+      <rect x="56" y="18" width="6" height="20" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="57" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="focus-center">
+      <rect x="62" y="18" width="20" height="20" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="focus-right">
+      <rect x="82" y="18" width="6" height="20" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="87" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="86" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="focus-bottomleft">
+      <rect x="56" y="38" width="6" height="6" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="57" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="56" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="57" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="focus-bottom">
+      <rect x="62" y="38" width="20" height="6" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="62" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="62" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="focus-bottomright">
+      <rect x="82" y="38" width="6" height="6" class="ColorScheme-ButtonFocus" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="82" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="82" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="87" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="86" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <rect id="focus-hint-top-margin" x="72" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="focus-hint-bottom-margin" x="72" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="focus-hint-left-margin" x="56" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="focus-hint-right-margin" x="84" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="focus-hint-focus-over-base" x="61" y="13" width="1" height="1" fill="#00ff00" opacity="0"/>
+  <!-- hover -->
+    <g id="hover-topleft">
+      <rect x="100" y="12" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="100" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="101" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="100" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="101" y="13" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="hover-top">
+      <rect x="106" y="12" width="20" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="106" y="12" width="20" height="1" fill="#0a1012"/>
+      <rect x="106" y="13" width="20" height="1" fill="#4a5456"/>
+    </g>
+    <g id="hover-topright">
+      <rect x="126" y="12" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="126" y="12" width="6" height="1" fill="#0a1012"/>
+      <rect x="126" y="13" width="5" height="1" fill="#4a5456"/>
+      <rect x="131" y="12" width="1" height="6" fill="#0a1012"/>
+      <rect x="130" y="13" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <g id="hover-left">
+      <rect x="100" y="18" width="6" height="20" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="100" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="101" y="18" width="1" height="20" fill="#4a5456"/>
+    </g>
+    <g id="hover-center">
+      <rect x="106" y="18" width="20" height="20" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="hover-right">
+      <rect x="126" y="18" width="6" height="20" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="131" y="18" width="1" height="20" fill="#0a1012"/>
+      <rect x="130" y="18" width="1" height="20" fill="#0e1416"/>
+    </g>
+    <g id="hover-bottomleft">
+      <rect x="100" y="38" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="100" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="101" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="100" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="101" y="38" width="1" height="5" fill="#4a5456"/>
+    </g>
+    <g id="hover-bottom">
+      <rect x="106" y="38" width="20" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="106" y="43" width="20" height="1" fill="#0a1012"/>
+      <rect x="106" y="42" width="20" height="1" fill="#0e1416"/>
+    </g>
+    <g id="hover-bottomright">
+      <rect x="126" y="38" width="6" height="6" class="ColorScheme-ButtonHover" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="126" y="43" width="6" height="1" fill="#0a1012"/>
+      <rect x="126" y="42" width="5" height="1" fill="#0e1416"/>
+      <rect x="131" y="38" width="1" height="6" fill="#0a1012"/>
+      <rect x="130" y="38" width="1" height="5" fill="#0e1416"/>
+    </g>
+    <rect id="hover-hint-top-margin" x="116" y="12" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="hover-hint-bottom-margin" x="116" y="40" width="2" height="4" fill="#ff00ff" opacity="0"/>
+    <rect id="hover-hint-left-margin" x="100" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="hover-hint-right-margin" x="128" y="28" width="4" height="2" fill="#ff00ff" opacity="0"/>
+    <rect id="hover-hint-focus-over-base" x="105" y="13" width="1" height="1" fill="#00ff00" opacity="0"/>
+</svg>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="56" viewBox="0 0 100 56">
+  <!-- checkmarks.svg — Haken in Ankreuzfeldern -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#202628; stop-color:#202628; }
+      .ColorScheme-Background { color:#d8d8d0; stop-color:#d8d8d0; }
+      .ColorScheme-Highlight { color:#287f8c; stop-color:#287f8c; }
+      .ColorScheme-ViewText { color:#202628; stop-color:#202628; }
+      .ColorScheme-ViewBackground { color:#f0f0e8; stop-color:#f0f0e8; }
+      .ColorScheme-ViewHover { color:#d6a23a; stop-color:#d6a23a; }
+      .ColorScheme-ViewFocus { color:#287f8c; stop-color:#287f8c; }
+      .ColorScheme-ButtonText { color:#202628; stop-color:#202628; }
+      .ColorScheme-ButtonBackground { color:#d8d8d0; stop-color:#d8d8d0; }
+      .ColorScheme-ButtonHover { color:#d6a23a; stop-color:#d6a23a; }
+      .ColorScheme-ButtonFocus { color:#287f8c; stop-color:#287f8c; }
+      .ColorScheme-HighlightedText { color:#f0f0e8; stop-color:#f0f0e8; }
+      .ColorScheme-ComplementaryBackground { color:#b8c4c4; stop-color:#b8c4c4; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+    <g id="checkbox">
+      <path d="M17.12,28 L24.736,35.616 L38.88,20.384" fill="none" stroke="#202628" stroke-width="3.84" stroke-linecap="square"/>
+    </g>
+    <g id="radiobutton">
+      <circle cx="72" cy="28" r="5.44" fill="#202628"/>
+    </g>
+</svg>

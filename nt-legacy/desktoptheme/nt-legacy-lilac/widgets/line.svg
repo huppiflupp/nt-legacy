@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="56" viewBox="0 0 100 56">
+  <!-- line.svg — Trennlinien in Listen und im Anwendungsstarter -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#202628; stop-color:#202628; }
+      .ColorScheme-Background { color:#d8d8d0; stop-color:#d8d8d0; }
+      .ColorScheme-Highlight { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-ViewText { color:#202628; stop-color:#202628; }
+      .ColorScheme-ViewBackground { color:#f0f0e8; stop-color:#f0f0e8; }
+      .ColorScheme-ViewHover { color:#c8a83a; stop-color:#c8a83a; }
+      .ColorScheme-ViewFocus { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-ButtonText { color:#202628; stop-color:#202628; }
+      .ColorScheme-ButtonBackground { color:#d8d8d0; stop-color:#d8d8d0; }
+      .ColorScheme-ButtonHover { color:#c8a83a; stop-color:#c8a83a; }
+      .ColorScheme-ButtonFocus { color:#6b5590; stop-color:#6b5590; }
+      .ColorScheme-HighlightedText { color:#f0f0e8; stop-color:#f0f0e8; }
+      .ColorScheme-ComplementaryBackground { color:#c4bcc8; stop-color:#c4bcc8; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+    <g id="horizontal-line">
+      <rect x="12" y="28" width="32" height="1" fill="#8a8a82"/>
+    </g>
+    <g id="vertical-line">
+      <rect x="72" y="12" width="1" height="32" fill="#8a8a82"/>
+    </g>
+</svg>

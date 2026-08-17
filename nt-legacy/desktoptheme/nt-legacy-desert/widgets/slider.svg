@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="56" viewBox="0 0 100 56">
+  <!-- slider.svg — Schieberegler -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#202628; stop-color:#202628; }
+      .ColorScheme-Background { color:#d8d0c0; stop-color:#d8d0c0; }
+      .ColorScheme-Highlight { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-ViewText { color:#202628; stop-color:#202628; }
+      .ColorScheme-ViewBackground { color:#f0ece0; stop-color:#f0ece0; }
+      .ColorScheme-ViewHover { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-ViewFocus { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-ButtonText { color:#202628; stop-color:#202628; }
+      .ColorScheme-ButtonBackground { color:#d8d0c0; stop-color:#d8d0c0; }
+      .ColorScheme-ButtonHover { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-ButtonFocus { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-HighlightedText { color:#f0ece0; stop-color:#f0ece0; }
+      .ColorScheme-ComplementaryBackground { color:#c8bca4; stop-color:#c8bca4; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+  <!-- groove -->
+    <g id="groove-topleft">
+      <rect x="12" y="12" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="12" width="3" height="1" fill="#202628"/>
+      <rect x="13" y="13" width="2" height="1" fill="#f4f0e6"/>
+      <rect x="12" y="12" width="1" height="3" fill="#202628"/>
+      <rect x="13" y="13" width="1" height="2" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-top">
+      <rect x="15" y="12" width="26" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="15" y="12" width="26" height="1" fill="#202628"/>
+      <rect x="15" y="13" width="26" height="1" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-topright">
+      <rect x="41" y="12" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="41" y="12" width="3" height="1" fill="#202628"/>
+      <rect x="41" y="13" width="2" height="1" fill="#f4f0e6"/>
+      <rect x="43" y="12" width="1" height="3" fill="#202628"/>
+      <rect x="42" y="13" width="1" height="2" fill="#8a8272"/>
+    </g>
+    <g id="groove-left">
+      <rect x="12" y="15" width="3" height="26" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="15" width="1" height="26" fill="#202628"/>
+      <rect x="13" y="15" width="1" height="26" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-center">
+      <rect x="15" y="15" width="26" height="26" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="groove-right">
+      <rect x="41" y="15" width="3" height="26" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="43" y="15" width="1" height="26" fill="#202628"/>
+      <rect x="42" y="15" width="1" height="26" fill="#8a8272"/>
+    </g>
+    <g id="groove-bottomleft">
+      <rect x="12" y="41" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="12" y="43" width="3" height="1" fill="#202628"/>
+      <rect x="13" y="42" width="2" height="1" fill="#8a8272"/>
+      <rect x="12" y="41" width="1" height="3" fill="#202628"/>
+      <rect x="13" y="41" width="1" height="2" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-bottom">
+      <rect x="15" y="41" width="26" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="15" y="43" width="26" height="1" fill="#202628"/>
+      <rect x="15" y="42" width="26" height="1" fill="#8a8272"/>
+    </g>
+    <g id="groove-bottomright">
+      <rect x="41" y="41" width="3" height="3" class="ColorScheme-Background" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="41" y="43" width="3" height="1" fill="#202628"/>
+      <rect x="41" y="42" width="2" height="1" fill="#8a8272"/>
+      <rect x="43" y="41" width="1" height="3" fill="#202628"/>
+      <rect x="42" y="41" width="1" height="2" fill="#8a8272"/>
+    </g>
+    <rect id="groove-hint-handle-size" x="13" y="15" width="20" height="20" fill="#00ff00" opacity="0"/>
+  <!-- groove-highlight -->
+    <g id="groove-highlight-topleft">
+      <rect x="56" y="12" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="12" width="3" height="1" fill="#202628"/>
+      <rect x="57" y="13" width="2" height="1" fill="#f4f0e6"/>
+      <rect x="56" y="12" width="1" height="3" fill="#202628"/>
+      <rect x="57" y="13" width="1" height="2" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-highlight-top">
+      <rect x="59" y="12" width="26" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="59" y="12" width="26" height="1" fill="#202628"/>
+      <rect x="59" y="13" width="26" height="1" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-highlight-topright">
+      <rect x="85" y="12" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="85" y="12" width="3" height="1" fill="#202628"/>
+      <rect x="85" y="13" width="2" height="1" fill="#f4f0e6"/>
+      <rect x="87" y="12" width="1" height="3" fill="#202628"/>
+      <rect x="86" y="13" width="1" height="2" fill="#8a8272"/>
+    </g>
+    <g id="groove-highlight-left">
+      <rect x="56" y="15" width="3" height="26" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="15" width="1" height="26" fill="#202628"/>
+      <rect x="57" y="15" width="1" height="26" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-highlight-center">
+      <rect x="59" y="15" width="26" height="26" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+    </g>
+    <g id="groove-highlight-right">
+      <rect x="85" y="15" width="3" height="26" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="87" y="15" width="1" height="26" fill="#202628"/>
+      <rect x="86" y="15" width="1" height="26" fill="#8a8272"/>
+    </g>
+    <g id="groove-highlight-bottomleft">
+      <rect x="56" y="41" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="56" y="43" width="3" height="1" fill="#202628"/>
+      <rect x="57" y="42" width="2" height="1" fill="#8a8272"/>
+      <rect x="56" y="41" width="1" height="3" fill="#202628"/>
+      <rect x="57" y="41" width="1" height="2" fill="#f4f0e6"/>
+    </g>
+    <g id="groove-highlight-bottom">
+      <rect x="59" y="41" width="26" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="59" y="43" width="26" height="1" fill="#202628"/>
+      <rect x="59" y="42" width="26" height="1" fill="#8a8272"/>
+    </g>
+    <g id="groove-highlight-bottomright">
+      <rect x="85" y="41" width="3" height="3" class="ColorScheme-Highlight" style="fill:currentColor;fill-opacity:1;stroke:none"/>
+      <rect x="85" y="43" width="3" height="1" fill="#202628"/>
+      <rect x="85" y="42" width="2" height="1" fill="#8a8272"/>
+      <rect x="87" y="41" width="1" height="3" fill="#202628"/>
+      <rect x="86" y="41" width="1" height="2" fill="#8a8272"/>
+    </g>
+    <rect id="groove-highlight-hint-handle-size" x="57" y="15" width="20" height="20" fill="#00ff00" opacity="0"/>
+</svg>

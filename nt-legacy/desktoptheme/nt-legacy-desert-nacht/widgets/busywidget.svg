@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="56" viewBox="0 0 144 56">
+  <!-- busywidget.svg — Wartekringel -->
+  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind
+       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->
+  <defs>
+    <style id="current-color-scheme" type="text/css">
+      .ColorScheme-Text { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-Background { color:#32302a; stop-color:#32302a; }
+      .ColorScheme-Highlight { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-ViewText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ViewBackground { color:#26241e; stop-color:#26241e; }
+      .ColorScheme-ViewHover { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-ViewFocus { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-ButtonText { color:#0a1012; stop-color:#0a1012; }
+      .ColorScheme-ButtonBackground { color:#32302a; stop-color:#32302a; }
+      .ColorScheme-ButtonHover { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-ButtonFocus { color:#96703a; stop-color:#96703a; }
+      .ColorScheme-HighlightedText { color:#26241e; stop-color:#26241e; }
+      .ColorScheme-ComplementaryBackground { color:#2b2822; stop-color:#2b2822; }
+      .ColorScheme-NegativeText { color:#a83232; stop-color:#a83232; }
+      .ColorScheme-NeutralText { color:#c87922; stop-color:#c87922; }
+      .ColorScheme-PositiveText { color:#39734a; stop-color:#39734a; }
+    </style>
+  </defs>
+    <g id="busywidget">
+      <circle cx="28" cy="28" r="10.88" fill="none" stroke="#96703a" stroke-width="3.84"/>
+    </g>
+    <g id="16-16-busywidget">
+      <circle cx="72" cy="28" r="10.88" fill="none" stroke="#96703a" stroke-width="3.84"/>
+    </g>
+    <g id="22-22-busywidget">
+      <circle cx="116" cy="28" r="10.88" fill="none" stroke="#96703a" stroke-width="3.84"/>
+    </g>
+</svg>

@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "huppiflupp",
+                "Email": "huppiflupp@users.noreply.github.com"
+            }
+        ],
+        "Description": "Sand and terracotta, after NT's Desert scheme",
+        "Description[de]": "Sand und Terrakotta, nach NTs Schema Desert",
+        "Id": "com.github.huppiflupp.nt-legacy-desert",
+        "License": "GPL-2.0-or-later",
+        "Name": "NT Legacy Wueste",
+        "Version": "0.2.8",
+        "Website": "https://github.com/huppiflupp/nt-legacy"
+    },
+    "Keywords": "Desktop;Workspace;Appearance;Look and Feel;",
+    "X-Plasma-APIVersion": "2"
+}
