@@ -10,10 +10,17 @@ and a night version.
 | ![NT Legacy 2000](screenshots/nt-legacy-win2k.jpg) | ![NT Legacy 98 Nacht](screenshots/nt-legacy-win98-nacht.jpg) |
 | *NT Legacy 2000* | *NT Legacy 98, night version* |
 
-Everything is generated from one set of colour values: the Plasma style,
-the colour schemes, the Aurorae window decoration, the cursors and the
-icons. Change a value in `nt-legacy/build.py`, run it, and all ten
-versions follow — that is the whole idea behind this repository.
+Each palette is generated from one set of colour values: the Plasma style,
+the colour scheme, the Aurorae window decoration, the Konsole scheme and
+the plain-gradient wallpaper. Change a value in `nt-legacy/build.py`, run
+it, and every layer of that palette follows — that is the whole idea
+behind this repository.
+
+Two things do *not* vary by palette: the icon set and the cursors exist
+once each in a light and a dark version, because ten near-identical sets
+would only clutter the selection dialogs. And the *shapes* are global —
+titlebar height, border widths, bevel or flat — they are arguments to the
+generators in `tools/`, not part of a palette.
 
 ## Install
 
