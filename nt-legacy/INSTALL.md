@@ -240,6 +240,26 @@ Four things worth knowing:
   The theme draws prompt and one box per typed character; both were
   verified in a VM.
 
+## Icons after switching themes
+
+`install.sh` writes the icon theme you had before into the `Inherits`
+line of the NT Legacy icon set. Distribution-specific icons — a
+distribution logo in an updater, for instance — then keep their picture
+instead of turning into a blank page, while everything else still comes
+from NT Legacy, which sits first in that line. The trade-off is honest:
+at those few spots two visual languages meet. A blank page is worse.
+
+If an icon does turn blank anyway, it is usually the icon cache rather
+than the theme: it remembers that a name could *not* be resolved.
+`install.sh` and `apply.sh` clear it since 0.2.13, but if you switched
+by hand:
+
+```bash
+rm -f ~/.cache/icon-cache.kcache
+```
+
+Then log out and back in.
+
 ## Chicago95 icons — optional, not included
 
 NT Legacy ships its own icon set (*NTLegacyIcons*, plus a night version),
@@ -323,8 +343,14 @@ Three levels, depending on how far back you want:
 ./uninstall.sh                                 # remove the theme completely
 ```
 
-`uninstall.sh` resets the configuration to Breeze **first** and deletes
-the files **afterwards**. That order matters: if `kwinrc` points at a
+`uninstall.sh` removes both icon sets, the wallpapers, the colour
+schemes and the theme's entries in `~/.config/kdedefaults/` — that last
+directory is where Plasma keeps the defaults of the global theme you
+applied, and leaving NT Legacy's values there would point at files that
+are gone.
+
+It resets the configuration to Breeze **first** and deletes the files
+**afterwards**. That order matters: if `kwinrc` points at a
 deleted Aurorae theme, KWin draws no titlebar at all — no frame, no close
 button.
 
