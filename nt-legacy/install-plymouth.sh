@@ -22,9 +22,24 @@ HIER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 THEMES="/usr/share/plymouth/themes"
 SICHERUNG="/var/backups/nt-legacy-plymouth"
 
+# Nennt den Installationsbefehl der laufenden Distribution.
+#
+# Vorher stand in beiden Meldungen unten "dnf install …" - auf dem
+# Arch-Testsystem also ein Befehl, den es dort gar nicht gibt. Wer eine
+# Fehlermeldung schreibt, sollte den Rat darin auch ausfuehren koennen.
+paketbefehl() {
+    if command -v pacman >/dev/null;   then echo "sudo pacman -S --needed $1"
+    elif command -v dnf >/dev/null;    then echo "sudo dnf install $1"
+    elif command -v apt >/dev/null;    then echo "sudo apt install $1"
+    elif command -v zypper >/dev/null; then echo "sudo zypper install $1"
+    else echo "das Paket '$1' nachinstallieren"
+    fi
+}
+
 if ! command -v plymouth-set-default-theme >/dev/null; then
     echo "FEHLER: plymouth-set-default-theme fehlt." >&2
-    echo "        Nutzt dieses System Plymouth? (dnf install plymouth)" >&2
+    echo "        Nutzt dieses System Plymouth? Sonst:" >&2
+    echo "        $(paketbefehl plymouth)" >&2
     exit 1
 fi
 
@@ -36,14 +51,29 @@ if [ ! -f /usr/lib64/plymouth/script.so ] && \
    [ ! -f /usr/lib/plymouth/script.so ] && \
    [ ! -f /usr/lib/x86_64-linux-gnu/plymouth/script.so ]; then
     echo "FEHLER: Das Plymouth-Modul 'script' fehlt." >&2
-    echo "        Fedora/Nobara:  sudo dnf install plymouth-plugin-script" >&2
-    echo "        Debian/Ubuntu:  ist in plymouth enthalten" >&2
-    echo "        Arch:           ist in plymouth enthalten" >&2
+    echo "        Auf Fedora und Nobara ist es ein eigenes Paket:" >&2
+    echo "        $(paketbefehl plymouth-plugin-script)" >&2
+    echo "        Anderswo steckt es in 'plymouth' selbst." >&2
     exit 1
 fi
 
 initramfs_neu() {
-    if command -v dracut >/dev/null; then
+    # Die Reihenfolge ist nicht beliebig.
+    #
+    # dracut-rebuild kommt zuerst, weil EndeavourOS es genau dafuer
+    # mitbringt: dort scheitert ein blosses "dracut --force" mit
+    #
+    #   dracut[F]: Can't write to /boot/efi/<machine-id>/<kernel>:
+    #   Directory does not exist or is not accessible.
+    #
+    # Grund ist das kernel-install-Layout - dracut allein sucht ein
+    # Verzeichnis, das dort niemand angelegt hat. In der Arch-Test-VM
+    # beim Rueckweg aufgefallen; die initramfs blieb unveraendert, ohne
+    # dass das Skript es gemerkt haette.
+    if command -v dracut-rebuild >/dev/null; then
+        echo "  initramfs neu bauen (dracut-rebuild) - das dauert einen Moment …"
+        sudo dracut-rebuild
+    elif command -v dracut >/dev/null; then
         echo "  initramfs neu bauen (dracut) - das dauert einen Moment …"
         sudo dracut --force
     elif command -v update-initramfs >/dev/null; then
@@ -60,6 +90,19 @@ initramfs_neu() {
     fi
 }
 
+# Der Aufruf oben darf nicht stillschweigend scheitern: eine nicht
+# erneuerte initramfs zeigt beim naechsten Start weiter das alte Theme,
+# und niemand kaeme auf die Idee, dort zu suchen.
+initramfs_neu_gemeldet() {
+    if ! initramfs_neu; then
+        echo "" >&2
+        echo "WARNUNG: Der Neubau der initramfs ist fehlgeschlagen." >&2
+        echo "         Das Theme liegt richtig, erscheint beim naechsten" >&2
+        echo "         Start aber erst, wenn er nachgeholt wird." >&2
+        return 1
+    fi
+}
+
 # ── Rueckweg ─────────────────────────────────────────────────────────────
 if [ "${1:-}" = "--zurueck" ]; then
     if [ -f "$SICHERUNG/theme" ]; then
@@ -72,7 +115,7 @@ if [ "${1:-}" = "--zurueck" ]; then
             sudo plymouth-set-default-theme details
     fi
     sudo sh -c "rm -rf '$THEMES'/nt-legacy-*"
-    initramfs_neu || true
+    initramfs_neu_gemeldet || true
     echo "Zurueckgesetzt."
     exit 0
 fi
@@ -127,7 +170,51 @@ echo "  $THEMES/$NAME"
 sudo plymouth-set-default-theme "$NAME"
 echo "  als Vorgabe gesetzt"
 
-initramfs_neu || true
+initramfs_neu_gemeldet || true
+
+# Ohne "splash" auf der Kernel-Kommandozeile zeigt Plymouth nichts.
+#
+# Fedora und Nobara setzen "rhgb quiet" ab Werk, Arch und EndeavourOS
+# nicht - dort steht das Theme sauber installiert da und erscheint beim
+# Start trotzdem nie. In der Arch-Test-VM nachgestellt; plymouthd sagt
+# es selbst, aber nur im Debug-Protokoll:
+#
+#   no default splash because kernel command line lacks "splash" or "rhgb"
+#
+# Bewusst nur ein Hinweis: Kernel-Parameter aendert dieses Skript nicht
+# von sich aus.
+if ! grep -qE "(^| )(splash|rhgb)( |$)" /proc/cmdline; then
+    # Den passenden Befehl fuer diese Distribution nennen statt einen,
+    # der anderswo stimmt. Ein erster Entwurf schlug hier ein sed vor,
+    # das auf doppelte Anfuehrungszeichen passte - EndeavourOS schreibt
+    # die Zeile aber in einfachen. Der Rat waere wirkungslos verpufft,
+    # und der Nutzer haette den Fehler beim Theme gesucht.
+    if [ -d /boot/grub2 ]; then
+        mkcfg="sudo grub2-mkconfig -o /boot/grub2/grub.cfg"
+    else
+        mkcfg="sudo grub-mkconfig -o /boot/grub/grub.cfg"
+    fi
+    cat >&2 <<HINWEIS
+
+HINWEIS: Auf der Kernel-Kommandozeile fehlt "splash".
+
+         Ohne dieses Wort zeigt Plymouth beim Start gar nichts - das
+         Theme ist dann installiert und unsichtbar. Auf Arch und
+         EndeavourOS ist das der Normalfall, auf Fedora steht dort ab
+         Werk "rhgb quiet". plymouthd sagt es selbst, aber nur im
+         Debug-Protokoll:
+
+           no default splash because kernel command line lacks
+           "splash" or "rhgb"
+
+         So kommt es hinein: in /etc/default/grub das Wort splash in
+         die Zeile GRUB_CMDLINE_LINUX_DEFAULT aufnehmen - innerhalb der
+         Anfuehrungszeichen, hinter die vorhandenen Werte - und danach
+
+           $mkcfg
+
+HINWEIS
+fi
 
 cat <<EOF
 

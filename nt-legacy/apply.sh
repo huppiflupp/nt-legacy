@@ -363,6 +363,68 @@ if command -v systemctl >/dev/null; then
     fi
 fi
 
+# ── Panelbreite nachziehen ───────────────────────────────────────────────
+#
+# Das Layout-Skript im Design setzt die Laenge des Panels, und Plasma
+# ueberschreibt sie beim Anwenden wieder mit der Breite der Symbole:
+# gemessen 456 statt 1024 Pixel (EndeavourOS) und 388 statt 1280
+# (Fedora). Auf dem Bildschirm sieht das nicht nach "Panel etwas kurz"
+# aus, sondern nach "Panel fehlt" - ein Stummel in der linken Ecke.
+#
+# Deshalb hier noch einmal ueber die Skriptkonsole - und zwar in einer
+# Schleife mit Nachkontrolle. Ein einzelner Versuch reicht nicht: Plasma
+# baut das Layout asynchron auf und schrumpft das Panel unter Umstaenden
+# NACH unserem Aufruf wieder. Wie lange das dauert, ist von System zu
+# System verschieden - drei Sekunden genuegten auf EndeavourOS und auf
+# Fedora nicht.
+#
+# Nur mit --panel: an einem selbstgebauten Panel des Nutzers hat dieses
+# Skript nichts zu drehen.
+if $PANEL; then
+    PANEL_JS='var ps = panels();
+var alles_gut = true;
+for (var i = 0; i < ps.length; i++) {
+    var nr = ps[i].screen; if (nr === undefined || nr < 0) { nr = 0; }
+    var g = screenGeometry(nr);
+    var b = (g && g.width > 0) ? g.width : 99999;
+    ps[i].length = b; ps[i].maximumLength = b; ps[i].minimumLength = b;
+    if (ps[i].length != b) { alles_gut = false; }
+}
+print(alles_gut ? "PANEL-OK" : "PANEL-KURZ");'
+
+    plasma_skript() {
+        if command -v qdbus6 >/dev/null; then
+            qdbus6 org.kde.plasmashell /PlasmaShell evaluateScript "$1" 2>/dev/null
+        elif command -v qdbus >/dev/null; then
+            qdbus org.kde.plasmashell /PlasmaShell evaluateScript "$1" 2>/dev/null
+        else
+            dbus-send --session --print-reply --dest=org.kde.plasmashell \
+                /PlasmaShell org.kde.PlasmaShell.evaluateScript \
+                "string:$1" 2>/dev/null
+        fi
+    }
+
+    panel_sitzt=false
+    for _versuch in 1 2 3 4 5 6; do
+        sleep 2
+        if plasma_skript "$PANEL_JS" | grep -q "PANEL-OK"; then
+            # Noch einmal hinsehen: der Wert muss auch zwei Sekunden
+            # spaeter noch stehen, sonst hat Plasma nur noch nicht
+            # zurueckgeschrieben.
+            sleep 2
+            if plasma_skript "$PANEL_JS" | grep -q "PANEL-OK"; then
+                panel_sitzt=true
+                break
+            fi
+        fi
+    done
+    if ! $panel_sitzt; then
+        echo "  Warnung: Das Panel konnte nicht auf volle Breite gezogen" >&2
+        echo "           werden. Rechtsklick darauf > Anzeigen einrichten" >&2
+        echo "           > Breite, oder einmal ab- und wieder anmelden." >&2
+    fi
+fi
+
 cat <<EOF
 
 Angewendet.

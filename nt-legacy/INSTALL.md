@@ -29,7 +29,7 @@ The archive `nt-legacy-full-manual-install-<version>.tar.xz` contains all
 six layers of the theme at once.
 
 ```bash
-tar -xf nt-legacy-full-manual-install-0.2.10.tar.xz
+tar -xf nt-legacy-full-manual-install-0.2.12.tar.xz
 cd nt-legacy
 ./install.sh --anwenden win2k     # install, then apply that version
 ```
@@ -210,7 +210,11 @@ What can go wrong is limited: if GRUB cannot find its theme it draws its
 plain text menu, and if Plymouth cannot find its theme you simply see the
 usual boot messages. The machine boots either way.
 
-Three things worth knowing:
+Tested on two distributions — Fedora and EndeavourOS — because the
+scripts take different paths on each: `/boot/grub2` vs `/boot/grub`,
+`grub2-mkconfig` vs `grub-mkconfig`, `dracut` vs `dracut-rebuild`.
+
+Four things worth knowing:
 
 - **Plymouth needs its script module.** On Fedora and Nobara it is a
   separate package: `sudo dnf install plymouth-plugin-script`. Debian and
@@ -220,6 +224,11 @@ Three things worth knowing:
 - **`GRUB_TERMINAL=console` beats everything.** If that line is in
   `/etc/default/grub`, the menu stays in text mode and the theme is
   installed but invisible. The script warns you if it finds it.
+- **Arch and EndeavourOS need `splash` on the kernel command line.**
+  Fedora sets `rhgb quiet` out of the box, Arch sets neither — and
+  without it Plymouth shows nothing at all, however well the theme is
+  installed. `install-plymouth.sh` checks and tells you exactly what to
+  add where.
 - **With an encrypted disk, test the passphrase prompt** before you
   reboot. It is the one thing that can leave you staring at a screen that
   waits for input without showing what for:
