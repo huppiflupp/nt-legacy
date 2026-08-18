@@ -49,10 +49,43 @@ for d in "$DATEN"/plasma/desktoptheme "$DATEN"/plasma/look-and-feel \
          "$DATEN"/aurorae/themes "$DATEN"/aurorae; do
     rmdir "$d" 2>/dev/null && echo "  leeres Verzeichnis $d entfernt"
 done
-rm -rf "$DATEN"/icons/NTLegacy                 && echo "  Symbole"
+# Alle drei Symbolsaetze, nicht nur einer.
+#
+# Hier stand bis 0.2.13 allein "$DATEN/icons/NTLegacy" - das ist der
+# Chicago95-Ableger aus fetch-icons.sh. Die beiden mitgelieferten Saetze
+# NTLegacyIcons und NTLegacyIconsNacht blieben liegen, und mit ihnen der
+# Eindruck, die Deinstallation habe nicht gewirkt. In der Arch-Test-VM
+# aufgefallen, als der Ausgangszustand nach uninstall.sh nicht wieder
+# der alte war.
+rm -rf "$DATEN"/icons/NTLegacy "$DATEN"/icons/NTLegacyIcons \
+       "$DATEN"/icons/NTLegacyIconsNacht      && echo "  Symbole"
 rm -rf "$DATEN"/icons/NTLegacy*_cursors         2>/dev/null || true
 rm -rf "$DATEN"/wallpapers/ntlegacy*           && echo "  Hintergrundbilder"
 rm -f  "$DATEN"/color-schemes/NTLegacy*.colors && echo "  Farbschemata"
+
+# Die Vorgabedatei des Globalen Designs aufraeumen.
+#
+# ~/.config/kdedefaults/ gehoert dem zuletzt angewendeten Design: Plasma
+# legt die Werte dort als Vorgaben ab, nicht als Nutzerwerte. Nach der
+# Deinstallation stand dort weiter "Theme=NTLegacyIcons" - ein Verweis
+# auf einen Symbolsatz, den wir gerade geloescht haben.
+#
+# Die Sicherung deckt das nicht ab: install.sh kopiert ~/.config, nicht
+# ~/.config/kdedefaults. Deshalb hier gezielt die eigenen Zeilen weg -
+# und nur die eigenen. Wer inzwischen ein anderes Design angewendet hat,
+# behaelt dessen Vorgaben unangetastet.
+KDD="$HOME/.config/kdedefaults"
+if [ -d "$KDD" ]; then
+    geraeumt=false
+    for f in "$KDD"/*; do
+        [ -f "$f" ] || continue
+        if grep -qE "=.*(NTLegacy|nt-legacy)" "$f" 2>/dev/null; then
+            sed -i -E "/=.*(NTLegacy|nt-legacy)/d" "$f"
+            geraeumt=true
+        fi
+    done
+    $geraeumt && echo "  Vorgaben in kdedefaults"
+fi
 
 # Konsole: erst konsolerc zuruecksetzen, dann die Dateien loeschen.
 # Zeigt DefaultProfile auf ein geloeschtes Profil, startet Konsole zwar,

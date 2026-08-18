@@ -29,7 +29,7 @@ The archive `nt-legacy-full-manual-install-<version>.tar.xz` contains all
 six layers of the theme at once.
 
 ```bash
-tar -xf nt-legacy-full-manual-install-0.2.13.tar.xz
+tar -xf nt-legacy-full-manual-install-0.2.14.tar.xz
 cd nt-legacy
 ./install.sh --anwenden win2k     # install, then apply that version
 ```
