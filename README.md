@@ -50,6 +50,27 @@ Releases are on the [KDE Store](https://store.kde.org/) and under
 Each also comes as a night version: `teal-nacht`, `lilac-nacht`,
 `desert-nacht`, `win2k-nacht`, `win98-nacht`.
 
+## Boot screens
+
+GRUB and Plymouth get the same NT dialog as the Plasma splash, so the
+machine looks the same from power-on to desktop:
+
+```bash
+./install-grub.sh win2k          # boot menu
+./install-plymouth.sh win2k      # boot splash
+./install-grub.sh --zurueck      # remove, restore what was there before
+./install-plymouth.sh --zurueck
+```
+
+These two are **not** part of `install.sh`: they write to `/boot` and
+`/usr` and need `sudo`, while everything else stays inside `$HOME`. Both
+back up what they touch, and `--zurueck` restores it byte for byte.
+
+Plymouth needs its script module, which Fedora and Nobara ship separately
+(`sudo dnf install plymouth-plugin-script`); the installer checks. With an
+encrypted disk, test the passphrase prompt before rebooting — see
+[nt-legacy/INSTALL.md](nt-legacy/INSTALL.md).
+
 ## Building from source
 
 ```bash

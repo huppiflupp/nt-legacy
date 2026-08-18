@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=NT Legacy
+Description=Startbildschirm im Stil von Windows NT
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/nt-legacy
+ScriptFile=/usr/share/plymouth/themes/nt-legacy/nt-legacy.script

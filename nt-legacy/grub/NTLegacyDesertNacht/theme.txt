@@ -1,0 +1,38 @@
+# NT Legacy - GRUB-Theme, erzeugt von tools/gen-grub.py
+#
+# Das Bootmenue in der Formensprache des Themes: ein NT-Dialog mit
+# Titelleiste. Nicht von Hand aendern - der naechste build.py-Lauf
+# ueberschreibt die Datei.
+
+title-text: ""
+desktop-color: "#221f1a"
+
+# Der Kasten. Die Titelleiste steckt im oberen Rand des 9-Patch,
+# deshalb sitzt der erste Eintrag 29 Pixel unter dem oberen Rand.
++ boot_menu {
+    left                       = 50%-310
+    top                        = 30%
+    width                      = 620
+    height                     = 260
+    item_color                 = "#dae0e0"
+    selected_item_color        = "#ffffff"
+    item_height                = 26
+    item_padding               = 12
+    item_spacing               = 2
+    icon_width                 = 0
+    icon_height                = 0
+    menu_pixmap_style          = "menu_*.png"
+    selected_item_pixmap_style = "select_*.png"
+    scrollbar                  = false
+}
+
+# Der Countdown, im Stil einer NT-Statuszeile unter dem Kasten.
++ label {
+    left  = 50%-310
+    top   = 30%+272
+    width = 620
+    align = "center"
+    id    = "__timeout__"
+    text  = "Starting in %d s"
+    color = "#ffffff"
+}

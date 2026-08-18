@@ -13,11 +13,6 @@
 # auffaelligste Merkmal.
 #
 # Dauer: rund zwei Minuten je Variante.
-#
-# HINWEIS: Dieses Skript braucht die Test-VM aus der Werkstatt
-# (vm/vmctl.sh) und laeuft in diesem Repository deshalb nicht. Es liegt
-# hier bei, weil build.py und mach-paket.sh darauf verweisen: die
-# Vorschaubilder im Theme sind damit entstanden, nicht von Hand.
 
 set -uo pipefail
 

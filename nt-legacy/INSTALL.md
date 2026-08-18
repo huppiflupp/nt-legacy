@@ -29,7 +29,7 @@ The archive `nt-legacy-full-manual-install-<version>.tar.xz` contains all
 six layers of the theme at once.
 
 ```bash
-tar -xf nt-legacy-full-manual-install-0.2.8.tar.xz
+tar -xf nt-legacy-full-manual-install-0.2.9.tar.xz
 cd nt-legacy
 ./install.sh --anwenden win2k     # install, then apply that version
 ```
@@ -184,6 +184,52 @@ silently and the terminal simply does not look like NT.
 pick. There are five schemes rather than ten because the accent colours
 are identical between the day and night version of a palette — the
 terminal is dark either way, as it was under NT.
+
+## Boot screens — GRUB and Plymouth
+
+The theme also covers what you see before the desktop appears: the GRUB
+boot menu and the Plymouth boot splash, both in the same NT dialog shape
+as the Plasma splash screen.
+
+**These two are not part of `install.sh`.** They write to `/boot` and
+`/usr` and therefore need `sudo` — every other part of NT Legacy stays
+inside `$HOME`. They are separate scripts so that the decision is yours:
+
+```bash
+./install-grub.sh win2k          # boot menu
+./install-plymouth.sh win2k      # boot splash
+./install-grub.sh --zurueck      # remove, restore what was there before
+./install-plymouth.sh --zurueck
+```
+
+Both back up what they change before changing it, and `--zurueck`
+restores it byte for byte — verified in a VM by comparing checksums of
+`/etc/default/grub` before and after.
+
+What can go wrong is limited: if GRUB cannot find its theme it draws its
+plain text menu, and if Plymouth cannot find its theme you simply see the
+usual boot messages. The machine boots either way.
+
+Three things worth knowing:
+
+- **Plymouth needs its script module.** On Fedora and Nobara it is a
+  separate package: `sudo dnf install plymouth-plugin-script`. Debian and
+  Arch ship it inside `plymouth`. Without it, Plymouth silently falls back
+  to the text theme — the most common reason a boot splash "just doesn't
+  show up". `install-plymouth.sh` checks for it and stops.
+- **`GRUB_TERMINAL=console` beats everything.** If that line is in
+  `/etc/default/grub`, the menu stays in text mode and the theme is
+  installed but invisible. The script warns you if it finds it.
+- **With an encrypted disk, test the passphrase prompt** before you
+  reboot. It is the one thing that can leave you staring at a screen that
+  waits for input without showing what for:
+
+  ```bash
+  sudo plymouth ask-for-password --prompt "Test"
+  ```
+
+  The theme draws prompt and one box per typed character; both were
+  verified in a VM.
 
 ## Chicago95 icons — optional, not included
 

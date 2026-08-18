@@ -1,0 +1,94 @@
+// NT Legacy - Plymouth-Theme, erzeugt von tools/gen-plymouth.py
+//
+// Derselbe Kasten wie im Plasma-Startbildschirm. Nicht von Hand
+// aendern - der naechste build.py-Lauf ueberschreibt die Datei.
+
+Window.SetBackgroundTopColor(0.1333, 0.1216, 0.1020);
+Window.SetBackgroundBottomColor(0.1333, 0.1216, 0.1020);
+
+dialog.image = Image("dialog.png");
+dialog.sprite = Sprite(dialog.image);
+dialog.x = Window.GetX() + (Window.GetWidth() - dialog.image.GetWidth()) / 2;
+dialog.y = Window.GetY() + (Window.GetHeight() - dialog.image.GetHeight()) / 2;
+dialog.sprite.SetPosition(dialog.x, dialog.y, 0);
+
+track.image = Image("bar-track.png");
+track.sprite = Sprite(track.image);
+track.x = dialog.x + 14;
+track.y = dialog.y + 150 - 14 - 14;
+track.sprite.SetPosition(track.x, track.y, 1);
+
+fill.image = Image("bar-fill.png");
+fill.sprite = Sprite();
+fill.sprite.SetPosition(track.x + 2, track.y + 2, 2);
+
+// ── Fortschritt ────────────────────────────────────────────────────
+// Plymouth ruft das mit der geschaetzten Bootdauer und dem Anteil auf.
+fun fortschritt(dauer, anteil) {
+    breite = (460 - 28 - 4) * anteil;
+    if (breite < 1) breite = 1;
+    fill.sprite.SetImage(fill.image.Scale(breite, 10));
+}
+Plymouth.SetBootProgressFunction(fortschritt);
+
+// ── Passwortabfrage ────────────────────────────────────────────────
+// Ohne diese Funktion bleibt der Bildschirm bei einer verschluesselten
+// Platte stumm stehen: Plymouth wartet auf die Eingabe, zeigt aber
+// nichts an. Der Aufforderungstext kommt vom System.
+bullet.image = Image("bullet.png");
+bullets = [];
+prompt.sprite = Sprite();
+
+fun passwort(aufforderung, anzahl) {
+    fill.sprite.SetOpacity(0);
+    track.sprite.SetOpacity(0);
+
+    prompt.image = Image.Text(aufforderung, 0.8549, 0.8784, 0.8784);
+    prompt.sprite.SetImage(prompt.image);
+    prompt.sprite.SetPosition(
+        dialog.x + 14,
+        dialog.y + 24 + 22, 3);
+    prompt.sprite.SetOpacity(1);
+
+    for (i = 0; i < anzahl || i < bullets.GetSize(); i++) {
+        if (i < anzahl) {
+            if (!bullets[i]) bullets[i] = Sprite(bullet.image);
+            bullets[i].SetPosition(dialog.x + 16 + i * 13,
+                                   dialog.y + 150 - 34, 3);
+            bullets[i].SetOpacity(1);
+        } else if (bullets[i]) {
+            bullets[i].SetOpacity(0);
+        }
+    }
+}
+Plymouth.SetDisplayPasswordFunction(passwort);
+
+// ── Zurueck zur normalen Anzeige ───────────────────────────────────
+fun normal() {
+    prompt.sprite.SetOpacity(0);
+    for (i = 0; i < bullets.GetSize(); i++) {
+        if (bullets[i]) bullets[i].SetOpacity(0);
+    }
+    track.sprite.SetOpacity(1);
+    fill.sprite.SetOpacity(1);
+}
+Plymouth.SetDisplayNormalFunction(normal);
+
+// ── Meldungen ──────────────────────────────────────────────────────
+// systemd schickt hierueber Texte wie "Press any key to abort".
+meldung.sprite = Sprite();
+fun meldung(text) {
+    meldung.image = Image.Text(text, 0.8549, 0.8784, 0.8784);
+    meldung.sprite.SetImage(meldung.image);
+    meldung.sprite.SetPosition(
+        Window.GetX() + (Window.GetWidth() - meldung.image.GetWidth()) / 2,
+        dialog.y + 150 + 24, 4);
+}
+Plymouth.SetMessageFunction(meldung);
+
+// Beim Herunterfahren laeuft der Balken rueckwaerts leer - ohne diese
+// Funktion bliebe er auf dem letzten Stand des Startvorgangs stehen.
+fun beenden() {
+    fill.sprite.SetOpacity(0);
+}
+Plymouth.SetQuitFunction(beenden);

@@ -58,7 +58,7 @@ EMAIL = "huppiflupp@users.noreply.github.com"
 WEBSITE = "https://github.com/huppiflupp/nt-legacy"
 LIZENZ = "GPL-2.0-or-later"
 SCHRIFT = "Noto Sans"
-VERSION = "0.2.8"
+VERSION = "0.2.9"
 
 # --------------------------------------------------------------------------
 # Farben. Einzige Stelle, an der sie stehen.
@@ -1017,6 +1017,35 @@ def baue(variante, pruefen=False):
                 s = s.replace(alt, neu)
             datei.write_text(s)
     print(f"  aurorae/{k['aurorae']}/")
+
+    # ── Bootbildschirme ──────────────────────────────────────────────────
+    #
+    # GRUB und Plymouth bekommen dieselbe Formensprache wie der
+    # Startbildschirm: ein NT-Dialog mit Titelleiste. Damit sieht der
+    # Rechner vom Einschalten bis zum Desktop nach demselben Design aus.
+    #
+    # Beide Generatoren nehmen die fertige Palette, nicht die Grundfarben
+    # mit anschliessendem Suchen und Ersetzen wie beim Plasma-Stil: sie
+    # zeichnen Pixel, keine SVGs, und ein PNG laesst sich nicht
+    # nachtraeglich umfaerben.
+    #
+    # Installiert wird das NICHT von install.sh - beides liegt ausserhalb
+    # von $HOME und braucht sudo. Dafuer gibt es install-grub.sh und
+    # install-plymouth.sh, die der Nutzer bewusst aufruft.
+    pal_json = json.dumps(p)
+    for werk, unterordner, zielname in [
+            ("gen-grub.py", "grub", k["aurorae"]),
+            ("gen-plymouth.py", "plymouth", k["lnf"].split(".")[-1]),
+    ]:
+        r = subprocess.run(
+            [sys.executable, werkzeug(werk), "--name", zielname,
+             "--anzeige", anzeige, "--palette", pal_json,
+             "-o", str(HIER / unterordner)],
+            capture_output=True, text=True)
+        if r.returncode != 0:
+            print(r.stderr, file=sys.stderr)
+            return False
+        print(r.stdout.rstrip())
 
     # ── Hintergruende ────────────────────────────────────────────────────
     #
