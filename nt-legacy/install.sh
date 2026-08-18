@@ -94,6 +94,36 @@ chmod +x "$BACKUP/restore.sh"
 echo "Sicherung: $BACKUP"
 
 # ── Installation ─────────────────────────────────────────────────────────
+# kpackagetool6 aufrufen und dabei ein bekanntes Rauschen aussieben.
+#
+# Aus der Community (cubanismo, Arch mit Plasma 6.6.5): je installiertem
+# Plasma-Stil eine Zeile
+#
+#   qt.dbus.integration: QDBusConnection: error: could not send signal to
+#   service "" path "/KPackage/" interface "org.kde.plasma.kpackage"
+#   member "packageInstalled": Invalid object path: /KPackage/
+#
+# Das ist KEIN Fehler dieses Themes und auch keiner der Installation: die
+# Pakete landen korrekt. KPackage meldet die geglueckte Installation per
+# D-Bus und baut den Objektpfad aus einem Praefix, das bei Plasma/Theme
+# leer ist - "/KPackage/" ist als Pfad ungueltig, Qt sagt das laut.
+#
+# Nachgestellt: Auf Fedora mit KF6 6.28 bleibt stderr leer, mit den
+# aelteren Bibliotheken von Plasma 6.6.5 kommen zehn dieser Zeilen. Der
+# Melder hielt sie fuer den Grund, warum das Design nicht griff, und hat
+# von Hand nachgearbeitet - genau davor schuetzt dieser Filter.
+#
+# Bewusst kein pauschales 2>/dev/null: echte Fehler von kpackagetool6
+# muessen sichtbar bleiben.
+kpaket() {
+    local fehler rc=0
+    fehler="$(mktemp)"
+    kpackagetool6 "$@" >/dev/null 2>"$fehler" || rc=$?
+    grep -v "^qt\.dbus\.integration:" "$fehler" >&2 || true
+    rm -f "$fehler"
+    return $rc
+}
+
 # kpackagetool6 statt cp -r: es prueft die Metadaten, legt unter der
 # richtigen Id ab und kann sauber wieder deinstallieren.
 installiere() {
@@ -102,12 +132,12 @@ installiere() {
     # Verzeichnis zwar da, das Paket aber nicht registriert ist - dann
     # scheitert auch -i mit "existiert bereits". Ohne diesen Weg schlaegt
     # jede zweite Installation fehl.
-    if kpackagetool6 -t "$typ" -u "$pfad" >/dev/null 2>&1; then
+    if kpaket -t "$typ" -u "$pfad" 2>/dev/null; then
         return 0
     fi
-    kpackagetool6 -t "$typ" -r "$(basename "$pfad")" >/dev/null 2>&1 || true
+    kpaket -t "$typ" -r "$(basename "$pfad")" 2>/dev/null || true
     rm -rf "$ziel"
-    kpackagetool6 -t "$typ" -i "$pfad" >/dev/null
+    kpaket -t "$typ" -i "$pfad"
 }
 
 echo "Plasma Styles …"

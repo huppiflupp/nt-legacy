@@ -29,7 +29,7 @@ The archive `nt-legacy-full-manual-install-<version>.tar.xz` contains all
 six layers of the theme at once.
 
 ```bash
-tar -xf nt-legacy-full-manual-install-0.2.9.tar.xz
+tar -xf nt-legacy-full-manual-install-0.2.10.tar.xz
 cd nt-legacy
 ./install.sh --anwenden win2k     # install, then apply that version
 ```
@@ -279,6 +279,21 @@ still started with Breeze.
 itself. If you installed via *Get New …* and have no `apply.sh`, set it by
 hand under *System Settings → Colors & Themes → Application Style →
 MS Windows 9x*.
+
+**`qt.dbus.integration` messages while installing.** On Plasma 6.6 and
+older you may see one line per Plasma style:
+
+```
+qt.dbus.integration: QDBusConnection: error: could not send signal to
+service "" path "/KPackage/" … Invalid object path: /KPackage/
+```
+
+Harmless, and not a failed installation: KPackage announces each
+installed package over D-Bus and builds the object path from a prefix
+that is empty for Plasma styles. The packages themselves are installed
+correctly. Since 0.2.10 `install.sh` filters these lines out — real
+errors from `kpackagetool6` still get through. Newer KDE Frameworks
+(6.28 measured) no longer produce them.
 
 **No panel after switching several times.** `plasma-plasmashell` allows
 three starts per minute. `apply.sh` therefore does not restart the shell

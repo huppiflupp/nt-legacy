@@ -12,7 +12,7 @@
         "Id": "nt-legacy-desert-nacht",
         "License": "GPL-2.0-or-later",
         "Name": "NT Legacy Wueste Nacht",
-        "Version": "0.2.9",
+        "Version": "0.2.10",
         "Website": "https://github.com/huppiflupp/nt-legacy"
     },
     "X-Plasma-API": "5.0"
