@@ -12,15 +12,15 @@ Historie nur auf.
 
 ```
 dist/
-├── nt-legacy-full-manual-install-0.2.12.tar.xz    14 MB   Gesamtpaket
-├── nt-legacy-global-theme-<farbwelt>-0.2.12.tar.xz       10 Stück
-├── nt-legacy-plasma-style-<farbwelt>-0.2.12.tar.xz       10 Stück
-├── nt-legacy-icons-0.2.12.tar.xz                1,4 MB   (hell und Nachtfassung)
-├── nt-legacy-window-decorations-0.2.12.tar.xz    12 KB
-├── nt-legacy-cursors-0.2.12.tar.xz               12 KB
-├── nt-legacy-color-schemes-0.2.12.tar.xz        4,0 KB
-├── nt-legacy-wallpaper-<name>-0.2.12.tar.xz              26 Stück
-├── nt-legacy-wallpapers-manual-install-0.2.12.tar.xz  69 MB
+├── nt-legacy-full-manual-install-0.2.13.tar.xz    14 MB   Gesamtpaket
+├── nt-legacy-global-theme-<farbwelt>-0.2.13.tar.xz       10 Stück
+├── nt-legacy-plasma-style-<farbwelt>-0.2.13.tar.xz       10 Stück
+├── nt-legacy-icons-0.2.13.tar.xz                1,4 MB   (hell und Nachtfassung)
+├── nt-legacy-window-decorations-0.2.13.tar.xz    12 KB
+├── nt-legacy-cursors-0.2.13.tar.xz               12 KB
+├── nt-legacy-color-schemes-0.2.13.tar.xz        4,0 KB
+├── nt-legacy-wallpaper-<name>-0.2.13.tar.xz              26 Stück
+├── nt-legacy-wallpapers-manual-install-0.2.13.tar.xz  69 MB
 ├── screenshots/                                 16 Bilder (10 + 5 Tag/Nacht + Übersicht)
 └── SHA256SUMS
 ```

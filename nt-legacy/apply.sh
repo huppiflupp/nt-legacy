@@ -303,7 +303,8 @@ fi
 
 # Der Render-Cache traegt Themename und -version. Ohne Loeschen sieht man
 # nach einem Update das alte Bild und sucht den Fehler an der falschen Stelle.
-rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements"
+rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements" \
+      "$HOME/.cache/icon-cache.kcache"
 
 # --- Uebernehmen, ohne die Shell abzuschiessen ---------------------------
 #

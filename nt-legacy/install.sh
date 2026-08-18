@@ -86,7 +86,8 @@ kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 \
 kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 \
     --key theme Breeze 2>/dev/null || true
 
-rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements"
+rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements" \
+      "$HOME/.cache/icon-cache.kcache"
 echo ""
 echo "Wiederhergestellt. Ab- und wieder anmelden."
 EOF
@@ -192,6 +193,54 @@ if [ -d "$HIER/icons-nt" ]; then
     # Symbol, nur diesmal beide das falsche.
     rm -rf "$DATEN/icons/NTLegacyIcons" "$DATEN/icons/NTLegacyIconsNacht"
     cp -a "$HIER/icons-nt/"* "$DATEN/icons/"
+
+    # Das bisherige Symbolthema als Rueckfall eintragen.
+    #
+    # Aus der Rueckmeldung: Auf EndeavourOS zeigte der Systemaktualisierer
+    # nach dem Wechsel ein weisses Blatt. Sein Symbol heisst
+    # "endeavouros-icon" und liegt ausschliesslich in Qogir, dem
+    # Symbolthema der Distribution - unser Satz erbt von breeze und
+    # hicolor, Qogir ist nicht darunter, also findet Plasma nichts.
+    #
+    # Das trifft jedes distributionseigene Symbol und passiert beim
+    # Wechsel auf Breeze genauso. Wir koennen es hier aber abfangen: das
+    # zuvor aktive Thema kommt VOR breeze in die Inherits-Zeile. Dann
+    # behalten solche Symbole ihr Bild, und alles andere kommt weiter von
+    # uns - die Reihenfolge entscheidet, und wir stehen an erster Stelle.
+    #
+    # Der Preis ist ehrlich zu nennen: an genau diesen Stellen mischen
+    # sich zwei Bildsprachen. Ein weisses Blatt ist die schlechtere Wahl.
+    vorheriges_symbolthema() {
+        local kandidat quelle d
+        # Erst der laufende Zustand, dann die eben angelegte Sicherung
+        # (dort steht, was vor dieser Installation galt), zuletzt die
+        # Vorgaben des Globalen Designs.
+        for quelle in "$HOME/.config/kdeglobals" "$BACKUP/kdeglobals" \
+                      "$HOME/.config/kdedefaults/kdeglobals"; do
+            [ -f "$quelle" ] || continue
+            kandidat="$(sed -n '/^\[Icons\]/,/^\[/{s/^Theme=//p}' "$quelle" | head -1)"
+            case "$kandidat" in
+                ""|NTLegacy|NTLegacyIcons|NTLegacyIconsNacht|hicolor) continue ;;
+            esac
+            for d in "$DATEN/icons/$kandidat" "/usr/share/icons/$kandidat"; do
+                [ -d "$d" ] && { echo "$kandidat"; return 0; }
+            done
+        done
+        return 1
+    }
+
+    if FREMD="$(vorheriges_symbolthema)"; then
+        for satz in NTLegacyIcons NTLegacyIconsNacht; do
+            idx="$DATEN/icons/$satz/index.theme"
+            [ -f "$idx" ] || continue
+            # Nur die erste Inherits-Zeile, und nur wenn das Thema nicht
+            # ohnehin schon darin steht.
+            grep -q "^Inherits=.*\b$FREMD\b" "$idx" && continue
+            sed -i "0,/^Inherits=/s//Inherits=$FREMD,/" "$idx"
+        done
+        echo "  Rueckfall auf '$FREMD' eingetragen (fuer Symbole der Distribution)"
+    fi
+
     for satz in NTLegacyIcons NTLegacyIconsNacht; do
         [ -d "$DATEN/icons/$satz" ] || continue
         command -v gtk-update-icon-cache >/dev/null && \
@@ -269,7 +318,15 @@ kwriteconfig6 --file kdeglobals --group Icons --key Theme "$SATZ"
 
 # Der Render-Cache traegt die Themeversion im Namen. Ohne Loeschen sieht
 # man nach einem Update das alte Theme und sucht den Fehler woanders.
-rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements"
+#
+# icon-cache.kcache gehoert dazu und fehlte hier bis 0.2.12 - waehrend
+# das eigene Pruefskript ihn seit jeher nennt. Er merkt sich, welches
+# Symbol unter welchem Namen gefunden wurde; nach einem Themenwechsel
+# steht darin, dass es NICHT gefunden wurde, und die Anwendung zeigt
+# weiter ein weisses Blatt. Genau so aus der Community gemeldet
+# (EndeavourOS, Systemaktualisierer).
+rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements" \
+      "$HOME/.cache/icon-cache.kcache"
 
 echo ""
 echo "Installiert."
