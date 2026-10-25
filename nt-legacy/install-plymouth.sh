@@ -1,236 +1,236 @@
 #!/usr/bin/env bash
-# Installiert den Boot-Startbildschirm (Plymouth) von NT Legacy.
+# Installs the NT Legacy boot splash screen (Plymouth).
 #
-#   ./install-plymouth.sh              # Grundfassung (Petrol)
-#   ./install-plymouth.sh win2k        # eine der Varianten
-#   ./install-plymouth.sh --zurueck    # zurueck auf das vorherige Theme
+#   ./install-plymouth.sh              # base version (petrol)
+#   ./install-plymouth.sh win2k        # one of the variants
+#   ./install-plymouth.sh --revert     # back to the previous theme
 #
-# ACHTUNG - das hier ist NICHT install.sh.
+# CAUTION - this is NOT install.sh.
 #
-# Das Theme liegt unter /usr/share/plymouth/themes und muss in die
-# initramfs eingebaut werden; beides braucht sudo. Der Neubau der
-# initramfs dauert je nach Rechner eine halbe bis zwei Minuten.
+# The theme lives under /usr/share/plymouth/themes and has to be built into the
+# initramfs; both need sudo. Rebuilding the
+# initramfs takes half a minute to two minutes depending on the machine.
 #
-# Was im schlimmsten Fall passiert: Plymouth findet das Theme nicht und
-# zeigt gar keinen Startbildschirm - der Rechner startet trotzdem, man
-# sieht dann die Textmeldungen. Wer eine verschluesselte Platte hat,
-# sollte trotzdem den Test unten machen, bevor er neu startet.
+# What happens in the worst case: Plymouth does not find the theme and
+# shows no splash screen at all - the machine still boots, you
+# then see the text messages. Whoever has an encrypted disk
+# should still do the test below before rebooting.
 
 set -euo pipefail
 
-HIER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 THEMES="/usr/share/plymouth/themes"
-SICHERUNG="/var/backups/nt-legacy-plymouth"
+BACKUP="/var/backups/nt-legacy-plymouth"
 
-# Nennt den Installationsbefehl der laufenden Distribution.
+# Names the install command of the running distribution.
 #
-# Vorher stand in beiden Meldungen unten "dnf install …" - auf dem
-# Arch-Testsystem also ein Befehl, den es dort gar nicht gibt. Wer eine
-# Fehlermeldung schreibt, sollte den Rat darin auch ausfuehren koennen.
-paketbefehl() {
+# Both messages below used to say "dnf install …" - on the
+# Arch test system, that is, a command that does not even exist there. Whoever writes an
+# error message should make sure its advice can actually be followed.
+package_command() {
     if command -v pacman >/dev/null;   then echo "sudo pacman -S --needed $1"
     elif command -v dnf >/dev/null;    then echo "sudo dnf install $1"
     elif command -v apt >/dev/null;    then echo "sudo apt install $1"
     elif command -v zypper >/dev/null; then echo "sudo zypper install $1"
-    else echo "das Paket '$1' nachinstallieren"
+    else echo "install the package '$1'"
     fi
 }
 
 if ! command -v plymouth-set-default-theme >/dev/null; then
-    echo "FEHLER: plymouth-set-default-theme fehlt." >&2
-    echo "        Nutzt dieses System Plymouth? Sonst:" >&2
-    echo "        $(paketbefehl plymouth)" >&2
+    echo "ERROR: plymouth-set-default-theme is missing." >&2
+    echo "       Does this system use Plymouth? Otherwise:" >&2
+    echo "       $(package_command plymouth)" >&2
     exit 1
 fi
 
-# Das Skript-Modul ist eine eigene Paketauslieferung und fehlt oft.
-# Ohne es laedt Plymouth das Theme nicht und faellt still auf 'text'
-# zurueck - der haeufigste Grund, warum ein selbstgebautes Theme
-# "einfach nicht erscheint".
+# The script module is shipped as a package of its own and is often missing.
+# Without it Plymouth does not load the theme and silently falls back to 'text'
+# - the most common reason why a self-built theme
+# "just does not show up".
 if [ ! -f /usr/lib64/plymouth/script.so ] && \
    [ ! -f /usr/lib/plymouth/script.so ] && \
    [ ! -f /usr/lib/x86_64-linux-gnu/plymouth/script.so ]; then
-    echo "FEHLER: Das Plymouth-Modul 'script' fehlt." >&2
-    echo "        Auf Fedora und Nobara ist es ein eigenes Paket:" >&2
-    echo "        $(paketbefehl plymouth-plugin-script)" >&2
-    echo "        Anderswo steckt es in 'plymouth' selbst." >&2
+    echo "ERROR: the Plymouth module 'script' is missing." >&2
+    echo "       On Fedora and Nobara it is a separate package:" >&2
+    echo "       $(package_command plymouth-plugin-script)" >&2
+    echo "       Elsewhere it is part of 'plymouth' itself." >&2
     exit 1
 fi
 
-initramfs_neu() {
-    # Die Reihenfolge ist nicht beliebig.
+rebuild_initramfs() {
+    # The order is not arbitrary.
     #
-    # dracut-rebuild kommt zuerst, weil EndeavourOS es genau dafuer
-    # mitbringt: dort scheitert ein blosses "dracut --force" mit
+    # dracut-rebuild comes first, because EndeavourOS ships it for exactly
+    # this purpose: there a plain "dracut --force" fails with
     #
     #   dracut[F]: Can't write to /boot/efi/<machine-id>/<kernel>:
     #   Directory does not exist or is not accessible.
     #
-    # Grund ist das kernel-install-Layout - dracut allein sucht ein
-    # Verzeichnis, das dort niemand angelegt hat. In der Arch-Test-VM
-    # beim Rueckweg aufgefallen; die initramfs blieb unveraendert, ohne
-    # dass das Skript es gemerkt haette.
+    # The reason is the kernel-install layout - dracut alone looks for a
+    # directory that nobody created there. Noticed in the Arch test VM
+    # on the way back; the initramfs stayed unchanged without
+    # the script noticing.
     if command -v dracut-rebuild >/dev/null; then
-        echo "  initramfs neu bauen (dracut-rebuild) - das dauert einen Moment …"
+        echo "  rebuilding initramfs (dracut-rebuild) - this takes a moment …"
         sudo dracut-rebuild
     elif command -v dracut >/dev/null; then
-        echo "  initramfs neu bauen (dracut) - das dauert einen Moment …"
+        echo "  rebuilding initramfs (dracut) - this takes a moment …"
         sudo dracut --force
     elif command -v update-initramfs >/dev/null; then
-        echo "  initramfs neu bauen (update-initramfs) …"
+        echo "  rebuilding initramfs (update-initramfs) …"
         sudo update-initramfs -u
     elif command -v mkinitcpio >/dev/null; then
-        echo "  initramfs neu bauen (mkinitcpio) …"
+        echo "  rebuilding initramfs (mkinitcpio) …"
         sudo mkinitcpio -P
     else
-        echo "WARNUNG: Kein initramfs-Werkzeug gefunden." >&2
-        echo "         Das Theme greift erst, wenn die initramfs neu" >&2
-        echo "         gebaut wurde." >&2
+        echo "WARNING: no initramfs tool found." >&2
+        echo "         The theme only takes effect once the initramfs has been" >&2
+        echo "         rebuilt." >&2
         return 1
     fi
 }
 
-# Der Aufruf oben darf nicht stillschweigend scheitern: eine nicht
-# erneuerte initramfs zeigt beim naechsten Start weiter das alte Theme,
-# und niemand kaeme auf die Idee, dort zu suchen.
-initramfs_neu_gemeldet() {
-    if ! initramfs_neu; then
+# The call above must not fail silently: an initramfs that was not
+# renewed keeps showing the old theme on the next boot,
+# and nobody would think of looking there.
+rebuild_initramfs_reported() {
+    if ! rebuild_initramfs; then
         echo "" >&2
-        echo "WARNUNG: Der Neubau der initramfs ist fehlgeschlagen." >&2
-        echo "         Das Theme liegt richtig, erscheint beim naechsten" >&2
-        echo "         Start aber erst, wenn er nachgeholt wird." >&2
+        echo "WARNING: rebuilding the initramfs failed." >&2
+        echo "         The theme is in the right place, but only appears on the next" >&2
+        echo "         boot once the rebuild has been done." >&2
         return 1
     fi
 }
 
-# ── Rueckweg ─────────────────────────────────────────────────────────────
-if [ "${1:-}" = "--zurueck" ]; then
-    if [ -f "$SICHERUNG/theme" ]; then
-        vorher="$(cat "$SICHERUNG/theme")"
-        echo "Setze zurueck auf '$vorher' …"
-        sudo plymouth-set-default-theme "$vorher"
+# ── Way back ─────────────────────────────────────────────────────────────
+if [ "${1:-}" = "--revert" ]; then
+    if [ -f "$BACKUP/theme" ]; then
+        previous="$(cat "$BACKUP/theme")"
+        echo "Resetting to '$previous' …"
+        sudo plymouth-set-default-theme "$previous"
     else
-        echo "Keine Sicherung gefunden - setze auf 'bgrt' (Fedora-Vorgabe) …"
+        echo "No backup found - setting 'bgrt' (Fedora default) …"
         sudo plymouth-set-default-theme bgrt 2>/dev/null || \
             sudo plymouth-set-default-theme details
     fi
     sudo sh -c "rm -rf '$THEMES'/nt-legacy-*"
-    initramfs_neu_gemeldet || true
-    echo "Zurueckgesetzt."
+    rebuild_initramfs_reported || true
+    echo "Reset."
     exit 0
 fi
 
-VARIANTE="${1:-teal}"
+VARIANT="${1:-teal}"
 
-NAME=$(cd "$HIER" && python3 -c "
+NAME=$(cd "$HERE" && python3 -c "
 import importlib.util, sys
 s = importlib.util.spec_from_file_location('b', 'build.py')
 m = importlib.util.module_from_spec(s); s.loader.exec_module(m)
 v = sys.argv[1]
-if v not in m.VARIANTEN:
-    print('UNBEKANNT ' + ' '.join(sorted(m.VARIANTEN)))
+if v not in m.VARIANTS:
+    print('UNKNOWN ' + ' '.join(sorted(m.VARIANTS)))
 else:
     print(m.ids(v)['lnf'].split('.')[-1])
-" "$VARIANTE")
+" "$VARIANT")
 
-if [ "${NAME%% *}" = "UNBEKANNT" ]; then
-    echo "Unbekannte Variante '$VARIANTE'." >&2
-    echo "Moeglich: ${NAME#UNBEKANNT }" >&2
+if [ "${NAME%% *}" = "UNKNOWN" ]; then
+    echo "Unknown variant '$VARIANT'." >&2
+    echo "Possible: ${NAME#UNKNOWN }" >&2
     exit 1
 fi
 
-QUELLE="$HIER/plymouth/$NAME"
-if [ ! -d "$QUELLE" ]; then
-    echo "FEHLER: $QUELLE fehlt." >&2
-    echo "        Erst  ./build.py  ausfuehren." >&2
+SOURCE="$HERE/plymouth/$NAME"
+if [ ! -d "$SOURCE" ]; then
+    echo "ERROR: $SOURCE is missing." >&2
+    echo "       Run  ./build.py  first." >&2
     exit 1
 fi
 
-echo "Plymouth-Theme: $NAME"
-echo "Dieses Skript braucht sudo - es schreibt nach $THEMES."
+echo "Plymouth theme: $NAME"
+echo "This script needs sudo - it writes to $THEMES."
 echo ""
 
-# ── Sicherung ────────────────────────────────────────────────────────────
-# Auch hier nur beim ersten Mal: beim zweiten Lauf waere das
-# "vorherige" Theme unser eigenes, und --zurueck fuehrte im Kreis.
-sudo mkdir -p "$SICHERUNG"
-if sudo test ! -f "$SICHERUNG/theme"; then
-    vorher="$(plymouth-set-default-theme 2>/dev/null || echo bgrt)"
-    echo "$vorher" | sudo tee "$SICHERUNG/theme" >/dev/null
-    echo "Vorheriges Theme: $vorher  (gemerkt in $SICHERUNG/theme)"
+# ── Backup ───────────────────────────────────────────────────────────────
+# Here too only the first time: on the second run the
+# "previous" theme would be our own, and --revert would go round in circles.
+sudo mkdir -p "$BACKUP"
+if sudo test ! -f "$BACKUP/theme"; then
+    previous="$(plymouth-set-default-theme 2>/dev/null || echo bgrt)"
+    echo "$previous" | sudo tee "$BACKUP/theme" >/dev/null
+    echo "Previous theme: $previous  (remembered in $BACKUP/theme)"
 else
-    echo "Vorheriges Theme steht schon fest: $(sudo cat "$SICHERUNG/theme")"
+    echo "Previous theme already recorded: $(sudo cat "$BACKUP/theme")"
 fi
 
 # ── Installation ─────────────────────────────────────────────────────────
 sudo rm -rf "${THEMES:?}/$NAME"
-sudo cp -a "$QUELLE" "$THEMES/$NAME"
+sudo cp -a "$SOURCE" "$THEMES/$NAME"
 echo "  $THEMES/$NAME"
 
 sudo plymouth-set-default-theme "$NAME"
-echo "  als Vorgabe gesetzt"
+echo "  set as default"
 
-initramfs_neu_gemeldet || true
+rebuild_initramfs_reported || true
 
-# Ohne "splash" auf der Kernel-Kommandozeile zeigt Plymouth nichts.
+# Without "splash" on the kernel command line Plymouth shows nothing.
 #
-# Fedora und Nobara setzen "rhgb quiet" ab Werk, Arch und EndeavourOS
-# nicht - dort steht das Theme sauber installiert da und erscheint beim
-# Start trotzdem nie. In der Arch-Test-VM nachgestellt; plymouthd sagt
-# es selbst, aber nur im Debug-Protokoll:
+# Fedora and Nobara set "rhgb quiet" out of the box, Arch and EndeavourOS
+# do not - there the theme sits there cleanly installed and still never
+# appears at boot. Reproduced in the Arch test VM; plymouthd says
+# so itself, but only in the debug log:
 #
 #   no default splash because kernel command line lacks "splash" or "rhgb"
 #
-# Bewusst nur ein Hinweis: Kernel-Parameter aendert dieses Skript nicht
-# von sich aus.
+# Deliberately only a note: this script does not change kernel parameters
+# on its own.
 if ! grep -qE "(^| )(splash|rhgb)( |$)" /proc/cmdline; then
-    # Den passenden Befehl fuer diese Distribution nennen statt einen,
-    # der anderswo stimmt. Ein erster Entwurf schlug hier ein sed vor,
-    # das auf doppelte Anfuehrungszeichen passte - EndeavourOS schreibt
-    # die Zeile aber in einfachen. Der Rat waere wirkungslos verpufft,
-    # und der Nutzer haette den Fehler beim Theme gesucht.
+    # Name the right command for this distribution instead of one
+    # that is right elsewhere. A first draft suggested a sed here
+    # that matched double quotes - but EndeavourOS writes
+    # the line in single ones. The advice would have fizzled out without effect,
+    # and the user would have looked for the bug in the theme.
     if [ -d /boot/grub2 ]; then
         mkcfg="sudo grub2-mkconfig -o /boot/grub2/grub.cfg"
     else
         mkcfg="sudo grub-mkconfig -o /boot/grub/grub.cfg"
     fi
-    cat >&2 <<HINWEIS
+    cat >&2 <<NOTE
 
-HINWEIS: Auf der Kernel-Kommandozeile fehlt "splash".
+NOTE: "splash" is missing from the kernel command line.
 
-         Ohne dieses Wort zeigt Plymouth beim Start gar nichts - das
-         Theme ist dann installiert und unsichtbar. Auf Arch und
-         EndeavourOS ist das der Normalfall, auf Fedora steht dort ab
-         Werk "rhgb quiet". plymouthd sagt es selbst, aber nur im
-         Debug-Protokoll:
+      Without this word Plymouth shows nothing at all at boot - the
+      theme is then installed and invisible. On Arch and
+      EndeavourOS that is the normal case, on Fedora it says
+      "rhgb quiet" there out of the box. plymouthd says so itself, but only in the
+      debug log:
 
-           no default splash because kernel command line lacks
-           "splash" or "rhgb"
+        no default splash because kernel command line lacks
+        "splash" or "rhgb"
 
-         So kommt es hinein: in /etc/default/grub das Wort splash in
-         die Zeile GRUB_CMDLINE_LINUX_DEFAULT aufnehmen - innerhalb der
-         Anfuehrungszeichen, hinter die vorhandenen Werte - und danach
+      This is how to add it: in /etc/default/grub add the word splash to
+      the GRUB_CMDLINE_LINUX_DEFAULT line - inside the
+      quotes, after the existing values - and then run
 
-           $mkcfg
+        $mkcfg
 
-HINWEIS
+NOTE
 fi
 
 cat <<EOF
 
-Fertig. Beim naechsten Start erscheint der NT-Startbildschirm.
+Done. The NT splash screen appears on the next boot.
 
-  Vorher ansehen, ohne neu zu starten:
+  Preview it without rebooting:
 
     sudo plymouthd --debug --tty=/dev/tty1
     sudo plymouth --show-splash
     sleep 5; sudo plymouth --quit
 
-  Mit verschluesselter Platte unbedingt zusaetzlich die Passwortabfrage
-  pruefen - sie ist das einzige, was beim Start wirklich schiefgehen
-  kann:
+  With an encrypted disk, be sure to also check the password prompt
+  - it is the only thing that can really go wrong
+  at boot:
 
     sudo plymouth ask-for-password --prompt "Test"
 
-  Zurueck:  ./install-plymouth.sh --zurueck
+  To undo:  ./install-plymouth.sh --revert
 EOF

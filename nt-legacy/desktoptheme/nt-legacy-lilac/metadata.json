@@ -11,8 +11,9 @@
         "EnabledByDefault": true,
         "Id": "nt-legacy-lilac",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy Flieder",
-        "Version": "0.2.14",
+        "Name": "NT Legacy Lilac",
+        "Name[de]": "NT Legacy Flieder",
+        "Version": "0.3.1",
         "Website": "https://github.com/huppiflupp/nt-legacy"
     },
     "X-Plasma-API": "5.0"

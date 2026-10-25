@@ -1,58 +1,58 @@
 #!/usr/bin/env bash
-# Installiert NT Legacy.
+# Installs NT Legacy.
 #
-#   ./install.sh                    # nur installieren
-#   ./install.sh --anwenden         # danach die Grundfassung anwenden
-#   ./install.sh --anwenden win2k   # danach diese Variante anwenden
+#   ./install.sh                    # install only
+#   ./install.sh --apply            # then apply the base version
+#   ./install.sh --apply win2k      # then apply this variant
 #
-# Fasst ausschliesslich $HOME an, fragt nie nach sudo, und sichert vorher
-# die Konfiguration. Damit ist die Installation in jedem Fall umkehrbar -
-# das ist der Unterschied zwischen einem Theme, das man ausprobieren
-# kann, und einem, bei dem man vorher ueberlegt.
+# Touches nothing but $HOME, never asks for sudo, and backs up the
+# configuration first. That makes the installation reversible in every case -
+# that is the difference between a theme you can try out
+# and one you have to think about first.
 
 set -euo pipefail
 
-HIER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DATEN="${XDG_DATA_HOME:-$HOME/.local/share}"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 LNF_ID="com.github.huppiflupp.nt-legacy"
 STYLE_ID="nt-legacy"
 
-# ── Anwenden: Vorgabe ist weiterhin "nur installieren" ───────────────────
+# ── Apply: the default is still "install only" ───────────────────────────
 #
-# Aus der Community (cubanismo, KDE 6.6.5): nach install.sh war das Design
-# nicht aktiv, und die Schlussmeldung riet zu
-# "plasma-apply-lookandfeel --apply …". Dieser Weg ist unvollstaendig -
-# der Anwendungsstil bleibt dabei auf Breeze stehen, weil Qt-Programme
-# den Wert aus ~/.config/kdedefaults nicht lesen (Begruendung in
-# apply.sh). Wer ihm folgt, landet in den Systemeinstellungen und macht
-# den Rest von Hand.
+# From the community (cubanismo, KDE 6.6.5): after install.sh the theme was
+# not active, and the final message suggested
+# "plasma-apply-lookandfeel --apply …". That route is incomplete -
+# the application style stays on Breeze, because Qt programs
+# do not read the value from ~/.config/kdedefaults (reasoning in
+# apply.sh). Whoever follows it ends up in System Settings and does
+# the rest by hand.
 #
-# Deshalb zwei Aenderungen: die Schlussmeldung nennt jetzt ./apply.sh,
-# und mit --anwenden erledigt install.sh den zweiten Schritt gleich mit.
-ANWENDEN=false
-VARIANTE=""
+# Hence two changes: the final message now names ./apply.sh,
+# and with --apply install.sh takes care of the second step right away.
+APPLY=false
+VARIANT=""
 for arg in "$@"; do
     case "$arg" in
-        --anwenden) ANWENDEN=true ;;
-        -*)         echo "Unbekannte Option '$arg'." >&2; exit 1 ;;
-        *)          VARIANTE="$arg" ;;
+        --apply) APPLY=true ;;
+        -*)      echo "Unknown option '$arg'." >&2; exit 1 ;;
+        *)       VARIANT="$arg" ;;
     esac
 done
 
-# ── Sicherung ────────────────────────────────────────────────────────────
-BACKUP="$DATEN/nt-legacy/backup-$(date +%Y%m%d-%H%M%S)"
+# ── Backup ───────────────────────────────────────────────────────────────
+BACKUP="$DATA/nt-legacy/backup-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP"
-# kcminputrc gehoert dazu - sonst bleibt der Mauszeiger nach dem
-# Zuruecksetzen auf NT Legacy stehen.
+# kcminputrc belongs here - otherwise the mouse cursor stays on NT Legacy
+# after restoring.
 for f in plasma-org.kde.plasma.desktop-appletsrc plasmarc kdeglobals \
          kwinrc ksplashrc kcminputrc; do
     if [ -f "$HOME/.config/$f" ]; then
         cp -a "$HOME/.config/$f" "$BACKUP/"
     else
-        # Datei gibt es noch nicht - der haeufige Fall auf einem frischen
-        # Konto. Ohne Vermerk wuesste restore.sh nicht, dass sie hinterher
-        # wieder verschwinden muss, und unsere Werte blieben darin stehen.
+        # The file does not exist yet - the common case on a fresh
+        # account. Without a note restore.sh would not know that it has to
+        # disappear again afterwards, and our values would stay in it.
         echo "$f" >> "$BACKUP/.war-nicht-vorhanden"
     fi
 done
@@ -66,21 +66,21 @@ for f in "$HERE"/*; do
     cp -a "$f" "$HOME/.config/$n"; echo "  $n"
 done
 
-# Dateien, die es vor der Installation nicht gab, muessen wieder weg -
-# sonst bleiben unsere Werte darin stehen. Genau so ueberlebten frueher
-# Plasma-Stil und Mauszeiger ein restore.sh.
+# Files that did not exist before the installation have to go again -
+# otherwise our values stay in them. That is exactly how the
+# Plasma style and mouse cursor used to survive a restore.sh.
 if [ -f "$HERE/.war-nicht-vorhanden" ]; then
     while read -r n; do
         [ -n "$n" ] && [ -f "$HOME/.config/$n" ] && {
             rm -f "$HOME/.config/$n"
-            echo "  $n entfernt (gab es vorher nicht)"
+            echo "  $n removed (did not exist before)"
         }
     done < "$HERE/.war-nicht-vorhanden"
 fi
 
-# Fensterdekoration ausdruecklich zuruecksetzen. Zeigt kwinrc auf ein
-# geloeschtes Aurorae-Thema, zeichnet KWin GAR KEINE Titelleiste - kein
-# Fallback, kein Schliessknopf. In der Test-VM belegt.
+# Explicitly reset the window decoration. If kwinrc points to a
+# deleted Aurorae theme, KWin draws NO title bar AT ALL - no
+# fallback, no close button. Proven in the test VM.
 kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 \
     --key library org.kde.breeze 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 \
@@ -89,268 +89,295 @@ kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 \
 rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements" \
       "$HOME/.cache/icon-cache.kcache"
 echo ""
-echo "Wiederhergestellt. Ab- und wieder anmelden."
+echo "Restored. Log out and back in."
 EOF
 chmod +x "$BACKUP/restore.sh"
-echo "Sicherung: $BACKUP"
+echo "Backup: $BACKUP"
 
 # ── Installation ─────────────────────────────────────────────────────────
-# kpackagetool6 aufrufen und dabei ein bekanntes Rauschen aussieben.
+# Call kpackagetool6 and filter out a known noise.
 #
-# Aus der Community (cubanismo, Arch mit Plasma 6.6.5): je installiertem
-# Plasma-Stil eine Zeile
+# From the community (cubanismo, Arch with Plasma 6.6.5): one line
+# per installed Plasma style
 #
 #   qt.dbus.integration: QDBusConnection: error: could not send signal to
 #   service "" path "/KPackage/" interface "org.kde.plasma.kpackage"
 #   member "packageInstalled": Invalid object path: /KPackage/
 #
-# Das ist KEIN Fehler dieses Themes und auch keiner der Installation: die
-# Pakete landen korrekt. KPackage meldet die geglueckte Installation per
-# D-Bus und baut den Objektpfad aus einem Praefix, das bei Plasma/Theme
-# leer ist - "/KPackage/" ist als Pfad ungueltig, Qt sagt das laut.
+# This is NOT a bug in this theme, nor in the installation: the
+# packages land correctly. KPackage announces the successful installation over
+# D-Bus and builds the object path from a prefix that is empty for
+# Plasma/Theme - "/KPackage/" is invalid as a path, and Qt says so loudly.
 #
-# Nachgestellt: Auf Fedora mit KF6 6.28 bleibt stderr leer, mit den
-# aelteren Bibliotheken von Plasma 6.6.5 kommen zehn dieser Zeilen. Der
-# Melder hielt sie fuer den Grund, warum das Design nicht griff, und hat
-# von Hand nachgearbeitet - genau davor schuetzt dieser Filter.
+# Reproduced: on Fedora with KF6 6.28 stderr stays empty, with the
+# older libraries of Plasma 6.6.5 ten of these lines appear. The
+# reporter took them for the reason the theme did not take effect, and
+# fixed things up by hand - this filter protects against exactly that.
 #
-# Bewusst kein pauschales 2>/dev/null: echte Fehler von kpackagetool6
-# muessen sichtbar bleiben.
-kpaket() {
-    local fehler rc=0
-    fehler="$(mktemp)"
-    kpackagetool6 "$@" >/dev/null 2>"$fehler" || rc=$?
-    grep -v "^qt\.dbus\.integration:" "$fehler" >&2 || true
-    rm -f "$fehler"
+# Deliberately no blanket 2>/dev/null: real errors from kpackagetool6
+# must stay visible.
+kpackage() {
+    local errors rc=0
+    errors="$(mktemp)"
+    kpackagetool6 "$@" >/dev/null 2>"$errors" || rc=$?
+    grep -v "^qt\.dbus\.integration:" "$errors" >&2 || true
+    rm -f "$errors"
     return $rc
 }
 
-# kpackagetool6 statt cp -r: es prueft die Metadaten, legt unter der
-# richtigen Id ab und kann sauber wieder deinstallieren.
-installiere() {
-    local typ="$1" pfad="$2" ziel="$3"
-    # Erst -u (Upgrade), dann -r + -i. Das Upgrade scheitert, wenn das
-    # Verzeichnis zwar da, das Paket aber nicht registriert ist - dann
-    # scheitert auch -i mit "existiert bereits". Ohne diesen Weg schlaegt
-    # jede zweite Installation fehl.
-    if kpaket -t "$typ" -u "$pfad" 2>/dev/null; then
+# kpackagetool6 instead of cp -r: it checks the metadata, stores under the
+# right Id and can uninstall cleanly again.
+install_package() {
+    local type="$1" path="$2" target="$3"
+    # First -u (upgrade), then -r + -i. The upgrade fails if the
+    # directory exists but the package is not registered - then
+    # -i fails too with "already exists". Without this route
+    # every second installation fails.
+    if kpackage -t "$type" -u "$path" 2>/dev/null; then
         return 0
     fi
-    kpaket -t "$typ" -r "$(basename "$pfad")" 2>/dev/null || true
-    rm -rf "$ziel"
-    kpaket -t "$typ" -i "$pfad"
+    kpackage -t "$type" -r "$(basename "$path")" 2>/dev/null || true
+    rm -rf "$target"
+    kpackage -t "$type" -i "$path"
 }
 
-echo "Plasma Styles …"
-for d in "$HIER"/desktoptheme/*/; do
+echo "Plasma styles …"
+for d in "$HERE"/desktoptheme/*/; do
     n="$(basename "$d")"
-    installiere Plasma/Theme "${d%/}" "$DATEN/plasma/desktoptheme/$n"
+    install_package Plasma/Theme "${d%/}" "$DATA/plasma/desktoptheme/$n"
     echo "  $n"
 done
 
-echo "Farbschema …"
-install -Dm644 "$HIER/color-schemes/"*.colors -t "$DATEN/color-schemes/"
+echo "Colour scheme …"
+install -Dm644 "$HERE/color-schemes/"*.colors -t "$DATA/color-schemes/"
 
-if [ -d "$HIER/icons" ]; then
-    echo "Symbole (Chicago95, optional) …"
-    mkdir -p "$DATEN/icons"
-    rm -rf "$DATEN/icons/NTLegacy"
-    cp -a "$HIER/icons/"* "$DATEN/icons/"
-    # Ohne aktualisierten Cache zeigt Plasma teils noch die alten Symbole
-    command -v gtk-update-icon-cache >/dev/null && \
-        gtk-update-icon-cache -q -t -f "$DATEN/icons/NTLegacy" 2>/dev/null || true
+# Third-party sets fetched by fetch-icons.sh: NTLegacy (Chicago95) and
+# NTLegacySE98 (SE98). Both are optional, neither is in the repo. Nothing
+# is looked up by name here; whatever is there is taken - so a third
+# set later costs no further change.
+if [ -d "$HERE/icons" ] && [ -n "$(ls -A "$HERE/icons" 2>/dev/null)" ]; then
+    mkdir -p "$DATA/icons"
+    for q in "$HERE/icons"/*/; do
+        [ -d "$q" ] || continue
+        s="$(basename "$q")"
+        echo "Icons ($s, optional) …"
+        # Remove first, then copy: a "cp" on top would write through the
+        # links of the previous installation - the same trap as
+        # below with NTLegacyIcons, here with even more links.
+        rm -rf "${DATA:?}/icons/$s"
+        cp -a "${q%/}" "$DATA/icons/"
+        # Without an updated cache Plasma sometimes still shows the old icons
+        command -v gtk-update-icon-cache >/dev/null && \
+            gtk-update-icon-cache -q -t -f "$DATA/icons/$s" 2>/dev/null || true
+    done
 fi
 
-# Das mitgelieferte Symbolset. Anders als Chicago95 liegt es im Repo,
-# weil seine Herkunft geklaert ist: vollstaendig selbst gezeichnet in
-# tools/gen-icons.py, kein uebernommenes Fremdmaterial (ATTRIBUTION.md).
-# Es ist die Vorgabe; Chicago95 bleibt daneben waehlbar, wenn es ueber
-# fetch-icons.sh geholt wurde.
-if [ -d "$HIER/icons-nt" ]; then
-    echo "Symbole (NTLegacyIcons) …"
-    # Die Nachtfassung steht nicht im Repo - sie ist eine Ableitung und
-    # entsteht sonst in build.py. Wer direkt aus einem Klon installiert,
-    # hat sie noch nicht; ohne sie zeigen die Nachtvarianten auf ein
-    # Symbolthema, das es auf dem Rechner nicht gibt.
+# The bundled icon set. Unlike Chicago95 it is in the repo,
+# because its origin is clear: drawn entirely by ourselves in
+# tools/gen-icons.py, no third-party material taken over (ATTRIBUTION.md).
+# It is the default; Chicago95 remains selectable alongside it if it was
+# fetched with fetch-icons.sh.
+if [ -d "$HERE/icons-nt" ]; then
+    echo "Icons (NTLegacyIcons) …"
+    # The night version is not in the repo - it is derived and
+    # otherwise created in build.py. Whoever installs directly from a clone
+    # does not have it yet; without it the night variants point to an
+    # icon theme that does not exist on the machine.
     #
-    # tools/ liegt im Arbeitsbaum neben nt-legacy/, im Archiv darin.
-    if [ ! -d "$HIER/icons-nt/NTLegacyIconsNacht" ]; then
-        for w in "$HIER/tools/mach-nacht-symbole.py" \
-                 "$HIER/../tools/mach-nacht-symbole.py"; do
+    # tools/ sits next to nt-legacy/ in the working tree, inside it in the archive.
+    if [ ! -d "$HERE/icons-nt/NTLegacyIconsNacht" ]; then
+        for w in "$HERE/tools/make-night-icons.py" \
+                 "$HERE/../tools/make-night-icons.py"; do
             [ -f "$w" ] || continue
-            python3 "$w" "$HIER/icons-nt/NTLegacyIcons" >/dev/null 2>&1 || true
+            python3 "$w" "$HERE/icons-nt/NTLegacyIcons" >/dev/null 2>&1 || true
             break
         done
     fi
-    mkdir -p "$DATEN/icons"
-    # Erst das alte Verzeichnis weg, dann kopieren.
+    mkdir -p "$DATA/icons"
+    # Remove the old directory first, then copy.
     #
-    # Ein blosses "cp -r" darueber folgt den Verweisen der vorherigen
-    # Installation: Fast die Haelfte des Satzes besteht aus Symlinks, und
-    # cp schreibt DURCH sie hindurch in die Zieldatei. So hat ein neues
-    # start-here.png das Zahnrad von applications-system ueberschrieben -
-    # danach zeigten Starter und Systemeinstellungen wieder dasselbe
-    # Symbol, nur diesmal beide das falsche.
-    rm -rf "$DATEN/icons/NTLegacyIcons" "$DATEN/icons/NTLegacyIconsNacht"
-    cp -a "$HIER/icons-nt/"* "$DATEN/icons/"
+    # A plain "cp -r" on top follows the links of the previous
+    # installation: almost half of the set consists of symlinks, and
+    # cp writes THROUGH them into the target file. That is how a new
+    # start-here.png overwrote the gear of applications-system -
+    # after that the launcher and System Settings showed the same
+    # icon again, only this time both the wrong one.
+    rm -rf "$DATA/icons/NTLegacyIcons" "$DATA/icons/NTLegacyIconsNacht"
+    cp -a "$HERE/icons-nt/"* "$DATA/icons/"
 
-    # Das bisherige Symbolthema als Rueckfall eintragen.
+    # Enter the previous icon theme as a fallback.
     #
-    # Aus der Rueckmeldung: Auf EndeavourOS zeigte der Systemaktualisierer
-    # nach dem Wechsel ein weisses Blatt. Sein Symbol heisst
-    # "endeavouros-icon" und liegt ausschliesslich in Qogir, dem
-    # Symbolthema der Distribution - unser Satz erbt von breeze und
-    # hicolor, Qogir ist nicht darunter, also findet Plasma nichts.
+    # From feedback: on EndeavourOS the system updater showed a
+    # blank page after the switch. Its icon is called
+    # "endeavouros-icon" and lives only in Qogir, the
+    # distribution's icon theme - our set inherits from breeze and
+    # hicolor, Qogir is not among them, so Plasma finds nothing.
     #
-    # Das trifft jedes distributionseigene Symbol und passiert beim
-    # Wechsel auf Breeze genauso. Wir koennen es hier aber abfangen: das
-    # zuvor aktive Thema kommt VOR breeze in die Inherits-Zeile. Dann
-    # behalten solche Symbole ihr Bild, und alles andere kommt weiter von
-    # uns - die Reihenfolge entscheidet, und wir stehen an erster Stelle.
+    # This affects every distribution-specific icon and happens the same way when
+    # switching to Breeze. But we can catch it here: the
+    # previously active theme goes BEFORE breeze in the Inherits line. Then
+    # such icons keep their image, and everything else still comes from
+    # us - the order decides, and we come first.
     #
-    # Der Preis ist ehrlich zu nennen: an genau diesen Stellen mischen
-    # sich zwei Bildsprachen. Ein weisses Blatt ist die schlechtere Wahl.
-    vorheriges_symbolthema() {
-        local kandidat quelle d
-        # Erst der laufende Zustand, dann die eben angelegte Sicherung
-        # (dort steht, was vor dieser Installation galt), zuletzt die
-        # Vorgaben des Globalen Designs.
-        for quelle in "$HOME/.config/kdeglobals" "$BACKUP/kdeglobals" \
+    # The price should be stated honestly: in exactly these places two
+    # visual languages mix. A blank page is the worse choice.
+    previous_icon_theme() {
+        local candidate src d
+        # First the running state, then the backup just created
+        # (it holds what applied before this installation), finally the
+        # defaults of the global theme.
+        for src in "$HOME/.config/kdeglobals" "$BACKUP/kdeglobals" \
                       "$HOME/.config/kdedefaults/kdeglobals"; do
-            [ -f "$quelle" ] || continue
-            kandidat="$(sed -n '/^\[Icons\]/,/^\[/{s/^Theme=//p}' "$quelle" | head -1)"
-            case "$kandidat" in
-                ""|NTLegacy|NTLegacyIcons|NTLegacyIconsNacht|hicolor) continue ;;
+            [ -f "$src" ] || continue
+            candidate="$(sed -n '/^\[Icons\]/,/^\[/{s/^Theme=//p}' "$src" | head -1)"
+            case "$candidate" in
+                ""|NTLegacy|NTLegacySE98|NTLegacyIcons|NTLegacyIconsNacht|hicolor) continue ;;
             esac
-            for d in "$DATEN/icons/$kandidat" "/usr/share/icons/$kandidat"; do
-                [ -d "$d" ] && { echo "$kandidat"; return 0; }
+            for d in "$DATA/icons/$candidate" "/usr/share/icons/$candidate"; do
+                [ -d "$d" ] && { echo "$candidate"; return 0; }
             done
         done
         return 1
     }
 
-    if FREMD="$(vorheriges_symbolthema)"; then
-        for satz in NTLegacyIcons NTLegacyIconsNacht; do
-            idx="$DATEN/icons/$satz/index.theme"
+    if FOREIGN="$(previous_icon_theme)"; then
+        for icon_set in NTLegacyIcons NTLegacyIconsNacht; do
+            idx="$DATA/icons/$icon_set/index.theme"
             [ -f "$idx" ] || continue
-            # Nur die erste Inherits-Zeile, und nur wenn das Thema nicht
-            # ohnehin schon darin steht.
-            grep -q "^Inherits=.*\b$FREMD\b" "$idx" && continue
-            sed -i "0,/^Inherits=/s//Inherits=$FREMD,/" "$idx"
+            # Only the first Inherits line, and only if the theme is not
+            # already in it anyway.
+            grep -q "^Inherits=.*\b$FOREIGN\b" "$idx" && continue
+            sed -i "0,/^Inherits=/s//Inherits=$FOREIGN,/" "$idx"
         done
-        echo "  Rueckfall auf '$FREMD' eingetragen (fuer Symbole der Distribution)"
+        echo "  Fallback to '$FOREIGN' added (for the distribution's icons)"
     fi
 
-    for satz in NTLegacyIcons NTLegacyIconsNacht; do
-        [ -d "$DATEN/icons/$satz" ] || continue
+    for icon_set in NTLegacyIcons NTLegacyIconsNacht; do
+        [ -d "$DATA/icons/$icon_set" ] || continue
         command -v gtk-update-icon-cache >/dev/null && \
-            gtk-update-icon-cache -q -t -f "$DATEN/icons/$satz" 2>/dev/null || true
+            gtk-update-icon-cache -q -t -f "$DATA/icons/$icon_set" 2>/dev/null || true
     done
 fi
 
-if [ -d "$HIER/cursors" ]; then
-    echo "Mauszeiger …"
-    mkdir -p "$DATEN/icons"
-    # Auch hier erst raeumen: Ein Zeigerthema besteht zur Haelfte aus
-    # Verweisen (left_ptr -> default und so weiter), und cp -r schriebe
-    # durch sie hindurch. Siehe die Begruendung bei den Symbolen oben.
-    rm -rf "$DATEN"/icons/NTLegacy_cursors "$DATEN"/icons/NTLegacyRot_cursors
-    cp -a "$HIER/cursors/"* "$DATEN/icons/"
+if [ -d "$HERE/cursors" ]; then
+    echo "Mouse cursors …"
+    mkdir -p "$DATA/icons"
+    # Clear out first here too: half of a cursor theme consists of
+    # links (left_ptr -> default and so on), and cp -r would write
+    # through them. See the reasoning for the icons above.
+    rm -rf "$DATA"/icons/NTLegacy_cursors "$DATA"/icons/NTLegacyRot_cursors
+    cp -a "$HERE/cursors/"* "$DATA/icons/"
 fi
 
-if [ -d "$HIER/konsole" ]; then
-    # Nur ablegen, nicht aktivieren. Konsole zeigt Profil und Schemata
-    # danach zur Auswahl an; umgestellt wird erst durch anmutung.sh -
-    # Konsole ist ein fremdes Programm, und wer ein Design ausprobiert,
-    # rechnet nicht damit, dass hinterher sein Terminal anders aussieht.
-    echo "Konsole-Profil und -Farbschemata (nur ablegen) …"
-    mkdir -p "$DATEN/konsole"
-    cp -r "$HIER/konsole/"* "$DATEN/konsole/"
+if [ -d "$HERE/konsole" ]; then
+    # Only put in place, do not activate. Konsole then offers the profile and
+    # schemes for selection; only appearance.sh switches over -
+    # Konsole is someone else's program, and whoever tries out a theme
+    # does not expect their terminal to look different afterwards.
+    echo "Konsole profile and colour schemes (put in place only) …"
+    mkdir -p "$DATA/konsole"
+    cp -r "$HERE/konsole/"* "$DATA/konsole/"
 fi
 
-if [ -d "$HIER/wallpapers" ]; then
-    echo "Hintergrundbilder …"
-    mkdir -p "$DATEN/wallpapers"
-    # Erst die eigenen Pakete wegraeumen, dann kopieren.
+# The helper script that makes Konsole follow the theme switch, together with its
+# table. Both are only put in place - the service is only switched on
+# by appearance.sh, for the same reason as with the profile above.
+#
+# Not into konsole/: that holds the files Konsole itself reads,
+# and a script among the profiles shows up in the selection menu as a
+# broken profile. That has not been measured - but the folder
+# belongs to someone else's program, and you do not put anything there that it
+# does not expect.
+if [ -f "$HERE/konsole-follow.sh" ]; then
+    mkdir -p "$DATA/nt-legacy/bin"
+    install -m 755 "$HERE/konsole-follow.sh" "$DATA/nt-legacy/bin/"
+    [ -f "$HERE/konsole-variants.tsv" ] \
+        && install -m 644 "$HERE/konsole-variants.tsv" "$DATA/nt-legacy/"
+fi
+
+if [ -d "$HERE/wallpapers" ]; then
+    echo "Wallpapers …"
+    mkdir -p "$DATA/wallpapers"
+    # Clear away our own packages first, then copy.
     #
-    # cp -r legt nur darueber. Bis 0.2.5 lag in jedem Paket eine
-    # 3840x2160.png samt SVG, seit 0.2.6 eine 3840x2160.jpg - nach einer
-    # Aktualisierung lagen alle drei nebeneinander. Plasma sucht nach
-    # Aufloesung, findet drei Kandidaten fuer dieselbe und nimmt einen
-    # davon; welchen, haengt an der Reihenfolge im Verzeichnis. Auf
-    # einem Testrechner war es die alte Verlaufsflaeche - das neue Bild
-    # war installiert und blieb unsichtbar.
+    # cp -r only copies on top. Up to 0.2.5 every package contained a
+    # 3840x2160.png plus SVG, since 0.2.6 a 3840x2160.jpg - after an
+    # update all three lay side by side. Plasma looks for
+    # the resolution, finds three candidates for the same one and takes one
+    # of them; which one depends on the order in the directory. On
+    # a test machine it was the old gradient surface - the new image
+    # was installed and stayed invisible.
     #
-    # Nur ntlegacy*: was der Nutzer sonst unter wallpapers/ liegen hat,
-    # geht uns nichts an.
-    rm -rf "$DATEN"/wallpapers/ntlegacy*
-    cp -r "$HIER/wallpapers/"* "$DATEN/wallpapers/"
+    # Only ntlegacy*: whatever else the user has under wallpapers/
+    # is none of our business.
+    rm -rf "$DATA"/wallpapers/ntlegacy*
+    cp -r "$HERE/wallpapers/"* "$DATA/wallpapers/"
 fi
 
-if [ -d "$HIER/aurorae" ]; then
-    echo "Fensterdekoration …"
-    mkdir -p "$DATEN/aurorae/themes"
-    cp -r "$HIER/aurorae/"* "$DATEN/aurorae/themes/"
+if [ -d "$HERE/aurorae" ]; then
+    echo "Window decoration …"
+    mkdir -p "$DATA/aurorae/themes"
+    cp -r "$HERE/aurorae/"* "$DATA/aurorae/themes/"
 fi
 
-echo "Globale Designs …"
-for d in "$HIER"/look-and-feel/*/; do
+echo "Global themes …"
+for d in "$HERE"/look-and-feel/*/; do
     n="$(basename "$d")"
-    installiere Plasma/LookAndFeel "${d%/}" "$DATEN/plasma/look-and-feel/$n"
+    install_package Plasma/LookAndFeel "${d%/}" "$DATA/plasma/look-and-feel/$n"
     echo "  $n"
 done
 
-# Das Icon-Theme muss hart gesetzt werden. Plasma zieht die uebrigen
-# Vorgaben aus contents/defaults zur Laufzeit (Plasma Style, Farbschema,
-# Anwendungsstil greifen so), beim Icon-Theme aber nicht - gemessen: mit
-# Fallback blieben Breeze-Icons stehen, erst kwriteconfig6 brachte die
-# Symbolset. Die alten Werte liegen in der Sicherung oben.
+# The icon theme has to be set hard. Plasma picks up the other
+# defaults from contents/defaults at runtime (Plasma style, colour scheme,
+# application style take effect that way), but not the icon theme - measured: with
+# the fallback the Breeze icons stayed, only kwriteconfig6 brought in the
+# icon set. The old values are in the backup above.
 #
-# Wer schon eine Nachtfassung faehrt, behaelt ihren Satz. Sonst wuerfe ein
-# blosses Update ihn auf den hellen zurueck - und im Panel staende danach
-# wieder Dunkelgrau auf Dunkelgrau, ohne dass jemand etwas geaendert haette.
-AKTUELL=$(kreadconfig6 --file kdeglobals --group Icons --key Theme 2>/dev/null)
-case "$AKTUELL" in
-    NTLegacyIconsNacht) SATZ=NTLegacyIconsNacht ;;
-    *)                  SATZ=NTLegacyIcons ;;
+# Whoever already runs a night version keeps its set. Otherwise a
+# plain update would throw it back to the light one - and the panel would then
+# show dark grey on dark grey again, without anyone having changed anything.
+CURRENT=$(kreadconfig6 --file kdeglobals --group Icons --key Theme 2>/dev/null)
+case "$CURRENT" in
+    NTLegacyIconsNacht) SET=NTLegacyIconsNacht ;;
+    *)                  SET=NTLegacyIcons ;;
 esac
-kwriteconfig6 --file kdeglobals --group Icons --key Theme "$SATZ"
+kwriteconfig6 --file kdeglobals --group Icons --key Theme "$SET"
 
-# Der Render-Cache traegt die Themeversion im Namen. Ohne Loeschen sieht
-# man nach einem Update das alte Theme und sucht den Fehler woanders.
+# The render cache carries the theme version in its name. Without deleting it
+# you see the old theme after an update and look for the bug elsewhere.
 #
-# icon-cache.kcache gehoert dazu und fehlte hier bis 0.2.12 - waehrend
-# das eigene Pruefskript ihn seit jeher nennt. Er merkt sich, welches
-# Symbol unter welchem Namen gefunden wurde; nach einem Themenwechsel
-# steht darin, dass es NICHT gefunden wurde, und die Anwendung zeigt
-# weiter ein weisses Blatt. Genau so aus der Community gemeldet
-# (EndeavourOS, Systemaktualisierer).
+# icon-cache.kcache belongs here and was missing up to 0.2.12 - while
+# our own check script has always named it. It remembers which
+# icon was found under which name; after a theme switch
+# it says the icon was NOT found, and the application keeps
+# showing a blank page. Reported exactly like that from the community
+# (EndeavourOS, system updater).
 rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements" \
       "$HOME/.cache/icon-cache.kcache"
 
 echo ""
-echo "Installiert."
+echo "Installed."
 
-# ── Anwenden ─────────────────────────────────────────────────────────────
-if $ANWENDEN; then
+# ── Apply ────────────────────────────────────────────────────────────────
+if $APPLY; then
     echo ""
-    exec "$HIER/apply.sh" ${VARIANTE:+"$VARIANTE"}
+    exec "$HERE/apply.sh" ${VARIANT:+"$VARIANT"}
 fi
 
 cat <<EOF
 
-  Anwenden:     ./apply.sh              # Grundfassung (Petrol)
-                ./apply.sh win2k        # eine der Varianten
-                ./apply.sh --help       # alle Varianten und Schalter
+  Apply:        ./apply.sh              # base version (petrol)
+                ./apply.sh win2k        # one of the variants
+                ./apply.sh --help       # all variants and switches
 
-                Oder gleich beides:  ./install.sh --anwenden win2k
+                Or both at once:  ./install.sh --apply win2k
 
-  Nimm dafuer apply.sh und nicht plasma-apply-lookandfeel: der
-  Anwendungsstil (Windows statt Breeze) laesst sich nur ueber
-  ~/.config/kdeglobals setzen, und genau das macht apply.sh. Ueber
-  Systemeinstellungen > Farben & Design > Globales Design fehlt er.
+  Use apply.sh for this and not plasma-apply-lookandfeel: the
+  application style (Windows instead of Breeze) can only be set via
+  ~/.config/kdeglobals, and that is exactly what apply.sh does. Via
+  System Settings > Colors & Themes > Global Theme it is missing.
 
-Das Design wirkt erst nach einem Ab- und Wiederanmelden vollstaendig.
+The theme only takes full effect after logging out and back in.
 
-  Rueckweg:     $BACKUP/restore.sh
+  To undo:      $BACKUP/restore.sh
 EOF

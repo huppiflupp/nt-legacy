@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
-# Entfernt NT Legacy vollstaendig.
+# Removes NT Legacy completely.
 #
-# Wichtig ist die Reihenfolge: erst die Konfiguration zuruecksetzen, dann
-# die Dateien loeschen. Andersherum zeigt kwinrc auf ein nicht mehr
-# vorhandenes Aurorae-Thema - und dann zeichnet KWin GAR KEINE
-# Titelleiste. Kein Fallback, kein Schliessknopf, kein Ziehbereich.
-# In der Test-VM belegt: nur wenn die "library" ungueltig ist, faellt KWin
-# auf Breeze zurueck; ein ins Leere zeigender Themename laedt Aurorae und
-# zeichnet nichts.
+# The order matters: reset the configuration first, then
+# delete the files. The other way round, kwinrc points to an Aurorae theme
+# that no longer exists - and then KWin draws NO title bar
+# AT ALL. No fallback, no close button, no drag area.
+# Proven in the test VM: only if the "library" is invalid does KWin
+# fall back to Breeze; a theme name pointing nowhere loads Aurorae and
+# draws nothing.
 #
-# Dasselbe gilt fuer das Icon-Theme: fehlt das Verzeichnis, waehrend
-# kdeglobals darauf zeigt, verschwinden Starter- und Systray-Symbole
-# ganz, statt auf Breeze zurueckzufallen.
+# The same goes for the icon theme: if the directory is missing while
+# kdeglobals points to it, launcher and systray icons disappear
+# completely instead of falling back to Breeze.
 
 set -euo pipefail
 
-DATEN="${XDG_DATA_HOME:-$HOME/.local/share}"
+DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
 
-echo "Setze Konfiguration auf Breeze zurueck …"
+echo "Resetting configuration to Breeze …"
 kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key library org.kde.breeze
 kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key theme   Breeze
 kwriteconfig6 --file kdeglobals --group Icons   --key Theme        breeze
@@ -28,82 +28,106 @@ kwriteconfig6 --file plasmarc   --group Theme   --key name          default
 kwriteconfig6 --file kcminputrc --group Mouse   --key cursorTheme   breeze_cursors
 kwriteconfig6 --file ksplashrc  --group KSplash --key Theme         org.kde.breeze.desktop
 
-echo "Entferne Pakete …"
-for d in "$DATEN"/plasma/desktoptheme/nt-legacy*; do
+echo "Removing packages …"
+for d in "$DATA"/plasma/desktoptheme/nt-legacy*; do
     [ -d "$d" ] || continue
     kpackagetool6 -t Plasma/Theme -r "$(basename "$d")" >/dev/null 2>&1 || true
     rm -rf "$d"; echo "  $(basename "$d")"
 done
-for d in "$DATEN"/plasma/look-and-feel/com.github.huppiflupp.nt-legacy*; do
+for d in "$DATA"/plasma/look-and-feel/com.github.huppiflupp.nt-legacy*; do
     [ -d "$d" ] || continue
     kpackagetool6 -t Plasma/LookAndFeel -r "$(basename "$d")" >/dev/null 2>&1 || true
     rm -rf "$d"; echo "  $(basename "$d")"
 done
 
-rm -rf "$DATEN"/aurorae/themes/NTLegacy*      && echo "  Fensterdekorationen"
+rm -rf "$DATA"/aurorae/themes/NTLegacy*      && echo "  Window decorations"
 
-# Leere Huellen aufraeumen. rmdir statt rm -rf: schlaegt fehl, wenn noch
-# etwas drin ist - genau das ist hier die Sicherung. Wer neben NT Legacy
-# ein zweites Theme installiert hat, soll es behalten.
-for d in "$DATEN"/plasma/desktoptheme "$DATEN"/plasma/look-and-feel \
-         "$DATEN"/aurorae/themes "$DATEN"/aurorae; do
-    rmdir "$d" 2>/dev/null && echo "  leeres Verzeichnis $d entfernt"
+# Clean up empty shells. rmdir instead of rm -rf: it fails if there is still
+# something inside - that is exactly the safeguard here. Whoever has installed
+# a second theme next to NT Legacy should keep it.
+for d in "$DATA"/plasma/desktoptheme "$DATA"/plasma/look-and-feel \
+         "$DATA"/aurorae/themes "$DATA"/aurorae; do
+    rmdir "$d" 2>/dev/null && echo "  empty directory $d removed"
 done
-# Alle drei Symbolsaetze, nicht nur einer.
+# All four icon sets, not just one.
 #
-# Hier stand bis 0.2.13 allein "$DATEN/icons/NTLegacy" - das ist der
-# Chicago95-Ableger aus fetch-icons.sh. Die beiden mitgelieferten Saetze
-# NTLegacyIcons und NTLegacyIconsNacht blieben liegen, und mit ihnen der
-# Eindruck, die Deinstallation habe nicht gewirkt. In der Arch-Test-VM
-# aufgefallen, als der Ausgangszustand nach uninstall.sh nicht wieder
-# der alte war.
-rm -rf "$DATEN"/icons/NTLegacy "$DATEN"/icons/NTLegacyIcons \
-       "$DATEN"/icons/NTLegacyIconsNacht      && echo "  Symbole"
-rm -rf "$DATEN"/icons/NTLegacy*_cursors         2>/dev/null || true
-rm -rf "$DATEN"/wallpapers/ntlegacy*           && echo "  Hintergrundbilder"
-rm -f  "$DATEN"/color-schemes/NTLegacy*.colors && echo "  Farbschemata"
+# Up to 0.2.13 this said only "$DATA/icons/NTLegacy" - that is the
+# Chicago95 offshoot from fetch-icons.sh. The two bundled sets
+# NTLegacyIcons and NTLegacyIconsNacht stayed behind, and with them the
+# impression that the uninstall had not worked. Noticed in the Arch test VM
+# when the starting state after uninstall.sh was not the old one
+# again.
+#
+# Then there is NTLegacySE98 - the second set from fetch-icons.sh. With
+# around 32,000 links it is the largest of all; if it stays behind,
+# you notice it in the disk space.
+rm -rf "$DATA"/icons/NTLegacy "$DATA"/icons/NTLegacySE98 \
+       "$DATA"/icons/NTLegacyIcons \
+       "$DATA"/icons/NTLegacyIconsNacht      && echo "  Icons"
+rm -rf "$DATA"/icons/NTLegacy*_cursors         2>/dev/null || true
+rm -rf "$DATA"/wallpapers/ntlegacy*           && echo "  Wallpapers"
+rm -f  "$DATA"/color-schemes/NTLegacy*.colors && echo "  Colour schemes"
 
-# Die Vorgabedatei des Globalen Designs aufraeumen.
+# Clean up the defaults file of the global theme.
 #
-# ~/.config/kdedefaults/ gehoert dem zuletzt angewendeten Design: Plasma
-# legt die Werte dort als Vorgaben ab, nicht als Nutzerwerte. Nach der
-# Deinstallation stand dort weiter "Theme=NTLegacyIcons" - ein Verweis
-# auf einen Symbolsatz, den wir gerade geloescht haben.
+# ~/.config/kdedefaults/ belongs to the most recently applied theme: Plasma
+# stores the values there as defaults, not as user values. After
+# uninstalling it still said "Theme=NTLegacyIcons" - a reference
+# to an icon set we had just deleted.
 #
-# Die Sicherung deckt das nicht ab: install.sh kopiert ~/.config, nicht
-# ~/.config/kdedefaults. Deshalb hier gezielt die eigenen Zeilen weg -
-# und nur die eigenen. Wer inzwischen ein anderes Design angewendet hat,
-# behaelt dessen Vorgaben unangetastet.
+# The backup does not cover this: install.sh copies ~/.config, not
+# ~/.config/kdedefaults. Hence our own lines are removed specifically here -
+# and only our own. Whoever has applied another theme in the meantime
+# keeps its defaults untouched.
 KDD="$HOME/.config/kdedefaults"
 if [ -d "$KDD" ]; then
-    geraeumt=false
+    cleaned=false
     for f in "$KDD"/*; do
         [ -f "$f" ] || continue
         if grep -qE "=.*(NTLegacy|nt-legacy)" "$f" 2>/dev/null; then
             sed -i -E "/=.*(NTLegacy|nt-legacy)/d" "$f"
-            geraeumt=true
+            cleaned=true
         fi
     done
-    $geraeumt && echo "  Vorgaben in kdedefaults"
+    $cleaned && echo "  Defaults in kdedefaults"
 fi
 
-# Konsole: erst konsolerc zuruecksetzen, dann die Dateien loeschen.
-# Zeigt DefaultProfile auf ein geloeschtes Profil, startet Konsole zwar,
-# faellt aber auf ein leeres Standardprofil zurueck - inklusive
-# verlorener Fenstergroesse und Verlaufslaenge.
+# Konsole: reset konsolerc first, then delete the files.
+# If DefaultProfile points to a deleted profile, Konsole does start,
+# but falls back to an empty default profile - including
+# a lost window size and history length.
 if [ "$(kreadconfig6 --file konsolerc --group "Desktop Entry" --key DefaultProfile 2>/dev/null)" = "NT Legacy.profile" ]; then
     kwriteconfig6 --file konsolerc --group "Desktop Entry" --key DefaultProfile --delete
-    echo "  Konsole zurueck auf ihr Standardprofil"
+    echo "  Konsole back on its default profile"
 fi
-rm -f "$DATEN"/konsole/NTLegacy*.colorscheme "$DATEN/konsole/NT Legacy.profile" \
-    && echo "  Konsole-Profil und -Farbschemata"
+rm -f "$DATA"/konsole/NTLegacy*.colorscheme "$DATA/konsole/NT Legacy.profile" \
+    && echo "  Konsole profile and colour schemes"
+
+# The service that makes Konsole follow the theme switch.
+#
+# It has to be switched off BEFORE the script is deleted - an
+# enabled path unit whose service points to a deleted file
+# logs a failed start to the journal on every theme switch. Nothing of it
+# is visible, and that is exactly why it would otherwise stay around forever.
+#
+# appearance.sh --revert does the same. Doing it twice is right here: whoever
+# uninstalls may never have reverted the appearance.
+SERVICE_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+if [ -f "$SERVICE_DIR/nt-legacy-konsole.path" ]; then
+    systemctl --user disable --now nt-legacy-konsole.path >/dev/null 2>&1 || true
+    rm -f "$SERVICE_DIR/nt-legacy-konsole.path" \
+          "$SERVICE_DIR/nt-legacy-konsole.service"
+    systemctl --user daemon-reload 2>/dev/null || true
+    echo "  Service nt-legacy-konsole"
+fi
+rm -rf "$DATA/nt-legacy/bin" "$DATA/nt-legacy/konsole-variants.tsv"
 
 rm -f "$HOME/.cache/plasma_theme_"*.kcache "$HOME/.cache/ksvg-elements"
 
 cat <<TEXT
 
-Entfernt. Ab- und wieder anmelden.
+Removed. Log out and back in.
 
-Die Sicherungen unter $DATEN/nt-legacy/ bleiben liegen - dort steht der
-Zustand von vor der Installation, falls du ihn brauchst.
+The backups under $DATA/nt-legacy/ stay where they are - they hold the
+state from before the installation, in case you need it.
 TEXT

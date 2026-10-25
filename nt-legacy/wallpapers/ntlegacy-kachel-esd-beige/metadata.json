@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-kachel-esd-beige",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - ESD-Matte, beige (Kachel)"
+        "Name": "NT Legacy - ESD mat, beige (Tile)",
+        "Name[de]": "NT Legacy - ESD-Matte, beige (Kachel)"
     }
 }

@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-kachel-asphalt",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - Asphalt (Kachel)"
+        "Name": "NT Legacy - Asphalt (Tile)",
+        "Name[de]": "NT Legacy - Asphalt (Kachel)"
     }
 }

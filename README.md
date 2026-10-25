@@ -77,11 +77,11 @@ encrypted disk, test the passphrase prompt before rebooting — see
 cd nt-legacy
 ./build.py              # all ten versions
 ./build.py --nur win2k  # a single one
-./build.py --pruefen    # and lint the generated SVGs
+./build.py --check      # and lint the generated SVGs
 ```
 
 `build.py` calls the generators in `tools/`. Packaging for the store is
-`tools/mach-paket.sh`; see [UPLOAD.md](UPLOAD.md) for what goes where.
+`tools/make-package.sh`; see [UPLOAD.md](UPLOAD.md) for what goes where.
 
 The scripts and their comments are in German — that is where the
 reasoning behind each decision is written down, and translating it would

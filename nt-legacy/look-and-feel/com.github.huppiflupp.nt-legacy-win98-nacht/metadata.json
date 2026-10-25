@@ -11,8 +11,9 @@
         "Description[de]": "Systemgrau und Marineblau als Nachtfassung - dunkle Flaechen, gleiche Akzente",
         "Id": "com.github.huppiflupp.nt-legacy-win98-nacht",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy 98 Nacht",
-        "Version": "0.2.14",
+        "Name": "NT Legacy 98 Night",
+        "Name[de]": "NT Legacy 98 Nacht",
+        "Version": "0.3.1",
         "Website": "https://github.com/huppiflupp/nt-legacy"
     },
     "Keywords": "Desktop;Workspace;Appearance;Look and Feel;",

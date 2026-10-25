@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-kachel-marmor-rot",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - Marmor, rot (Kachel)"
+        "Name": "NT Legacy - Marble, red (Tile)",
+        "Name[de]": "NT Legacy - Marmor, rot (Kachel)"
     }
 }

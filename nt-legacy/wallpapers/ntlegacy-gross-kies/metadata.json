@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-gross-kies",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - Kies"
+        "Name": "NT Legacy - Gravel",
+        "Name[de]": "NT Legacy - Kies"
     }
 }

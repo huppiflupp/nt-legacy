@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-win98-flaeche",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy 98 (Flaeche)"
+        "Name": "NT Legacy 98 (Plain)",
+        "Name[de]": "NT Legacy 98 (Flaeche)"
     }
 }

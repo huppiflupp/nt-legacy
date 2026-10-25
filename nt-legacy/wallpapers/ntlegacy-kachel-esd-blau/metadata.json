@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-kachel-esd-blau",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - ESD-Matte, blau (Kachel)"
+        "Name": "NT Legacy - ESD mat, blue (Tile)",
+        "Name[de]": "NT Legacy - ESD-Matte, blau (Kachel)"
     }
 }

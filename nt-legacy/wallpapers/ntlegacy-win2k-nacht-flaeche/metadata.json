@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-win2k-nacht-flaeche",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy 2000 Nacht (Flaeche)"
+        "Name": "NT Legacy 2000 Night (Plain)",
+        "Name[de]": "NT Legacy 2000 Nacht (Flaeche)"
     }
 }

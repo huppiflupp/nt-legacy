@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Erzeugt ein GRUB-Theme aus einer NT-Legacy-Palette.
+"""Generates a GRUB theme from an NT Legacy palette.
 
-Das Bootmenue sieht aus wie ein NT-Dialog: grauer Kasten mit 3D-Kante,
-farbige Titelleiste, Auswahlbalken in der Akzentfarbe. Dieselbe
-Formensprache wie der Startbildschirm (Splash.qml) und die
-Fensterdekoration - wer den Rechner einschaltet, sieht ab der ersten
-Sekunde dasselbe Design.
+The boot menu looks like an NT dialog: grey box with a 3D edge,
+coloured title bar, selection bar in the accent colour. The same
+design language as the splash screen (Splash.qml) and the window
+decoration - whoever switches the machine on sees the same design
+from the first second.
 
-    ./gen-grub.py --name NTLegacyWin2k --anzeige "NT Legacy 2000" \\
-                  --palette '{"flaeche": "#d4d0c8", ...}' -o ziel/
+    ./gen-grub.py --name NTLegacyWin2k --display-name "NT Legacy 2000" \\
+                  --palette '{"surface": "#d4d0c8", ...}' -o target/
 
-GRUB zeichnet das Menue aus einem 9-Patch: neun PNGs, von denen die
-Kanten gestreckt und die Ecken fest gezeichnet werden. Die Titelleiste
-steckt im oberen Rand (menu_n.png) - GRUB kennt kein eigenes Element
-dafuer, aber der obere Rand darf beliebig hoch sein.
+GRUB draws the menu from a 9-patch: nine PNGs, of which the edges
+are stretched and the corners drawn fixed. The title bar lives in
+the top border (menu_n.png) - GRUB has no element of its own for it,
+but the top border may be as tall as you like.
 
-Kein Vollbild-Hintergrund: 'desktop-color' im theme.txt reicht und
-haelt das Theme bei wenigen Kilobyte. Ein 1920x1080-PNG waere auf einem
-4K-Schirm ohnehin falsch skaliert.
+No full-screen background: 'desktop-color' in theme.txt is enough and
+keeps the theme at a few kilobytes. A 1920x1080 PNG would be scaled
+wrongly on a 4K screen anyway.
 """
 
 import argparse
@@ -29,17 +29,17 @@ from pathlib import Path
 try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
-    print("FEHLER: Pillow fehlt (dnf install python3-pillow)", file=sys.stderr)
+    print("ERROR: Pillow is missing (dnf install python3-pillow)", file=sys.stderr)
     sys.exit(1)
 
-# Masse des Kastens. Rand 1 px aussen, dann die 3D-Kante, dann Flaeche -
-# dieselben Werte wie in gen-plasma-svg.py, damit Bootmenue und Fenster
-# denselben Rahmen tragen.
-RAHMEN = 1      # schwarze Aussenlinie
-BEVEL = 2       # helle bzw. dunkle 3D-Kante
-TITEL = 26      # Hoehe der Titelleiste
-ECKE = 8        # Kantenlaenge der Eckbilder
-MENUE_B = 620   # Breite des Menuekastens, auch fuer das Titelbild
+# Box dimensions. 1 px border outside, then the 3D edge, then surface -
+# the same values as in gen-plasma-svg.py, so that boot menu and windows
+# carry the same frame.
+BORDER = 1      # black outer line
+BEVEL = 2       # light or dark 3D edge
+TITLE = 26      # height of the title bar
+CORNER = 8      # edge length of the corner images
+MENU_W = 620    # width of the menu box, also for the title image
 
 
 def rgb(h):
@@ -47,196 +47,196 @@ def rgb(h):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def ttf(groesse, fett=False):
-    for k in ["/usr/share/fonts/google-noto/NotoSans-Bold.ttf" if fett
+def ttf(size, bold=False):
+    for k in ["/usr/share/fonts/google-noto/NotoSans-Bold.ttf" if bold
               else "/usr/share/fonts/google-noto/NotoSans-Regular.ttf",
-              "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf" if fett
+              "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf" if bold
               else "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf"]:
         if Path(k).exists():
             try:
-                return ImageFont.truetype(k, groesse)
+                return ImageFont.truetype(k, size)
             except OSError:
                 pass
     return ImageFont.load_default()
 
 
 class Grub:
-    def __init__(self, palette, ziel, name, anzeige):
+    def __init__(self, palette, target, name, display_name):
         self.p = palette
-        self.ziel = ziel
+        self.target = target
         self.name = name
-        self.anzeige = anzeige
+        self.display_name = display_name
 
-    def f(self, key, ersatz="#000000"):
-        return self.p.get(key, ersatz)
+    def f(self, key, fallback="#000000"):
+        return self.p.get(key, fallback)
 
     # ------------------------------------------------------------------
-    def _kasten(self, praefix, oben_hoch, titel):
-        """Ein 9-Patch.
+    def _box(self, prefix, top_height, title):
+        """A 9-patch.
 
-        praefix     Dateiname-Praefix (menu, select)
-        oben_hoch   Hoehe des oberen Randes
-        titel       Titelleiste in den oberen Rand zeichnen?
+        prefix      file name prefix (menu, select)
+        top_height  height of the top border
+        title       draw the title bar into the top border?
         """
-        flaeche = rgb(self.f("flaeche"))
-        rahmen = rgb(self.f("rahmen"))
-        hell = rgb(self.f("hell"))
-        dunkel = rgb(self.f("dunkel"))
-        kopf = rgb(self.f("kopf_aktiv"))
+        surface = rgb(self.f("surface"))
+        border = rgb(self.f("border"))
+        light = rgb(self.f("light"))
+        dark = rgb(self.f("dark"))
+        head = rgb(self.f("title_active"))
 
-        def bild(breite, hoehe, zeichne):
-            im = Image.new("RGBA", (breite, hoehe), flaeche + (255,))
-            zeichne(ImageDraw.Draw(im), breite, hoehe)
+        def image(width, height, draw):
+            im = Image.new("RGBA", (width, height), surface + (255,))
+            draw(ImageDraw.Draw(im), width, height)
             return im
 
-        r, b = RAHMEN, BEVEL
+        r, b = BORDER, BEVEL
 
-        # Ecken oben: Aussenlinie, Lichtkante, dann Titelfarbe.
+        # Top corners: outer line, light edge, then title colour.
         #
-        # Die linke obere Ecke traegt den Titeltext. Das ist kein
-        # Schoenheitsfehler, sondern der einzige verlaessliche Weg:
-        # GRUB zeichnet ein "+ label" ueber dem Menue nicht (in der
-        # Test-VM mit zwei verschiedenen Schriften geprueft, auch mit
-        # einer, die garantiert geladen war). Die Ecken eines 9-Patch
-        # streckt GRUB dagegen NICHT - was dort steht, steht fest.
-        def ecke_oben(links):
+        # The top-left corner carries the title text. That is not a
+        # cosmetic flaw but the only reliable way:
+        # GRUB does not draw a "+ label" above the menu (checked in the
+        # test VM with two different fonts, including one that was
+        # guaranteed to be loaded). The corners of a 9-patch, on the
+        # other hand, GRUB does NOT stretch - what is there stays fixed.
+        def corner_top(left):
             def z(d, w, h):
-                d.rectangle([0, 0, w - 1, h - 1], fill=kopf + (255,))
-                # Aussenrahmen an der jeweiligen Aussenseite
-                d.line([(0, 0), (w - 1, 0)], fill=rahmen + (255,))
-                x = 0 if links else w - 1
-                d.line([(x, 0), (x, h - 1)], fill=rahmen + (255,))
-                # Lichtkante innen
-                d.line([(r, r), (w - 1, r)], fill=hell + (255,))
-                xi = r if links else w - 1 - r
-                d.line([(xi, r), (xi, h - 1)], fill=hell + (255,))
-            return bild(ECKE, oben_hoch, z)
+                d.rectangle([0, 0, w - 1, h - 1], fill=head + (255,))
+                # Outer border on the respective outer side
+                d.line([(0, 0), (w - 1, 0)], fill=border + (255,))
+                x = 0 if left else w - 1
+                d.line([(x, 0), (x, h - 1)], fill=border + (255,))
+                # Light edge inside
+                d.line([(r, r), (w - 1, r)], fill=light + (255,))
+                xi = r if left else w - 1 - r
+                d.line([(xi, r), (xi, h - 1)], fill=light + (255,))
+            return image(CORNER, top_height, z)
 
-        def ecke_unten(links):
+        def corner_bottom(left):
             def z(d, w, h):
-                d.rectangle([0, 0, w - 1, h - 1], fill=flaeche + (255,))
-                d.line([(0, h - 1), (w - 1, h - 1)], fill=rahmen + (255,))
-                x = 0 if links else w - 1
-                d.line([(x, 0), (x, h - 1)], fill=rahmen + (255,))
-                # Schattenkante innen
+                d.rectangle([0, 0, w - 1, h - 1], fill=surface + (255,))
+                d.line([(0, h - 1), (w - 1, h - 1)], fill=border + (255,))
+                x = 0 if left else w - 1
+                d.line([(x, 0), (x, h - 1)], fill=border + (255,))
+                # Shadow edge inside
                 d.line([(r, h - 1 - r), (w - 1, h - 1 - r)],
-                       fill=dunkel + (255,))
-                xi = r if links else w - 1 - r
-                if not links:
-                    d.line([(xi, 0), (xi, h - 1 - r)], fill=dunkel + (255,))
+                       fill=dark + (255,))
+                xi = r if left else w - 1 - r
+                if not left:
+                    d.line([(xi, 0), (xi, h - 1 - r)], fill=dark + (255,))
                 else:
-                    d.line([(xi, 0), (xi, h - 1 - r)], fill=hell + (255,))
-            return bild(ECKE, ECKE, z)
+                    d.line([(xi, 0), (xi, h - 1 - r)], fill=light + (255,))
+            return image(CORNER, CORNER, z)
 
-        def rand_oben(d, w, h):
-            d.rectangle([0, 0, w - 1, h - 1], fill=kopf + (255,))
-            d.line([(0, 0), (w - 1, 0)], fill=rahmen + (255,))
-            d.line([(0, r), (w - 1, r)], fill=hell + (255,))
-            if titel:
-                d.text((2, (h + RAHMEN + BEVEL) / 2), self.anzeige,
+        def edge_top(d, w, h):
+            d.rectangle([0, 0, w - 1, h - 1], fill=head + (255,))
+            d.line([(0, 0), (w - 1, 0)], fill=border + (255,))
+            d.line([(0, r), (w - 1, r)], fill=light + (255,))
+            if title:
+                d.text((2, (h + BORDER + BEVEL) / 2), self.display_name,
                        font=ttf(15, True),
-                       fill=rgb(self.f("auswahl_text")) + (255,),
+                       fill=rgb(self.f("selection_text")) + (255,),
                        anchor="lm")
 
-        def rand_unten(d, w, h):
-            d.rectangle([0, 0, w - 1, h - 1], fill=flaeche + (255,))
-            d.line([(0, h - 1), (w - 1, h - 1)], fill=rahmen + (255,))
-            d.line([(0, h - 1 - r), (w - 1, h - 1 - r)], fill=dunkel + (255,))
+        def edge_bottom(d, w, h):
+            d.rectangle([0, 0, w - 1, h - 1], fill=surface + (255,))
+            d.line([(0, h - 1), (w - 1, h - 1)], fill=border + (255,))
+            d.line([(0, h - 1 - r), (w - 1, h - 1 - r)], fill=dark + (255,))
 
-        def rand_links(d, w, h):
-            d.rectangle([0, 0, w - 1, h - 1], fill=flaeche + (255,))
-            d.line([(0, 0), (0, h - 1)], fill=rahmen + (255,))
-            d.line([(r, 0), (r, h - 1)], fill=hell + (255,))
+        def edge_left(d, w, h):
+            d.rectangle([0, 0, w - 1, h - 1], fill=surface + (255,))
+            d.line([(0, 0), (0, h - 1)], fill=border + (255,))
+            d.line([(r, 0), (r, h - 1)], fill=light + (255,))
 
-        def rand_rechts(d, w, h):
-            d.rectangle([0, 0, w - 1, h - 1], fill=flaeche + (255,))
-            d.line([(w - 1, 0), (w - 1, h - 1)], fill=rahmen + (255,))
-            d.line([(w - 1 - r, 0), (w - 1 - r, h - 1)], fill=dunkel + (255,))
+        def edge_right(d, w, h):
+            d.rectangle([0, 0, w - 1, h - 1], fill=surface + (255,))
+            d.line([(w - 1, 0), (w - 1, h - 1)], fill=border + (255,))
+            d.line([(w - 1 - r, 0), (w - 1 - r, h - 1)], fill=dark + (255,))
 
-        teile = {
-            "nw": ecke_oben(True),
-            "ne": ecke_oben(False),
-            "sw": ecke_unten(True),
-            "se": ecke_unten(False),
-            "n": bild(self.titelrand() if titel else 1,
-                      oben_hoch, rand_oben),
-            "s": bild(1, ECKE, rand_unten),
-            "w": bild(ECKE, 1, rand_links),
-            "e": bild(ECKE, 1, rand_rechts),
-            "c": bild(1, 1, lambda d, w, h: d.point((0, 0), flaeche + (255,))),
+        parts = {
+            "nw": corner_top(True),
+            "ne": corner_top(False),
+            "sw": corner_bottom(True),
+            "se": corner_bottom(False),
+            "n": image(self.title_edge() if title else 1,
+                       top_height, edge_top),
+            "s": image(1, CORNER, edge_bottom),
+            "w": image(CORNER, 1, edge_left),
+            "e": image(CORNER, 1, edge_right),
+            "c": image(1, 1, lambda d, w, h: d.point((0, 0), surface + (255,))),
         }
-        for teil, im in teile.items():
-            im.save(self.ziel / f"{praefix}_{teil}.png")
+        for part, im in parts.items():
+            im.save(self.target / f"{prefix}_{part}.png")
 
-    def kasten_menue(self):
-        """Der Menuekasten - oberer Rand traegt die Titelleiste."""
-        self._kasten("menu", RAHMEN + BEVEL + TITEL, titel=True)
+    def menu_box(self):
+        """The menu box - the top border carries the title bar."""
+        self._box("menu", BORDER + BEVEL + TITLE, title=True)
 
-    def titelrand(self):
-        """Der obere Rand des Kastens - mit dem Titel darin.
+    def title_edge(self):
+        """The top border of the box - with the title in it.
 
-        Drei Wege ausprobiert, zwei davon in der Test-VM verworfen:
+        Three approaches tried, two of them rejected in the test VM:
 
-          1. "+ label" ueber dem Menue: wird nicht gezeichnet. Auch
-             nicht mit einer Schrift, die nachweislich geladen war.
-          2. "+ image" ueber dem Menue: ebenfalls unsichtbar - das
-             boot_menu fuellt seinen Bereich samt Rand und deckt alles
-             zu, was danach kommt.
-          3. Titel in die linke obere Ecke: sichtbar, aber die Ecken
-             bestimmen den Innenrand des Menues - bei 230 px Titel stand
-             die Haelfte jedes Eintrags ausserhalb des Kastens.
+          1. "+ label" above the menu: is not drawn. Not even with a
+             font that was demonstrably loaded.
+          2. "+ image" above the menu: invisible as well - the
+             boot_menu fills its area including the border and covers
+             everything that comes after it.
+          3. Title in the top-left corner: visible, but the corners
+             determine the inner padding of the menu - with a 230 px
+             title, half of every entry ended up outside the box.
 
-        Bleibt der obere Rand (menu_n). GRUB streckt ihn zwischen die
-        Ecken, also auf MENUE_B - 2 * ECKE Pixel. Genau in dieser Breite
-        wird er hier gezeichnet - dann ist die Streckung ein 1:1-Fall
-        und der Text bleibt unverzerrt. Das haelt nur, solange die
-        Menuebreite in theme.txt dieselbe Konstante benutzt.
+        That leaves the top border (menu_n). GRUB stretches it between
+        the corners, i.e. to MENU_W - 2 * CORNER pixels. It is drawn
+        here at exactly that width - then the stretch is a 1:1 case
+        and the text stays undistorted. That only holds as long as the
+        menu width in theme.txt uses the same constant.
         """
-        return MENUE_B - 2 * ECKE
+        return MENU_W - 2 * CORNER
 
-    def kasten_auswahl(self):
-        """Der Auswahlbalken. Vollton in der Akzentfarbe, ohne Rand -
-        so markiert NT einen ausgewaehlten Eintrag in einer Liste."""
-        auswahl = rgb(self.f("auswahl")) + (255,)
-        for teil, (w, h) in {"c": (1, 1), "n": (1, 1), "s": (1, 1),
+    def selection_box(self):
+        """The selection bar. Solid accent colour, no border -
+        this is how NT marks a selected entry in a list."""
+        selection = rgb(self.f("selection")) + (255,)
+        for part, (w, h) in {"c": (1, 1), "n": (1, 1), "s": (1, 1),
                              "w": (1, 1), "e": (1, 1), "nw": (1, 1),
                              "ne": (1, 1), "sw": (1, 1), "se": (1, 1)}.items():
-            im = Image.new("RGBA", (w, h), auswahl)
-            im.save(self.ziel / f"select_{teil}.png")
+            im = Image.new("RGBA", (w, h), selection)
+            im.save(self.target / f"select_{part}.png")
 
     # ------------------------------------------------------------------
     def theme_txt(self):
-        # Keine eigene Schrift.
+        # No font of our own.
         #
-        # Der erste Entwurf lieferte eine mit grub2-mkfont erzeugte
-        # .pf2 mit (90 KB je Variante). In der Test-VM wurde sie laut
-        # grub.cfg per loadfont geladen, der Name im Dateikopf stimmte
-        # mit item_font ueberein - und GRUB zeichnete trotzdem seine
-        # eingebaute Schrift. Auch mit 20 statt 16 Pixel: kein
-        # Unterschied im Bild.
+        # The first draft shipped a .pf2 generated with grub2-mkfont
+        # (90 KB per variant). In the test VM, according to grub.cfg,
+        # it was loaded via loadfont, the name in the file header
+        # matched item_font - and GRUB still drew its built-in font.
+        # With 20 instead of 16 pixels as well: no difference in the
+        # picture.
         #
-        # Statt 900 KB mitzuschleppen, die nichts bewirken, bleibt
-        # item_font weg. GRUB nimmt dann seine Standardschrift - genau
-        # das, was ohnehin zu sehen war, und sie passt mit ihrem
-        # Bitmap-Charakter gut zu einem NT-Bootmenue.
-        return f"""# NT Legacy - GRUB-Theme, erzeugt von tools/gen-grub.py
+        # Instead of dragging along 900 KB that do nothing, item_font
+        # is left out. GRUB then uses its default font - exactly what
+        # was visible anyway, and its bitmap character suits an NT
+        # boot menu well.
+        return f"""# NT Legacy - GRUB theme, generated by tools/gen-grub.py
 #
-# Das Bootmenue in der Formensprache des Themes: ein NT-Dialog mit
-# Titelleiste. Nicht von Hand aendern - der naechste build.py-Lauf
-# ueberschreibt die Datei.
+# The boot menu in the theme's design language: an NT dialog with a
+# title bar. Do not edit by hand - the next build.py run
+# overwrites this file.
 
 title-text: ""
 desktop-color: "{self.f('desktop')}"
 
-# Der Kasten. Die Titelleiste steckt im oberen Rand des 9-Patch,
-# deshalb sitzt der erste Eintrag {RAHMEN + BEVEL + TITEL} Pixel unter dem oberen Rand.
+# The box. The title bar lives in the top border of the 9-patch,
+# so the first entry sits {BORDER + BEVEL + TITLE} pixels below the top edge.
 + boot_menu {{
-    left                       = 50%-{MENUE_B // 2}
+    left                       = 50%-{MENU_W // 2}
     top                        = 30%
-    width                      = {MENUE_B}
+    width                      = {MENU_W}
     height                     = 260
     item_color                 = "{self.f('text')}"
-    selected_item_color        = "{self.f('auswahl_text')}"
+    selected_item_color        = "{self.f('selection_text')}"
     item_height                = 26
     item_padding               = 12
     item_spacing               = 2
@@ -247,38 +247,38 @@ desktop-color: "{self.f('desktop')}"
     scrollbar                  = false
 }}
 
-# Der Countdown, im Stil einer NT-Statuszeile unter dem Kasten.
+# The countdown, styled like an NT status line below the box.
 + label {{
-    left  = 50%-{MENUE_B // 2}
+    left  = 50%-{MENU_W // 2}
     top   = 30%+272
-    width = {MENUE_B}
+    width = {MENU_W}
     align = "center"
     id    = "__timeout__"
     text  = "Starting in %d s"
-    color = "{self.f('auswahl_text')}"
+    color = "{self.f('selection_text')}"
 }}
 """
 
-    def erzeuge(self):
-        self.ziel.mkdir(parents=True, exist_ok=True)
-        self.kasten_menue()
-        self.kasten_auswahl()
-        (self.ziel / "theme.txt").write_text(self.theme_txt())
+    def generate(self):
+        self.target.mkdir(parents=True, exist_ok=True)
+        self.menu_box()
+        self.selection_box()
+        (self.target / "theme.txt").write_text(self.theme_txt())
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--name", required=True, help="Verzeichnisname, z.B. NTLegacyWin2k")
-    ap.add_argument("--anzeige", required=True, help="Titel im Bootmenue")
-    ap.add_argument("--palette", required=True, help="Palette als JSON")
-    ap.add_argument("-o", "--ausgabe", type=Path, required=True)
+    ap.add_argument("--name", required=True, help="directory name, e.g. NTLegacyWin2k")
+    ap.add_argument("--display-name", required=True, help="title in the boot menu")
+    ap.add_argument("--palette", required=True, help="palette as JSON")
+    ap.add_argument("-o", "--output", type=Path, required=True)
     args = ap.parse_args()
 
     palette = json.loads(args.palette)
-    ziel = args.ausgabe / args.name
-    Grub(palette, ziel, args.name, args.anzeige).erzeuge()
-    print(f"  grub/{args.name}/  ({len(list(ziel.glob('*.png')))} Bilder)")
+    target = args.output / args.name
+    Grub(palette, target, args.name, args.display_name).generate()
+    print(f"  grub/{args.name}/  ({len(list(target.glob('*.png')))} images)")
 
 
 if __name__ == "__main__":

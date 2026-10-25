@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""Erzeugt ein X11-Mauszeiger-Thema aus Pixelmustern.
+"""Generates an X11 mouse cursor theme from pixel patterns.
 
-NT-Zeiger sind Pixel-Art: der weisse Pfeil mit schwarzem Rand, der
-I-Balken, die Sanduhr. Deshalb sind sie hier als Zeichenraster notiert
-statt als Vektorgrafik - das ist die ehrlichere Darstellung und laesst
-sich pixelgenau in jede Groesse hochskalieren (Nearest Neighbor, damit
-die Kanten hart bleiben).
+NT cursors are pixel art: the white arrow with a black outline, the
+I-beam, the hourglass. That is why they are written down here as
+character grids rather than vector graphics - that is the more honest
+representation and scales up pixel-exactly to any size (nearest
+neighbour, so the edges stay hard).
 
     ' '  transparent
-    'X'  Randfarbe (schwarz)
-    '.'  Fuellfarbe (weiss, oder die Akzentfarbe der Variante)
-    'o'  Schattenfarbe (fuer Sanduhr-Fuellung)
+    'X'  outline colour (black)
+    '.'  fill colour (white, or the variant's accent colour)
+    'o'  shadow colour (for the hourglass fill)
 
     ./gen-cursor.py -o nt-legacy/cursors/ --name NTLegacy
-    ./gen-cursor.py -o nt-legacy/cursors/ --name NTLegacyRot --fuellung "#c03028"
+    ./gen-cursor.py -o nt-legacy/cursors/ --name NTLegacyRot --fill "#c03028"
 
-Braucht xcursorgen (Paket: xcursorgen) und ImageMagick.
+Needs xcursorgen (package: xcursorgen) and ImageMagick.
 """
 
 import argparse
@@ -26,13 +26,13 @@ import tempfile
 from pathlib import Path
 
 # --------------------------------------------------------------------------
-# Die Zeiger. Jeder mit Muster und Hotspot (Spalte, Zeile) im Raster.
+# The cursors. Each with a pattern and a hotspot (column, row) in the grid.
 # --------------------------------------------------------------------------
 
-ZEIGER = {
+CURSORS = {
     "left_ptr": {
         "hotspot": (0, 0),
-        "muster": [
+        "pattern": [
             "X          ",
             "XX         ",
             "X.X        ",
@@ -54,7 +54,7 @@ ZEIGER = {
     },
     "text": {
         "hotspot": (3, 8),
-        "muster": [
+        "pattern": [
             "XX XX",
             " X.X ",
             " X.X ",
@@ -73,9 +73,9 @@ ZEIGER = {
         ],
     },
     "wait": {
-        # Die Sanduhr - das Wahrzeichen von Windows vor XP
+        # The hourglass - the hallmark of Windows before XP
         "hotspot": (6, 8),
-        "muster": [
+        "pattern": [
             "XXXXXXXXXXXXX",
             "X...........X",
             "X.ooooooooo.X",
@@ -95,7 +95,7 @@ ZEIGER = {
     },
     "crosshair": {
         "hotspot": (7, 7),
-        "muster": [
+        "pattern": [
             "      X      ",
             "      X      ",
             "      X      ",
@@ -113,7 +113,7 @@ ZEIGER = {
     },
     "fleur": {
         "hotspot": (10, 10),
-        "muster": [
+        "pattern": [
             "         X         ",
             "        X.X        ",
             "       X...X       ",
@@ -139,7 +139,7 @@ ZEIGER = {
     },
     "sb_v_double_arrow": {
         "hotspot": (5, 10),
-        "muster": [
+        "pattern": [
             "     X     ",
             "    X.X    ",
             "   X...X   ",
@@ -159,7 +159,7 @@ ZEIGER = {
     },
     "sb_h_double_arrow": {
         "hotspot": (10, 5),
-        "muster": [
+        "pattern": [
             "     X     X     ",
             "    X.X   X.X    ",
             "   X..XXXXX..X   ",
@@ -175,7 +175,7 @@ ZEIGER = {
     },
     "question_arrow": {
         "hotspot": (0, 0),
-        "muster": [
+        "pattern": [
             "X          ",
             "XX    XXX  ",
             "X.X  X...X ",
@@ -194,10 +194,10 @@ ZEIGER = {
         ],
     },
     "hand2": {
-        # Der Link-Zeiger. Nach dem Pfeil der am haeufigsten
-        # angeforderte ueberhaupt - jeder Hyperlink im Browser.
+        # The link cursor. After the arrow the most frequently
+        # requested one of all - every hyperlink in the browser.
         "hotspot": (5, 0),
-        "muster": [
+        "pattern": [
             "    XX     ",
             "   X..X    ",
             "   X..X    ",
@@ -219,11 +219,11 @@ ZEIGER = {
         ],
     },
     "top_left_corner": {
-        # Diagonaler Doppelpfeil von oben-links nach unten-rechts.
-        # Erster Versuch war eine Ecke mit Punkt - das ist die Form,
-        # die X11 "ul_angle" nennt, nicht der Groessenaenderungszeiger.
+        # Diagonal double arrow from top-left to bottom-right.
+        # The first attempt was a corner with a dot - that is the shape
+        # X11 calls "ul_angle", not the resize cursor.
         "hotspot": (7, 7),
-        "muster": [
+        "pattern": [
             "XXXXXXXX       ",
             "X......X       ",
             "X.....X        ",
@@ -242,9 +242,9 @@ ZEIGER = {
         ],
     },
     "top_right_corner": {
-        # Dieselbe Form, gespiegelt: unten-links nach oben-rechts.
+        # The same shape, mirrored: bottom-left to top-right.
         "hotspot": (7, 7),
-        "muster": [
+        "pattern": [
             "       XXXXXXXX",
             "       X......X",
             "        X.....X",
@@ -264,7 +264,7 @@ ZEIGER = {
     },
     "crossed_circle": {
         "hotspot": (8, 8),
-        "muster": [
+        "pattern": [
             "    XXXXXXX    ",
             "  XX.......XX  ",
             " X...XXXXX...X ",
@@ -284,14 +284,14 @@ ZEIGER = {
     },
 }
 
-# Namen, die auf einen der obigen zeigen. Ohne diese Aliase fallen viele
-# Programme auf den Standardzeiger des Systems zurueck - und dann hat man
-# mitten in der Arbeit wieder Breeze unter dem Finger.
-ALIASE = {
+# Names that point to one of the above. Without these aliases many
+# programs fall back to the system's default cursor - and then, in the
+# middle of your work, you have Breeze under your finger again.
+ALIASES = {
     "left_ptr": ["default", "arrow", "top_left_arrow", "left_arrow"],
     "text": ["xterm", "ibeam"],
     "wait": ["watch"],
-    "left_ptr_watch": [],          # eigener Eintrag unten
+    "left_ptr_watch": [],          # own entry below
     "crosshair": ["cross", "tcross", "cross_reverse"],
     "fleur": ["move", "all-scroll", "size_all", "grabbing", "closedhand",
               "dnd-move", "dnd-none"],
@@ -306,9 +306,9 @@ ALIASE = {
                        "03b6e0fcb3499374a867c041f52298f0"],
     "hand2": ["pointer", "hand1", "pointing_hand", "hand", "grab", "openhand",
               "dnd-copy", "copy", "alias", "link", "context-menu", "cell",
-              # Legacy-Hashes aus der X11-Cursor-Schriftart. GTK-Programme
-              # und Firefox fordern Zeiger unter diesen Namen an - ohne sie
-              # sieht man mitten im NT-Theme einen Breeze-Zeiger.
+              # Legacy hashes from the X11 cursor font. GTK programs
+              # and Firefox request cursors under these names - without them
+              # you see a Breeze cursor in the middle of the NT theme.
               "9d800788f1b08800ae810202380a0822",
               "e29285e634086352946a0e7090d73106",
               "5c6cd98b3f3ebcb1f9c7f1c204630408",
@@ -332,33 +332,33 @@ ALIASE = {
               "9081237383d90e509aa00f00170e968f"],
 }
 
-GROESSEN = [24, 32, 48, 64]
+SIZES = [24, 32, 48, 64]
 
 
-def bild(muster, gr, farben, ziel: Path):
-    """Zeichnet ein Muster als PNG in der gewuenschten Kantenlaenge."""
-    h = len(muster)
-    w = max(len(z) for z in muster)
-    # Pixelgroesse so waehlen, dass das Muster in die Zielgroesse passt
-    f = max(1, gr // max(w, h))
+def render(pattern, size, colours, target: Path):
+    """Draws a pattern as a PNG at the requested edge length."""
+    h = len(pattern)
+    w = max(len(z) for z in pattern)
+    # Choose the pixel size so the pattern fits into the target size
+    f = max(1, size // max(w, h))
     from PIL import Image
     bi = Image.new("RGBA", (w * f, h * f), (0, 0, 0, 0))
     px = bi.load()
-    for y, zeile in enumerate(muster):
-        for x, c in enumerate(zeile):
+    for y, row in enumerate(pattern):
+        for x, c in enumerate(row):
             if c == " ":
                 continue
-            farbe = farben.get(c)
-            if not farbe:
+            colour = colours.get(c)
+            if not colour:
                 continue
             for dy in range(f):
                 for dx in range(f):
-                    px[x * f + dx, y * f + dy] = farbe
-    # Auf exakte Zielgroesse legen, ohne zu skalieren - so bleiben die
-    # Kanten hart. Der Rest ist transparent.
-    aus = Image.new("RGBA", (gr, gr), (0, 0, 0, 0))
-    aus.paste(bi, (0, 0))
-    aus.save(ziel)
+                    px[x * f + dx, y * f + dy] = colour
+    # Place onto the exact target size without scaling - that keeps the
+    # edges hard. The rest is transparent.
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    out.paste(bi, (0, 0))
+    out.save(target)
     return f
 
 
@@ -368,82 +368,88 @@ def hexrgba(h, alpha=255):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Erzeugt ein Mauszeiger-Thema.")
-    ap.add_argument("-o", "--ausgabe", type=Path, required=True)
-    ap.add_argument("--name", required=True, help="Verzeichnis- und Themename")
-    ap.add_argument("--anzeige", help="Anzeigename (sonst wie --name)")
-    ap.add_argument("--fuellung", default="#ffffff", help="Farbe der Flaeche")
-    ap.add_argument("--rand", default="#000000", help="Farbe der Kontur")
-    ap.add_argument("--schatten", default="#808080", help="Fuellung der Sanduhr")
+    ap = argparse.ArgumentParser(description="Generates a mouse cursor theme.")
+    ap.add_argument("-o", "--output", type=Path, required=True)
+    ap.add_argument("--name", required=True, help="directory and theme name")
+    ap.add_argument("--display-name", help="display name (otherwise same as --name)")
+    ap.add_argument("--display-name-de", help="German display name (Name[de]), "
+                    "written only if it differs from the display name")
+    ap.add_argument("--fill", default="#ffffff", help="colour of the surface")
+    ap.add_argument("--outline", default="#000000", help="colour of the outline")
+    ap.add_argument("--shadow", default="#808080", help="fill of the hourglass")
     args = ap.parse_args()
 
     if not shutil.which("xcursorgen"):
-        print("FEHLER: xcursorgen fehlt (Paket: xcursorgen)", file=sys.stderr)
+        print("ERROR: xcursorgen is missing (package: xcursorgen)", file=sys.stderr)
         return 1
     try:
         import PIL  # noqa: F401
     except ImportError:
-        print("FEHLER: python3-pillow fehlt", file=sys.stderr)
+        print("ERROR: python3-pillow is missing", file=sys.stderr)
         return 1
 
-    farben = {
-        "X": hexrgba(args.rand),
-        ".": hexrgba(args.fuellung),
-        "o": hexrgba(args.schatten),
+    colours = {
+        "X": hexrgba(args.outline),
+        ".": hexrgba(args.fill),
+        "o": hexrgba(args.shadow),
     }
 
-    ziel = args.ausgabe / args.name
-    (ziel / "cursors").mkdir(parents=True, exist_ok=True)
+    target = args.output / args.name
+    (target / "cursors").mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        for name, spec in ZEIGER.items():
-            muster = spec["muster"]
-            h = len(muster)
-            w = max(len(z) for z in muster)
-            zeilen = []
-            for gr in GROESSEN:
-                png = tmp / f"{name}-{gr}.png"
-                f = bild(muster, gr, farben, png)
+        for name, spec in CURSORS.items():
+            pattern = spec["pattern"]
+            h = len(pattern)
+            w = max(len(z) for z in pattern)
+            rows = []
+            for size in SIZES:
+                png = tmp / f"{name}-{size}.png"
+                f = render(pattern, size, colours, png)
                 hx, hy = spec["hotspot"]
-                # xcursorgen erwartet: groesse xhot yhot datei
-                zeilen.append(f"{gr} {hx * f} {hy * f} {png}")
+                # xcursorgen expects: size xhot yhot file
+                rows.append(f"{size} {hx * f} {hy * f} {png}")
             cfg = tmp / f"{name}.cursor"
-            cfg.write_text("\n".join(zeilen) + "\n")
-            r = subprocess.run(["xcursorgen", str(cfg), str(ziel / "cursors" / name)],
+            cfg.write_text("\n".join(rows) + "\n")
+            r = subprocess.run(["xcursorgen", str(cfg), str(target / "cursors" / name)],
                                capture_output=True, text=True)
             if r.returncode != 0:
-                print(f"FEHLER bei {name}: {r.stderr}", file=sys.stderr)
+                print(f"ERROR for {name}: {r.stderr}", file=sys.stderr)
                 return 1
 
-        # "Arbeitet im Hintergrund" ist der Pfeil - eine eigene Animation
-        # waere Zierrat, den NT auch nicht hatte.
-        quelle = ziel / "cursors" / "left_ptr"
+        # "Working in background" is the arrow - an animation of its own
+        # would be decoration that NT did not have either.
+        source = target / "cursors" / "left_ptr"
         for extra in ["left_ptr_watch", "progress", "half-busy"]:
-            z = ziel / "cursors" / extra
+            z = target / "cursors" / extra
             if not z.exists():
                 z.symlink_to("wait" if extra != "left_ptr_watch" else "left_ptr")
 
-    # Aliase als relative Symlinks
+    # Aliases as relative symlinks
     n = 0
-    for original, namen in ALIASE.items():
-        if not (ziel / "cursors" / original).exists():
+    for original, names in ALIASES.items():
+        if not (target / "cursors" / original).exists():
             continue
-        for alias in namen:
-            z = ziel / "cursors" / alias
+        for alias in names:
+            z = target / "cursors" / alias
             if not z.exists() and not z.is_symlink():
                 z.symlink_to(original)
                 n += 1
 
-    anzeige = args.anzeige or args.name
-    (ziel / "index.theme").write_text(
-        f"[Icon Theme]\nName={anzeige}\nComment=Mauszeiger im Stil von "
-        f"Windows NT 4.0\nInherits=breeze_cursors\n")
-    # Kein cursor.theme: die Datei verweist von einem ICON-Theme auf ein
-    # Cursor-Theme. Hier laege sie im Cursor-Theme selbst und wuerde von
-    # sich selbst erben. breeze_cursors hat sie ebenfalls nicht.
+    display_name = args.display_name or args.name
+    name_de = (f"Name[de]={args.display_name_de}\n"
+               if args.display_name_de and args.display_name_de != display_name else "")
+    (target / "index.theme").write_text(
+        f"[Icon Theme]\nName={display_name}\n{name_de}"
+        f"Comment=Mouse cursors in the style of Windows NT 4.0\n"
+        f"Comment[de]=Mauszeiger im Stil von Windows NT 4.0\n"
+        f"Inherits=breeze_cursors\n")
+    # No cursor.theme: that file points from an ICON theme to a cursor
+    # theme. Here it would sit in the cursor theme itself and would
+    # inherit from itself. breeze_cursors does not have it either.
 
-    print(f"  {ziel.name}/  ({len(ZEIGER)} Zeiger, {n} Aliase)")
+    print(f"  {target.name}/  ({len(CURSORS)} cursors, {n} aliases)")
     return 0
 
 

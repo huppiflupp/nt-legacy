@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-gross-asche",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - Asche"
+        "Name": "NT Legacy - Ash",
+        "Name[de]": "NT Legacy - Asche"
     }
 }

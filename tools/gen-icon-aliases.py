@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
-"""Legt fehlende Icon-Namen als Verweise auf vorhandene an.
+"""Creates missing icon names as links to existing ones.
 
-Retro-Icon-Saetze tragen oft GNOME-Namen (view-grid, view-list), waehrend
-KDE-Programme freedesktop- oder KDE-eigene Namen anfordern
-(view-list-icons, view-list-details). Fehlt ein Name, faellt Plasma auf
-Breeze zurueck - flache graue Striche neben 16-Farben-Pixelart.
+Retro icon sets often carry GNOME names (view-grid, view-list), while
+KDE programs request freedesktop or KDE-specific names
+(view-list-icons, view-list-details). If a name is missing, Plasma falls
+back to Breeze - flat grey strokes next to 16-colour pixel art.
 
-Das Skript legt fuer jeden fehlenden Namen einen Verweis auf ein
-vorhandenes, inhaltlich passendes Icon an. In allen Groessen, in denen
-die Quelle existiert.
+The script creates, for every missing name, a link to an
+existing icon with a matching meaning. In every size in which
+the source exists.
 
-    ./gen-icon-aliase.py <theme-verzeichnis> [--probe]
+    ./gen-icon-aliases.py <theme-directory> [--probe]
 
-Die Zuordnungen sind Handarbeit - welches Icon inhaltlich passt, kann
-kein Skript entscheiden.
+The mappings are handwork - which icon matches in meaning, no
+script can decide.
 """
 
 import argparse
 import os
 from pathlib import Path
 
-# Ziel -> Liste moeglicher Quellen, erste vorhandene gewinnt.
-# Ermittelt aus den Namen, die Dolphin, Kate und die Systemeinstellungen
-# tatsaechlich anfordern (per strings aus den Binaerdateien gelesen).
-ALIASE = {
-    # --- Ansichtsmodi: die auffaelligste Luecke in Dolphins Werkzeugleiste
+# Target -> list of possible sources, the first one present wins.
+# Derived from the names that Dolphin, Kate and System Settings
+# actually request (read from the binaries with strings).
+ALIASES = {
+    # --- View modes: the most noticeable gap in Dolphin's toolbar
     "view-list-icons":       ["view-grid", "view-icon", "view-list"],
     "view-list-details":     ["view-list", "stock_view-details", "view-detailed"],
     "view-list-tree":        ["view-tree", "view-sidetree", "view-list"],
@@ -44,13 +44,13 @@ ALIASE = {
     "view-split-left-right": ["view-column", "view-columns"],
     "view-left-close":       ["dialog-close", "window-close"],
     "view-right-close":      ["dialog-close", "window-close"],
-    # (view-sidetree steht weiter oben - ein zweiter Eintrag mit gleichem
-    #  Schluessel wuerde den ersten still ueberschreiben)
+    # (view-sidetree is listed further up - a second entry with the same
+    #  key would silently overwrite the first)
     "swap-panels":           ["view-refresh", "system-switch-user"],
     "view-refresh":          ["reload", "view-refresh"],
     "view-filter":           ["edit-find", "system-search"],
 
-    # --- Werkzeugleiste und Menue
+    # --- Toolbar and menu
     "application-menu":      ["open-menu", "show-menu", "gtk-index"],
     "show-menu":             ["open-menu", "gtk-index"],
     "configure":             ["preferences-system", "gtk-preferences", "settings"],
@@ -62,7 +62,7 @@ ALIASE = {
     "tab-close-other":       ["dialog-close", "window-close"],
     "tab-detach":            ["window-new", "view-split-left-right"],
 
-    # --- Kontextmenue
+    # --- Context menu
     "edit-rename":           ["document-edit", "edit-entry", "gtk-edit"],
     "edit-copy-path":        ["edit-copy"],
     "edit-duplicate":        ["edit-copy"],
@@ -74,7 +74,7 @@ ALIASE = {
     "object-locked":         ["lock", "changes-prevent", "emblem-locked"],
     "object-unlocked":       ["unlock", "changes-allow", "emblem-unlocked"],
 
-    # --- Statusleiste und Zoom
+    # --- Status bar and zoom
     "zoom-in":               ["viewmag+", "zoom-in"],
     "zoom-out":              ["viewmag-", "zoom-out"],
     "zoom-fit-best":         ["viewmag1", "zoom-original"],
@@ -82,68 +82,68 @@ ALIASE = {
 }
 
 
-def hat(verz: Path, name: str):
-    """Findet ein Icon in allen Groessenverzeichnissen dieses Kontexts."""
-    treffer = []
-    for gr in sorted(verz.iterdir()):
-        if not gr.is_dir():
+def find(directory: Path, name: str):
+    """Finds an icon in all size directories of this context."""
+    hits = []
+    for sz in sorted(directory.iterdir()):
+        if not sz.is_dir():
             continue
-        for endung in (".png", ".svg", ".svgz"):
-            f = gr / f"{name}{endung}"
+        for ext in (".png", ".svg", ".svgz"):
+            f = sz / f"{name}{ext}"
             if f.exists():
-                treffer.append(f)
+                hits.append(f)
                 break
-    return treffer
+    return hits
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("theme", type=Path)
-    ap.add_argument("--probe", action="store_true", help="nur berichten")
+    ap.add_argument("--probe", action="store_true", help="only report")
     args = ap.parse_args()
 
     if not (args.theme / "index.theme").exists():
-        ap.error(f"{args.theme} ist kein Icon-Theme (index.theme fehlt)")
+        ap.error(f"{args.theme} is not an icon theme (index.theme missing)")
 
-    # In welchen Kontexten suchen wir? actions deckt fast alles ab,
-    # places/apps fuer die Ordner- und Programmnamen.
-    kontexte = [args.theme / k for k in ("actions", "places", "apps", "status")
+    # Which contexts do we search? actions covers almost everything,
+    # places/apps for the folder and program names.
+    contexts = [args.theme / k for k in ("actions", "places", "apps", "status")
                 if (args.theme / k).is_dir()]
 
-    angelegt = 0
-    ohne_quelle = []
+    created = 0
+    without_source = []
 
-    for ziel, quellen in ALIASE.items():
-        # Gibt es das Ziel schon irgendwo?
-        if any(hat(k, ziel) for k in kontexte):
+    for target, sources in ALIASES.items():
+        # Does the target already exist somewhere?
+        if any(find(k, target) for k in contexts):
             continue
 
-        gefunden = False
-        for quelle in quellen:
-            for kontext in kontexte:
-                treffer = hat(kontext, quelle)
-                if not treffer:
+        found = False
+        for source in sources:
+            for context in contexts:
+                hits = find(context, source)
+                if not hits:
                     continue
-                for f in treffer:
-                    z = f.with_name(f"{ziel}{f.suffix}")
+                for f in hits:
+                    z = f.with_name(f"{target}{f.suffix}")
                     if z.exists() or z.is_symlink():
                         continue
                     if not args.probe:
                         z.symlink_to(f.name)
-                    angelegt += 1
-                gefunden = True
+                    created += 1
+                found = True
                 break
-            if gefunden:
+            if found:
                 break
-        if not gefunden:
-            ohne_quelle.append(ziel)
+        if not found:
+            without_source.append(target)
 
-    was = "waeren anzulegen" if args.probe else "angelegt"
-    print(f"  {angelegt} Verweise {was}")
-    if ohne_quelle:
-        print(f"  {len(ohne_quelle)} ohne passende Quelle - bleiben bei Breeze:")
-        for z in ohne_quelle:
+    what = "would be created" if args.probe else "created"
+    print(f"  {created} links {what}")
+    if without_source:
+        print(f"  {len(without_source)} without a matching source - stay with Breeze:")
+        for z in without_source:
             print(f"      {z}")
     return 0
 

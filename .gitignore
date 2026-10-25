@@ -4,10 +4,10 @@
 nt-legacy/icons/
 
 # Die Nachtfassung des Symbolsatzes ist eine Ableitung und entsteht in
-# build.py (tools/mach-nacht-symbole.py).
+# build.py (tools/make-night-icons.py).
 nt-legacy/icons-nt/NTLegacyIconsNacht/
 
-# Die Archive fuer den Store. Reproduzierbar mit tools/mach-paket.sh -
+# Die Archive fuer den Store. Reproduzierbar mit tools/make-package.sh -
 # Binaerdateien blaehen nur die Historie auf.
 dist/
 

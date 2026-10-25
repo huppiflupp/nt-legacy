@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
-"""Erzeugt ein Plymouth-Theme aus einer NT-Legacy-Palette.
+"""Generates a Plymouth theme from an NT Legacy palette.
 
-Der Startbildschirm zeigt denselben Kasten wie Splash.qml: NT-Dialog
-mit Titelleiste und Fortschrittsbalken. Damit ist die Kette geschlossen -
-GRUB, Boot-Splash und Plasma-Startbildschirm sehen gleich aus.
+The boot screen shows the same box as Splash.qml: an NT dialog
+with title bar and progress bar. That closes the chain -
+GRUB, boot splash and Plasma splash screen look the same.
 
-    ./gen-plymouth.py --name nt-legacy-win2k --anzeige "NT Legacy 2000" \\
-                      --palette '{"flaeche": "#d4d0c8", ...}' -o ziel/
+    ./gen-plymouth.py --name nt-legacy-win2k --display-name "NT Legacy 2000" \\
+                      --palette '{"surface": "#d4d0c8", ...}' -o target/
 
-Zwei Dinge, die ein Boot-Splash koennen MUSS und die man beim Bauen
-leicht vergisst:
+Two things a boot splash MUST be able to do and that are easy to
+forget when building one:
 
-  * Die Passwortabfrage. Auf einem verschluesselten System fragt
-    Plymouth nach der Passphrase. Ein Theme ohne diese Funktion zeigt
-    einen stummen Bildschirm - der Rechner wartet auf eine Eingabe, und
-    niemand sieht, worauf. Das macht die Platte nicht kaputt, aber es
-    sieht aus, als haenge der Start.
-  * Meldungen. systemd schickt Texte ueber denselben Weg ("Press any
-    key to abort"), und fsck-Fortschritt ebenso.
+  * The password prompt. On an encrypted system Plymouth asks for
+    the passphrase. A theme without this function shows a silent
+    screen - the machine waits for input, and nobody can see what
+    for. That does not damage the disk, but it looks as if the boot
+    has hung.
+  * Messages. systemd sends texts through the same channel ("Press any
+    key to abort"), and so does fsck progress.
 
-Beides ist unten umgesetzt. Der Text kommt aus Image.Text() - die
-Schrift dafuer stellt Plymouth, nicht das Theme.
+Both are implemented below. The text comes from Image.Text() - the
+font for it is provided by Plymouth, not by the theme.
 """
 
 import argparse
@@ -31,14 +31,14 @@ from pathlib import Path
 try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
-    print("FEHLER: Pillow fehlt (dnf install python3-pillow)", file=sys.stderr)
+    print("ERROR: Pillow is missing (dnf install python3-pillow)", file=sys.stderr)
     sys.exit(1)
 
-BREITE = 460          # wie Splash.qml: Math.min(width * 0.5, 460)
-HOEHE = 150
-TITEL = 24
-RAND = 1
-BALKEN_H = 14
+WIDTH = 460           # as in Splash.qml: Math.min(width * 0.5, 460)
+HEIGHT = 150
+TITLE = 24
+EDGE = 1
+BAR_H = 14
 
 
 def rgb(h):
@@ -46,96 +46,96 @@ def rgb(h):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def schrift(groesse, fett=False):
-    kandidaten = [
-        "/usr/share/fonts/google-noto/NotoSans-Bold.ttf" if fett
+def font(size, bold=False):
+    candidates = [
+        "/usr/share/fonts/google-noto/NotoSans-Bold.ttf" if bold
         else "/usr/share/fonts/google-noto/NotoSans-Regular.ttf",
-        "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf" if fett
+        "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf" if bold
         else "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf",
     ]
-    for k in kandidaten:
+    for k in candidates:
         if Path(k).exists():
             try:
-                return ImageFont.truetype(k, groesse)
+                return ImageFont.truetype(k, size)
             except OSError:
                 pass
     return ImageFont.load_default()
 
 
 class Plymouth:
-    def __init__(self, palette, ziel, name, anzeige):
+    def __init__(self, palette, target, name, display_name):
         self.p = palette
-        self.ziel = ziel
+        self.target = target
         self.name = name
-        self.anzeige = anzeige
+        self.display_name = display_name
 
-    def f(self, key, ersatz="#000000"):
-        return self.p.get(key, ersatz)
+    def f(self, key, fallback="#000000"):
+        return self.p.get(key, fallback)
 
     # ------------------------------------------------------------------
     def dialog(self):
-        """Der Kasten samt Titelleiste und beschrifteter Titelzeile.
+        """The box with title bar and labelled title row.
 
-        Als ein Bild und nicht als Einzelteile: Plymouth-Skripte koennen
-        zwar stapeln, aber jede Sprite ist eine eigene Ebene mit eigener
-        Position - bei einem Kasten, dessen Teile fest zueinander stehen,
-        ist ein Bild einfacher und sieht auf jeder Aufloesung gleich aus.
+        As one image rather than separate parts: Plymouth scripts can
+        stack, but every sprite is its own layer with its own position -
+        for a box whose parts are fixed relative to each other, one
+        image is simpler and looks the same at every resolution.
         """
-        flaeche = rgb(self.f("flaeche"))
-        rahmen = rgb(self.f("rahmen"))
-        kopf = rgb(self.f("kopf_aktiv"))
-        kopftext = rgb(self.f("auswahl_text"))
+        surface = rgb(self.f("surface"))
+        border = rgb(self.f("border"))
+        head = rgb(self.f("title_active"))
+        head_text = rgb(self.f("selection_text"))
 
-        im = Image.new("RGBA", (BREITE, HOEHE), flaeche + (255,))
+        im = Image.new("RGBA", (WIDTH, HEIGHT), surface + (255,))
         d = ImageDraw.Draw(im)
-        d.rectangle([0, 0, BREITE - 1, HOEHE - 1], outline=rahmen + (255,))
-        d.rectangle([RAND, RAND, BREITE - 1 - RAND, RAND + TITEL],
-                    fill=kopf + (255,))
-        d.text((9, RAND + TITEL // 2), self.anzeige, font=schrift(13, True),
-               fill=kopftext + (255,), anchor="lm")
-        im.save(self.ziel / "dialog.png")
+        d.rectangle([0, 0, WIDTH - 1, HEIGHT - 1], outline=border + (255,))
+        d.rectangle([EDGE, EDGE, WIDTH - 1 - EDGE, EDGE + TITLE],
+                    fill=head + (255,))
+        d.text((9, EDGE + TITLE // 2), self.display_name, font=font(13, True),
+               fill=head_text + (255,), anchor="lm")
+        im.save(self.target / "dialog.png")
 
-    def balken(self):
-        """Rinne und Fuellung des Fortschrittsbalkens.
+    def bar(self):
+        """Track and fill of the progress bar.
 
-        Die Fuellung ist ein Pixel breit und wird im Skript gestreckt -
-        so braucht der Balken kein Bild je Fortschrittsstufe.
+        The fill is one pixel wide and gets stretched in the script -
+        that way the bar needs no image per progress step.
         """
-        rahmen = rgb(self.f("rahmen"))
-        dunkel = rgb(self.f("dunkel"))
-        akzent = rgb(self.f("kopf_aktiv"))
+        border = rgb(self.f("border"))
+        dark = rgb(self.f("dark"))
+        accent = rgb(self.f("title_active"))
 
-        breite = BREITE - 28
-        track = Image.new("RGBA", (breite, BALKEN_H), dunkel + (255,))
+        width = WIDTH - 28
+        track = Image.new("RGBA", (width, BAR_H), dark + (255,))
         d = ImageDraw.Draw(track)
-        d.rectangle([0, 0, breite - 1, BALKEN_H - 1], outline=rahmen + (255,))
-        track.save(self.ziel / "bar-track.png")
+        d.rectangle([0, 0, width - 1, BAR_H - 1], outline=border + (255,))
+        track.save(self.target / "bar-track.png")
 
-        fill = Image.new("RGBA", (1, BALKEN_H - 4), akzent + (255,))
-        fill.save(self.ziel / "bar-fill.png")
+        fill = Image.new("RGBA", (1, BAR_H - 4), accent + (255,))
+        fill.save(self.target / "bar-fill.png")
 
     def bullet(self):
-        """Ein Kaestchen je eingegebenem Zeichen der Passphrase.
+        """One small square per typed character of the passphrase.
 
-        NT zeigte Sternchen; ein gefuelltes Quadrat ist naeher an dem,
-        was Plymouth ueblicherweise darstellt, und bei 10 px lesbarer.
+        NT showed asterisks; a filled square is closer to what Plymouth
+        usually displays, and more legible at 10 px.
         """
-        akzent = rgb(self.f("kopf_aktiv"))
-        rahmen = rgb(self.f("rahmen"))
+        accent = rgb(self.f("title_active"))
+        border = rgb(self.f("border"))
         im = Image.new("RGBA", (10, 10), (0, 0, 0, 0))
         d = ImageDraw.Draw(im)
-        d.rectangle([0, 0, 9, 9], fill=akzent + (255,), outline=rahmen + (255,))
-        im.save(self.ziel / "bullet.png")
+        d.rectangle([0, 0, 9, 9], fill=accent + (255,), outline=border + (255,))
+        im.save(self.target / "bullet.png")
 
     # ------------------------------------------------------------------
     def script(self):
         t = rgb(self.f("text"))
-        # Image.Text() erwartet Farbanteile von 0 bis 1.
+        # Image.Text() expects colour components from 0 to 1.
         tr, tg, tb = (c / 255 for c in t)
-        return f"""// NT Legacy - Plymouth-Theme, erzeugt von tools/gen-plymouth.py
+        return f"""// NT Legacy - Plymouth theme, generated by tools/gen-plymouth.py
 //
-// Derselbe Kasten wie im Plasma-Startbildschirm. Nicht von Hand
-// aendern - der naechste build.py-Lauf ueberschreibt die Datei.
+// The same box as the Plasma splash screen. Do not edit by
+// hand - the next build.py run overwrites this file.
 
 Window.SetBackgroundTopColor({", ".join(f"{c/255:.4f}" for c in rgb(self.f("desktop")))});
 Window.SetBackgroundBottomColor({", ".join(f"{c/255:.4f}" for c in rgb(self.f("desktop")))});
@@ -149,55 +149,55 @@ dialog.sprite.SetPosition(dialog.x, dialog.y, 0);
 track.image = Image("bar-track.png");
 track.sprite = Sprite(track.image);
 track.x = dialog.x + 14;
-track.y = dialog.y + {HOEHE} - {BALKEN_H} - 14;
+track.y = dialog.y + {HEIGHT} - {BAR_H} - 14;
 track.sprite.SetPosition(track.x, track.y, 1);
 
 fill.image = Image("bar-fill.png");
 fill.sprite = Sprite();
 fill.sprite.SetPosition(track.x + 2, track.y + 2, 2);
 
-// ── Fortschritt ────────────────────────────────────────────────────
-// Plymouth ruft das mit der geschaetzten Bootdauer und dem Anteil auf.
-fun fortschritt(dauer, anteil) {{
-    breite = ({BREITE} - 28 - 4) * anteil;
-    if (breite < 1) breite = 1;
-    fill.sprite.SetImage(fill.image.Scale(breite, {BALKEN_H - 4}));
+// ── Progress ───────────────────────────────────────────────────────
+// Plymouth calls this with the estimated boot duration and the fraction done.
+fun progress(duration, fraction) {{
+    width = ({WIDTH} - 28 - 4) * fraction;
+    if (width < 1) width = 1;
+    fill.sprite.SetImage(fill.image.Scale(width, {BAR_H - 4}));
 }}
-Plymouth.SetBootProgressFunction(fortschritt);
+Plymouth.SetBootProgressFunction(progress);
 
-// ── Passwortabfrage ────────────────────────────────────────────────
-// Ohne diese Funktion bleibt der Bildschirm bei einer verschluesselten
-// Platte stumm stehen: Plymouth wartet auf die Eingabe, zeigt aber
-// nichts an. Der Aufforderungstext kommt vom System.
+// ── Password prompt ────────────────────────────────────────────────
+// Without this function the screen just sits there silently with an
+// encrypted disk: Plymouth waits for input but shows
+// nothing. The prompt text comes from the system.
 bullet.image = Image("bullet.png");
 bullets = [];
 prompt.sprite = Sprite();
 
-fun passwort(aufforderung, anzahl) {{
+fun password(prompt_text, count) {{
     fill.sprite.SetOpacity(0);
     track.sprite.SetOpacity(0);
 
-    prompt.image = Image.Text(aufforderung, {tr:.4f}, {tg:.4f}, {tb:.4f});
+    prompt.image = Image.Text(prompt_text, {tr:.4f}, {tg:.4f}, {tb:.4f});
     prompt.sprite.SetImage(prompt.image);
     prompt.sprite.SetPosition(
         dialog.x + 14,
-        dialog.y + {TITEL} + 22, 3);
+        dialog.y + {TITLE} + 22, 3);
     prompt.sprite.SetOpacity(1);
 
-    for (i = 0; i < anzahl || i < bullets.GetSize(); i++) {{
-        if (i < anzahl) {{
+    for (i = 0; i < count || i < bullets.GetSize(); i++) {{
+        if (i < count) {{
             if (!bullets[i]) bullets[i] = Sprite(bullet.image);
             bullets[i].SetPosition(dialog.x + 16 + i * 13,
-                                   dialog.y + {HOEHE} - 34, 3);
+                                   dialog.y + {HEIGHT} - 34, 3);
             bullets[i].SetOpacity(1);
         }} else if (bullets[i]) {{
             bullets[i].SetOpacity(0);
         }}
     }}
 }}
-Plymouth.SetDisplayPasswordFunction(passwort);
+Plymouth.SetDisplayPasswordFunction(password);
 
-// ── Zurueck zur normalen Anzeige ───────────────────────────────────
+// ── Back to the normal display ─────────────────────────────────────
 fun normal() {{
     prompt.sprite.SetOpacity(0);
     for (i = 0; i < bullets.GetSize(); i++) {{
@@ -208,30 +208,30 @@ fun normal() {{
 }}
 Plymouth.SetDisplayNormalFunction(normal);
 
-// ── Meldungen ──────────────────────────────────────────────────────
-// systemd schickt hierueber Texte wie "Press any key to abort".
-meldung.sprite = Sprite();
-fun meldung(text) {{
-    meldung.image = Image.Text(text, {tr:.4f}, {tg:.4f}, {tb:.4f});
-    meldung.sprite.SetImage(meldung.image);
-    meldung.sprite.SetPosition(
-        Window.GetX() + (Window.GetWidth() - meldung.image.GetWidth()) / 2,
-        dialog.y + {HOEHE} + 24, 4);
+// ── Messages ───────────────────────────────────────────────────────
+// systemd sends texts like "Press any key to abort" through this.
+message.sprite = Sprite();
+fun message(text) {{
+    message.image = Image.Text(text, {tr:.4f}, {tg:.4f}, {tb:.4f});
+    message.sprite.SetImage(message.image);
+    message.sprite.SetPosition(
+        Window.GetX() + (Window.GetWidth() - message.image.GetWidth()) / 2,
+        dialog.y + {HEIGHT} + 24, 4);
 }}
-Plymouth.SetMessageFunction(meldung);
+Plymouth.SetMessageFunction(message);
 
-// Beim Herunterfahren laeuft der Balken rueckwaerts leer - ohne diese
-// Funktion bliebe er auf dem letzten Stand des Startvorgangs stehen.
-fun beenden() {{
+// On shutdown the bar empties backwards - without this
+// function it would stay where the boot left it.
+fun quit() {{
     fill.sprite.SetOpacity(0);
 }}
-Plymouth.SetQuitFunction(beenden);
+Plymouth.SetQuitFunction(quit);
 """
 
-    def plymouth_datei(self):
+    def plymouth_file(self):
         return f"""[Plymouth Theme]
-Name={self.anzeige}
-Description=Startbildschirm im Stil von Windows NT
+Name={self.display_name}
+Description=Boot screen in the style of Windows NT
 ModuleName=script
 
 [script]
@@ -239,28 +239,28 @@ ImageDir=/usr/share/plymouth/themes/{self.name}
 ScriptFile=/usr/share/plymouth/themes/{self.name}/nt-legacy.script
 """
 
-    def erzeuge(self):
-        self.ziel.mkdir(parents=True, exist_ok=True)
+    def generate(self):
+        self.target.mkdir(parents=True, exist_ok=True)
         self.dialog()
-        self.balken()
+        self.bar()
         self.bullet()
-        (self.ziel / "nt-legacy.script").write_text(self.script())
-        (self.ziel / f"{self.name}.plymouth").write_text(self.plymouth_datei())
+        (self.target / "nt-legacy.script").write_text(self.script())
+        (self.target / f"{self.name}.plymouth").write_text(self.plymouth_file())
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--name", required=True)
-    ap.add_argument("--anzeige", required=True)
+    ap.add_argument("--display-name", required=True)
     ap.add_argument("--palette", required=True)
-    ap.add_argument("-o", "--ausgabe", type=Path, required=True)
+    ap.add_argument("-o", "--output", type=Path, required=True)
     args = ap.parse_args()
 
-    ziel = args.ausgabe / args.name
-    Plymouth(json.loads(args.palette), ziel, args.name, args.anzeige).erzeuge()
+    target = args.output / args.name
+    Plymouth(json.loads(args.palette), target, args.name, args.display_name).generate()
     print(f"  plymouth/{args.name}/  "
-          f"({len(list(ziel.glob('*.png')))} Bilder, Skript)")
+          f"({len(list(target.glob('*.png')))} images, script)")
 
 
 if __name__ == "__main__":

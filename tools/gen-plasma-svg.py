@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-"""Erzeugt Plasma-Style-SVGs aus Parametern statt aus Handarbeit.
+"""Generates Plasma style SVGs from parameters instead of by hand.
 
-Eine Plasma-SVG ist keine Zeichnung, sondern ein Atlas: alle Zustaende
-eines Widgets liegen nebeneinander im selben Koordinatenraum, und Plasma
-schneidet sie ueber Element-IDs heraus. Ein Button braucht so schnell
-40 exakt benannte Objekte - und ein Tippfehler in einer ID wird von
-Plasma stillschweigend ignoriert.
+A Plasma SVG is not a drawing but an atlas: all states of a widget sit
+side by side in the same coordinate space, and Plasma cuts them out by
+element ID. A button quickly needs 40 precisely named objects - and
+Plasma silently ignores a typo in an ID.
 
-Genau diese Fleissarbeit macht dieses Skript. Was uebrig bleibt, ist die
-Gestaltung: Farben, Rahmenbreite, Verlauf, Rundung - als Parameter.
+This script does exactly that drudgery. What is left is the design:
+colours, border width, gradient, rounding - as parameters.
 
-    ./gen-plasma-svg.py button                      # eine Datei nach stdout
-    ./gen-plasma-svg.py --alle -o desktoptheme/meintheme/
-    ./gen-plasma-svg.py button --stil flach --rahmen 1 --rundung 3
-    ./gen-plasma-svg.py --liste
+    ./gen-plasma-svg.py button                      # one file to stdout
+    ./gen-plasma-svg.py --all -o desktoptheme/mytheme/
+    ./gen-plasma-svg.py button --style flat --border 1 --radius 3
+    ./gen-plasma-svg.py --list
 
-Der klassische Mac-OS-9-Look ist der Standard: 3D-Rahmen (oben/links
-hell, unten/rechts dunkel), leichter Verlauf, kaum Rundung.
+The classic Mac OS 9 look is the default: 3D border (light at the
+top/left, dark at the bottom/right), a slight gradient, hardly any rounding.
 """
 
 import argparse
@@ -24,505 +23,546 @@ import sys
 from pathlib import Path
 
 # --------------------------------------------------------------------------
-# Widget-Definitionen
+# Widget definitions
 #
-# Welche Zustandspraefixe ein Widget braucht und welche Hints dazugehoeren.
-# Abgeleitet aus dem Breeze-Quellbaum, nicht geraten.
+# Which state prefixes a widget needs and which hints go with them.
+# Derived from the Breeze source tree, not guessed.
 # --------------------------------------------------------------------------
 
-# Zum fehlenden "shadow"-Praefix:
+# On the missing "shadow" prefix:
 #
-# Breeze zeichnet unter shadow-* einen weichen, halbtransparenten
-# Verlauf. Wenn ein Generator dort dieselbe Volltonflaeche mit 3D-Kante
-# ablegt wie fuer den Normalzustand, malt Plasma sie versetzt unter das
-# Element - und man sieht die Kante zweimal. Am Panel war das ein
-# deutlicher Doppelstrich.
+# Breeze draws a soft, semi-transparent gradient under shadow-*. If a
+# generator puts the same solid surface with a 3D edge there as for the
+# normal state, Plasma paints it offset under the element - and you see
+# the edge twice. On the panel this was a clearly visible double line.
 #
-# Ein flaches NT-Theme braucht ohnehin keinen Schatten: Taskleiste,
-# Popups und Schaltflaechen lagen dort ohne Schlagschatten auf. Fehlt
-# der Praefix, zeichnet Plasma an der Stelle einfach nichts - das ist
-# hier das gewuenschte Ergebnis, kein Mangel.
+# A flat NT theme needs no shadow anyway: the taskbar, popups and
+# buttons sat there without a drop shadow. If the prefix is missing,
+# Plasma simply draws nothing in that spot - which is the desired result
+# here, not a shortcoming.
 #
-# "" bedeutet: Elemente ohne Praefix (center, top, left ...)
+# "" means: elements without a prefix (center, top, left ...)
 WIDGETS = {
     "button": {
-        "beschreibung": "Schaltflaechen in Plasmoids",
-        "praefixe": ["normal", "hover", "pressed", "focus",
+        "description": "Buttons in plasmoids",
+        "prefixes": ["normal", "hover", "pressed", "focus",
                      "toolbutton-hover", "toolbutton-pressed", "toolbutton-focus"],
         "hints": ["margin", "compose-over-border"],
-        "masken": ["normal"],
+        "masks": ["normal"],
     },
     "background": {
-        "beschreibung": "Hintergrund von Plasmoids",
-        "praefixe": ["",],
+        "description": "Background of plasmoids",
+        "prefixes": ["",],
         "hints": ["margin", "inset"],
-        "masken": [""],
+        "masks": [""],
     },
     "panel-background": {
-        "farbe": "panel",
-        "fest": True,
-        # Kein dunkler Aussenrahmen. Gemessen an einem NT-4.0-Screenshot:
-        # die Taskleiste hat am oberen Rand genau EINE Linie, 1px weiss
-        # (255,255,255), darueber und darunter direkt die Grundflaeche
-        # (192,192,192). Aussenrahmen plus 3D-Kante ergaeben zwei Linien.
-        "aussenrahmen": 0,
-        "beschreibung": "Panel / Taskleiste",
-        "praefixe": ["", "thick", "north", "south", "east", "west",],
+        "color": "panel",
+        "fixed": True,
+        # No dark outer border. Measured on an NT 4.0 screenshot: the
+        # taskbar has exactly ONE line at its top edge, 1px white
+        # (255,255,255), with the base surface (192,192,192) directly above
+        # and below it. Outer border plus 3D edge would make two lines.
+        "outer_border": 0,
+        "description": "Panel / taskbar",
+        "prefixes": ["", "thick", "north", "south", "east", "west",],
         "hints": ["margin", "inset", "tile-center"],
-        "masken": [""],
+        "masks": [""],
     },
     "background-dialog": {
-        "beschreibung": "Hintergrund aller Plasma-Popups (Anwendungsstarter, "
-                        "Benachrichtigungen). Fehlt sie, nimmt Plasma den "
-                        "halbtransparenten Breeze-Hintergrund.",
-        # Plasma sucht dialogs/background.svg. Hiesse die Datei nach dem
-        # Widget-Schluessel, wuerde sie nie gefunden - und der Starter
-        # bliebe durchscheinend, obwohl die Datei vorhanden ist.
-        "datei": "background",
-        "ordner": "dialogs",
-        "praefixe": ["",],
+        "description": "Background of all Plasma popups (application launcher, "
+                       "notifications). If it is missing, Plasma uses the "
+                       "translucent Breeze background.",
+        # Plasma looks for dialogs/background.svg. If the file were named
+        # after the widget key, it would never be found - and the launcher
+        # would stay see-through even though the file exists.
+        "file": "background",
+        "folder": "dialogs",
+        "prefixes": ["",],
         "hints": ["margin", "inset", "preferred-icon-size"],
-        "masken": [""],
+        "masks": [""],
     },
     "tooltip": {
-        "beschreibung": "Kurzinfos",
-        "praefixe": ["",],
+        "description": "Tooltips",
+        "prefixes": ["",],
         "hints": ["margin"],
-        "masken": [""],
+        "masks": [""],
     },
     "frame": {
-        "ecke": 3,
-        "beschreibung": "Rahmen, Gruppierungen",
-        "praefixe": ["", "raised", "sunken", "plain"],
+        "corner": 3,
+        "description": "Frames, groupings",
+        "prefixes": ["", "raised", "sunken", "plain"],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
+        # The "plain" prefix is the SIDEBAR of the application menu.
+        #
+        # Not obvious, but looked up: kicker draws it as a
+        # KSvg.FrameSvgItem with imagePath "widgets/frame" and prefix
+        # "plain" (plasma-desktop, applets/kicker/MenuRepresentation.qml,
+        # the block with id: sideBar). That makes the sidebar colourable
+        # through the Plasma style - without touching the applet, which
+        # has shipped compiled since Plasma 6.4 and no longer has any QML
+        # files on disk.
+        #
+        # It gets the PANEL colour - the same as the taskbar the menu
+        # opens from. Without a colour the sidebar disappears into the
+        # menu surface, and the logout buttons in it look as if they
+        # belonged to the list of entries.
+        #
+        # The title bar colour would be the more obvious choice - that is
+        # where Windows 95 to 2000 had the dark bar with the vertical
+        # lettering. Checked on the running desktop and rejected again:
+        # the three session buttons at the bottom of the sidebar (Log Out,
+        # Restart, Shut Down) are monochrome icons that Kirigami tints in
+        # the TEXT colour of the colour scheme. On #176b78 they showed up
+        # as dark grey on dark petrol - the sidebar was colourful and the
+        # buttons in it unreadable. Nothing can be changed about that from
+        # outside: the icon colour depends on the dialog's colour set, not
+        # on the SVG.
+        #
+        # Without a colour scheme class, i.e. fixed like the panel: the
+        # classes that KSvg replaces know no panel colour. With
+        # ColorScheme-Highlight the sidebar would carry the selection
+        # colour - a garish stripe in the night variants.
+        #
+        # Checked what else this affects: apart from kicker, only
+        # PlasmaComponents3.Frame and .GroupBox request this prefix (per
+        # strings in liborg_kde_plasmacomponents3.so). On this
+        # installation not a single plasmoid uses them - measured
+        # across all .so files in plasma/applets and plasma/private.
+        "states": {
+            "plain": ("panel", False, None),
+        },
     },
     "listitem": {
-        "ecke": 2,
-        "beschreibung": "Listeneintraege, u.a. im Anwendungsstarter",
-        "praefixe": ["normal", "hover", "pressed", "selected", "selected+hover"],
+        "corner": 2,
+        "description": "List entries, e.g. in the application launcher",
+        "prefixes": ["normal", "hover", "pressed", "selected", "selected+hover"],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
     },
     "viewitem": {
-        "beschreibung": "Eintraege in Ansichten",
-        "praefixe": ["normal", "hover", "selected", "selected+hover"],
+        "description": "Entries in views",
+        "prefixes": ["normal", "hover", "selected", "selected+hover"],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
     },
     "lineedit": {
-        "beschreibung": "Eingabefelder",
-        "praefixe": ["base", "focus", "hover"],
+        "description": "Input fields",
+        "prefixes": ["base", "focus", "hover"],
         "hints": ["margin", "focus-over-base"],
-        "masken": [],
+        "masks": [],
     },
     "tasks": {
-        "beschreibung": "Fensterknoepfe in der Taskleiste",
-        # Wird von org.kde.plasma.taskmanager.so angefordert (per strings
-        # verifiziert). Ohne diese Datei kommt der zentrale Teil der
-        # Taskleiste aus Breeze - runde Ecken mitten im NT-Panel.
-        # Vier Zustaende je Panelkante - der Taskmanager waehlt nach
-        # Panelposition, wie beim panel-background.
-        "praefixe": [z for z in ["normal", "focus", "hover", "attention",
+        "description": "Window buttons in the taskbar",
+        # Requested by org.kde.plasma.taskmanager.so (verified with
+        # strings). Without this file the central part of the taskbar
+        # comes from Breeze - rounded corners in the middle of the NT panel.
+        # Four states per panel edge - the task manager picks by panel
+        # position, as with panel-background.
+        "prefixes": [s for s in ["normal", "focus", "hover", "attention",
                                  "minimized", "progress"]]
-                    + [f"{r}-{z}" for r in ("north", "west", "east")
-                       for z in ("normal", "focus", "hover", "attention",
+                    + [f"{e}-{s}" for e in ("north", "west", "east")
+                       for s in ("normal", "focus", "hover", "attention",
                                  "minimized", "progress")],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
         "margin": 4,
-        # Der aktive Fensterknopf traegt die Titelleistenfarbe - und
-        # darauf steht der Fenstertitel in der normalen Textfarbe, denn
-        # den Text zeichnet der Taskmanager aus dem Farbschema, nicht
-        # aus dem SVG. Gemessen: 1,47:1 bei win2k, 1,31:1 bei win98,
-        # unter 4,5:1 in allen zehn Varianten. Aus der Community kam
-        # genau das zurueck ("way too dark, text unreadable").
+        # The active window button carries the title bar colour - and on
+        # it the window title sits in the normal text colour, because the
+        # task manager draws the text from the colour scheme, not from
+        # the SVG. Measured: 1.47:1 for win2k, 1.31:1 for win98, below
+        # 4.5:1 in all ten variants. The community reported exactly that
+        # back ("way too dark, text unreadable").
         #
-        # Deshalb wie in Windows selbst: der aktive Knopf ist kein
-        # farbiges Feld, sondern ein eingedrueckter Knopf in der
-        # Flaechenfarbe. Der Text steht dann auf demselben Grund wie
-        # ueberall - lesbar in jeder Variante und jedem Farbschema.
-        "zustaende": {
-            "focus":       ("flaeche", True, "ColorScheme-Background"),
-            "north-focus": ("flaeche", True, "ColorScheme-Background"),
-            "west-focus":  ("flaeche", True, "ColorScheme-Background"),
-            "east-focus":  ("flaeche", True, "ColorScheme-Background"),
+        # Hence, as in Windows itself: the active button is not a
+        # coloured field but a pressed-in button in the surface colour.
+        # The text then sits on the same ground as everywhere else -
+        # readable in every variant and every colour scheme.
+        "states": {
+            "focus":       ("surface", True, "ColorScheme-Background"),
+            "north-focus": ("surface", True, "ColorScheme-Background"),
+            "west-focus":  ("surface", True, "ColorScheme-Background"),
+            "east-focus":  ("surface", True, "ColorScheme-Background"),
         },
     },
     "toolbar": {
-        "farbe": "panel",
-        "fest": True,
-        "beschreibung": "Werkzeugleisten",
-        "praefixe": ["", "north", "south", "east", "west"],
+        "color": "panel",
+        "fixed": True,
+        "description": "Toolbars",
+        "prefixes": ["", "north", "south", "east", "west"],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
     },
     "plasmoidheading": {
-        "beschreibung": "Kopfzeilen in Plasmoids",
-        "praefixe": ["header", "footer"],
+        "description": "Headers in plasmoids",
+        "prefixes": ["header", "footer"],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
     },
     "scrollbar": {
-        "beschreibung": "Bildlaufleisten",
-        # ScrollBar.qml waehlt zwischen "slider" und "mouseover-slider".
-        # Mit slider-vertical/-horizontal findet es nichts, faellt auf den
-        # leeren Praefix zurueck - und der hat kein center. Ergebnis war
-        # ein unsichtbarer Griff in jeder Plasma-Bildlaufleiste.
-        "praefixe": ["background-vertical", "background-horizontal",
+        "description": "Scrollbars",
+        # ScrollBar.qml chooses between "slider" and "mouseover-slider".
+        # With slider-vertical/-horizontal it finds nothing, falls back to
+        # the empty prefix - and that has no center. The result was an
+        # invisible handle in every Plasma scrollbar.
+        "prefixes": ["background-vertical", "background-horizontal",
                      "slider", "mouseover-slider"],
         "hints": ["scrollbar-size"],
-        "masken": [],
-        "ecke": 3,
-        # Die Rinne bekommt das Karomuster, das Windows dort hatte: ein
-        # Schachbrett aus Buttongrau und Weiss, jede Zelle ein Pixel.
-        # Der Qt-Stil zeichnet es in Anwendungen von sich aus - in
-        # Plasma-Oberflaechen wie den Systemeinstellungen kommt die
-        # Bildlaufleiste aber aus diesem SVG, und dort fehlte es. Aus der
-        # Community gemeldet.
+        "masks": [],
+        "corner": 3,
+        # The groove gets the checkerboard pattern Windows had there: a
+        # checkerboard of button grey and white, each cell one pixel.
+        # The Qt style draws it in applications on its own - but in
+        # Plasma surfaces such as System Settings the scrollbar comes from
+        # this SVG, and there it was missing. Reported by the community.
         #
-        # Nur die Rinne, nicht der Griff: In Windows ist der Griff eine
-        # glatte Schaltflaeche, und das Muster ist gerade das, was ihn
-        # von der Rinne unterscheidet.
+        # Only the groove, not the handle: in Windows the handle is a
+        # smooth button, and the pattern is exactly what sets it apart
+        # from the groove.
         "dither": ("background-vertical", "background-horizontal"),
-        # Ohne diesen Hint streckt Plasma den Mittelteil, und aus dem
-        # Karo wuerden Streifen. Mit ihm kachelt es - so macht es Breeze
-        # in derselben Datei auch.
+        # Without this hint Plasma stretches the middle part, and the
+        # checkerboard would turn into stripes. With it, it tiles - Breeze
+        # does the same in the same file.
         "tile_center": True,
     },
     "switch": {
-        "beschreibung": "Umschalter (Systemabschnitt, Benachrichtigungen)",
-        # Nur links/rechts - ein Schalter ist ein horizontaler 3-Patch.
-        "praefixe": ["inactive", "active"],
+        "description": "Switches (system tray, notifications)",
+        # Only left/right - a switch is a horizontal 3-patch.
+        "prefixes": ["inactive", "active"],
         "hints": [],
-        "masken": [],
-        "formen": {
-            "handle":         ("kreis", "flaeche"),
-            "handle-hover":   ("kreis", "hover"),
-            "handle-pressed": ("kreis", "dunkel"),
-            "handle-focus":   ("kreis", "aktiv"),
+        "masks": [],
+        "shapes": {
+            "handle":         ("circle", "surface"),
+            "handle-hover":   ("circle", "hover"),
+            "handle-pressed": ("circle", "dark"),
+            "handle-focus":   ("circle", "active"),
         },
     },
     "tabbar": {
-        "beschreibung": "Reiter",
-        "praefixe": ["north-active-tab", "south-active-tab",
+        "description": "Tabs",
+        "prefixes": ["north-active-tab", "south-active-tab",
                      "east-active-tab", "west-active-tab"],
         "hints": ["margin"],
-        "masken": [],
-        # Nur der Rahmen, keine Flaeche. Das ist keine Geschmacksfrage:
-        # Plasma legt dieses FrameSvg UEBER den Inhalt eines aktiven
-        # Panel-Miniprogramms. Eine deckende Flaeche verschluckt dessen
-        # Symbol - beim "Peek at Desktop" blieb ein leeres Quadrat
-        # zurueck, das aus der Community als fehlende Textur gemeldet
-        # wurde. Per Bisektion auf diese Datei eingegrenzt: nimmt man
-        # sie weg, ist das Symbol wieder da.
+        "masks": [],
+        # Only the border, no surface. This is not a matter of taste:
+        # Plasma lays this FrameSvg OVER the content of an active panel
+        # widget. An opaque surface swallows its icon - with "Peek at
+        # Desktop" an empty square was left behind, which the community
+        # reported as a missing texture. Narrowed down to this file by
+        # bisection: take it away and the icon is back.
         #
-        # Breeze loest dasselbe Problem mit opacity:0.01 auf allen neun
-        # Feldern, zeichnet dort also gar nichts. Wir behalten den
-        # 3D-Rahmen - er markiert den gedrueckten Knopf wie in Windows -
-        # und lassen nur die Flaeche weg.
-        "nur_rahmen": True,
+        # Breeze solves the same problem with opacity:0.01 on all nine
+        # fields, so it draws nothing there at all. We keep the 3D
+        # border - it marks the pressed button as in Windows - and only
+        # leave out the surface.
+        "frame_only": True,
     },
     "bar_meter_horizontal": {
-        "ecke": 3,
-        "beschreibung": "Fortschritts- und Pegelbalken",
-        "praefixe": ["bar-inactive", "bar-active"],
+        "corner": 3,
+        "description": "Progress and level bars",
+        "prefixes": ["bar-inactive", "bar-active"],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
     },
     "containment-controls": {
-        "beschreibung": "Werkzeuge im Panel-Bearbeitungsmodus",
-        "praefixe": ["north", "south", "east", "west"],
+        "description": "Tools in panel edit mode",
+        "prefixes": ["north", "south", "east", "west"],
         "hints": [],
-        "masken": [],
+        "masks": [],
     },
     "translucentbackground": {
-        "beschreibung": "Miniprogramm im Bearbeitungsmodus",
-        "praefixe": ["",],
+        "description": "Widget in edit mode",
+        "prefixes": ["",],
         "hints": ["margin"],
-        "masken": [],
+        "masks": [],
     },
     "slider": {
-        "beschreibung": "Schieberegler",
-        # Der Griff kommt aus actionbutton.svg - Breeze macht das
-        # genauso. Hier steht nur die Rille plus die Groessenvorgabe.
-        "praefixe": ["groove", "groove-highlight"],
+        "description": "Sliders",
+        # The handle comes from actionbutton.svg - Breeze does the
+        # same. Here there is only the groove plus the size hint.
+        "prefixes": ["groove", "groove-highlight"],
         "hints": ["handle-size"],
-        "masken": [],
-        "ecke": 3,
+        "masks": [],
+        "corner": 3,
     },
 }
 
-# Widgets, die keine Rahmen sind, sondern Einzelformen: Haken, Pfeile,
-# Linien. Sie haben kein 9-Patch-Raster - Plasma schneidet sie ueber
-# einzelne IDs aus. Der Guide nennt das die Klasse, bei der ein
-# Generator an seine Grenze kommt; die Formen sind hier deshalb
-# ausgeschrieben statt berechnet.
-FORM_WIDGETS = {
+# Widgets that are not frames but single shapes: checkmarks, arrows,
+# lines. They have no 9-patch grid - Plasma cuts them out by
+# individual IDs. The guide calls this the class where a generator
+# reaches its limit; the shapes are therefore written out here instead
+# of computed.
+SHAPE_WIDGETS = {
     "line": {
-        "beschreibung": "Trennlinien in Listen und im Anwendungsstarter",
-        "formen": {
-            "horizontal-line": ("hlinie", "dunkel"),
-            "vertical-line":   ("vlinie", "dunkel"),
+        "description": "Separator lines in lists and in the application launcher",
+        "shapes": {
+            "horizontal-line": ("hline", "dark"),
+            "vertical-line":   ("vline", "dark"),
         },
     },
     "checkmarks": {
-        "beschreibung": "Haken in Ankreuzfeldern",
-        "formen": {
-            "checkbox":    ("haken", "text"),
-            "radiobutton": ("punkt", "text"),
+        "description": "Checkmarks in checkboxes",
+        "shapes": {
+            "checkbox":    ("check", "text"),
+            "radiobutton": ("dot", "text"),
         },
     },
     "radiobutton": {
-        "beschreibung": "Auswahlknoepfe",
-        "formen": {
-            "normal":  ("ring", "flaeche"),
+        "description": "Radio buttons",
+        "shapes": {
+            "normal":  ("ring", "surface"),
             "hover":   ("ring", "hover"),
-            "focus":   ("ring", "aktiv"),
-            "checked": ("punkt", "text"),
-            "shadow":  ("ring", "dunkel"),
+            "focus":   ("ring", "active"),
+            "checked": ("dot", "text"),
+            "shadow":  ("ring", "dark"),
         },
     },
     "arrows": {
-        "beschreibung": "Pfeile in Aufklappmenues und Bildlaufleisten",
-        "formen": {
-            "up-arrow":    ("dreieck-o", "text"),
-            "down-arrow":  ("dreieck-u", "text"),
-            "left-arrow":  ("dreieck-l", "text"),
-            "right-arrow": ("dreieck-r", "text"),
+        "description": "Arrows in drop-down menus and scrollbars",
+        "shapes": {
+            "up-arrow":    ("triangle-u", "text"),
+            "down-arrow":  ("triangle-d", "text"),
+            "left-arrow":  ("triangle-l", "text"),
+            "right-arrow": ("triangle-r", "text"),
         },
     },
     "busywidget": {
-        "beschreibung": "Wartekringel",
-        "formen": {
-            "busywidget":       ("ring", "aktiv"),
-            "16-16-busywidget": ("ring", "aktiv"),
-            "22-22-busywidget": ("ring", "aktiv"),
+        "description": "Busy indicator",
+        "shapes": {
+            "busywidget":       ("ring", "active"),
+            "16-16-busywidget": ("ring", "active"),
+            "22-22-busywidget": ("ring", "active"),
         },
     },
     "actionbutton": {
-        "beschreibung": "Runde Knoepfe",
-        # Zusaetzlich zu den groessenbehafteten die nackten Namen:
-        # RoundButton.qml und der Schieberegler-Griff fordern "normal",
-        # "hover", "pressed", "focus" ohne Praefix an.
-        "formen": {**{f"{g}-{g}-{z}": ("kreis", f)
+        "description": "Round buttons",
+        # In addition to the sized ones, the bare names:
+        # RoundButton.qml and the slider handle request "normal",
+        # "hover", "pressed", "focus" without a prefix.
+        "shapes": {**{f"{g}-{g}-{s}": ("circle", c)
                       for g in (16, 22, 24, 32)
-                      for z, f in [("normal", "flaeche"), ("hover", "hover"),
-                                   ("pressed", "dunkel"), ("focus", "aktiv")]},
-                   **{z: ("kreis", f)
-                      for z, f in [("normal", "flaeche"), ("hover", "hover"),
-                                   ("pressed", "dunkel"), ("focus", "aktiv")]}},
+                      for s, c in [("normal", "surface"), ("hover", "hover"),
+                                   ("pressed", "dark"), ("focus", "active")]},
+                   **{s: ("circle", c)
+                      for s, c in [("normal", "surface"), ("hover", "hover"),
+                                   ("pressed", "dark"), ("focus", "active")]}},
     },
     "action-overlays": {
-        "beschreibung": "Ueberlagerungen in der Ordner-Ansicht",
-        "formen": {f"add-{z}": ("plus", f)
-                   for z, f in [("normal", "text"), ("hover", "hover"),
-                                ("pressed", "dunkel")]},
+        "description": "Overlays in the folder view",
+        "shapes": {f"add-{s}": ("plus", c)
+                   for s, c in [("normal", "text"), ("hover", "hover"),
+                                ("pressed", "dark")]},
     },
 }
 
-# Elemente eines vollstaendigen 9-Patch, in Zeichenreihenfolge:
-# erst die Flaeche, dann die Raender, damit Raender obenauf liegen.
-ECKEN  = ["topleft", "topright", "bottomleft", "bottomright"]
-KANTEN = ["top", "bottom", "left", "right"]
+# Elements of a complete 9-patch, in drawing order:
+# first the surface, then the edges, so that the edges lie on top.
+CORNERS = ["topleft", "topright", "bottomleft", "bottomright"]
+EDGES   = ["top", "bottom", "left", "right"]
 
 # --------------------------------------------------------------------------
-# Paletten
+# Palettes
 # --------------------------------------------------------------------------
 
-PALETTEN = {
-    # Mac OS 9 Platinum: warmes Grau, harte 3D-Kanten, kaum Rundung
+PALETTES = {
+    # Mac OS 9 Platinum: warm grey, hard 3D edges, hardly any rounding
     "platinum": {
-        "flaeche":   "#dddad2",
-        "hell":      "#ffffff",   # oben/links
-        "dunkel":    "#84817a",   # unten/rechts
-        "rahmen":    "#000000",
-        "aktiv":     "#c8c4bc",
+        "surface":   "#dddad2",
+        "light":      "#ffffff",   # top/left
+        "dark":    "#84817a",   # bottom/right
+        "border":    "#000000",
+        "active":     "#c8c4bc",
         "text":      "#000000",
     },
     "platinum-dark": {
-        "flaeche":   "#2c2a28",
-        "hell":      "#565250",
-        "dunkel":    "#000000",
-        "rahmen":    "#000000",
-        "aktiv":     "#3c3a38",
+        "surface":   "#2c2a28",
+        "light":      "#565250",
+        "dark":    "#000000",
+        "border":    "#000000",
+        "active":     "#3c3a38",
         "text":      "#e6e2dc",
     },
     "charcoal": {
-        "flaeche":   "#3c3c3c",
-        "hell":      "#6a6a6a",
-        "dunkel":    "#101010",
-        "rahmen":    "#000000",
-        "aktiv":     "#4c4c4c",
+        "surface":   "#3c3c3c",
+        "light":      "#6a6a6a",
+        "dark":    "#101010",
+        "border":    "#000000",
+        "active":     "#4c4c4c",
         "text":      "#dcdcdc",
     },
-    # NT Legacy: Windows-NT-4.0-Farbwelt, Petrol statt Marineblau.
-    # Bewusst ohne schwarze Flaechen - dunkel wird nur Text, Rahmen und
-    # die aktive Titelleiste. Das haelt das Theme fuer lange Sitzungen
-    # angenehm, ohne den Charakter zu verlieren.
+    # NT Legacy: Windows NT 4.0 colour world, petrol instead of navy blue.
+    # Deliberately without black surfaces - only text, borders and the
+    # active title bar go dark. That keeps the theme pleasant for long
+    # sessions without losing its character.
     "nt-legacy": {
-        "flaeche":   "#d8d8d0",   # Hauptflaeche, helles neutrales Grau
-        "fenster":   "#f0f0e8",   # Fensterinhalt, fast cremeweiss
-        "panel":     "#b8c4c4",   # gedaempftes Petrol-Grau
-        "hell":      "#f4f4ee",   # 3D-Kante oben/links
-        # Der helle Punkt im Karo der Bildlaufleiste. Eigener Wert, nicht
-        # die Lichtkante: er soll so hell sein wie moeglich, waehrend die
-        # Kante bewusst gedaempft bleibt. build.py ersetzt Farben ueber
-        # ihren Hexwert, deshalb darf er mit keinem anderen der Palette
-        # zusammenfallen - #fcfcfa statt reinem Weiss.
-        "karo":      "#fcfcfa",
-        "dunkel":    "#8a8a82",   # 3D-Kante unten/rechts
-        "rahmen":    "#202628",   # Aussenrahmen, sehr dunkles Blau-Grau
-        "aktiv":     "#287f8c",   # Auswahl, Petrol
+        "surface":   "#d8d8d0",   # main surface, light neutral grey
+        "window":   "#f0f0e8",   # window content, almost cream white
+        "panel":     "#b8c4c4",   # muted petrol grey
+        "light":      "#f4f4ee",   # 3D edge top/left
+        # The light dot in the scrollbar checkerboard. A value of its own,
+        # not the light edge: it should be as light as possible, while the
+        # edge deliberately stays muted. build.py replaces colours by
+        # their hex value, so it must not coincide with any other value
+        # in the palette - #fcfcfa instead of pure white.
+        "checker":      "#fcfcfa",
+        "dark":    "#8a8a82",   # 3D edge bottom/right
+        "border":    "#202628",   # outer border, very dark blue grey
+        # Must match BASE["selection"] in build.py. build.py recolours the
+        # generated SVGs by replacing HEX VALUES - if a different one
+        # stands here, it does not find it, and the selection bar in the
+        # Plasma style stays in the base colour while the colour scheme
+        # has long been showing another one.
+        "active":     "#29818e",   # selection, petrol
         "aktiv_text": "#ffffff",
-        "kopf_aktiv":   "#176b78",
-        "kopf_inaktiv": "#60777a",
+        "title_active":   "#176b78",
+        "title_inactive": "#60777a",
         "text":      "#202628",
-        "text2":     "#526166",   # Sekundaertext
-        "hover":     "#d6a23a",   # NT-artiges Gold
-        "warnung":   "#c87922",
-        "fehler":    "#a83232",
-        "positiv":   "#39734a",
+        "text2":     "#526166",   # secondary text
+        "hover":     "#d6a23a",   # NT-like gold
+        "warning":   "#c87922",
+        "error":    "#a83232",
+        "positive":   "#39734a",
         "desktop":   "#899a9a",
     },
 }
 
-# Zustaende, die anders eingefaerbt werden als der Normalzustand.
-# Ein Button muss sich beim Ueberfahren und Druecken sichtbar aendern -
-# sonst wirkt das Theme "tot", obwohl technisch alles stimmt.
-# Je Zustand: Ersatzfarbe, ob der 3D-Rahmen umgedreht wird, und die
-# Farbschema-Klasse.
+# States that are coloured differently from the normal state.
+# A button has to change visibly on hover and press - otherwise the
+# theme feels "dead", even though everything is technically right.
+# Per state: fallback colour, whether the 3D border is flipped, and the
+# colour scheme class.
 #
-# Die Klasse ist das Entscheidende. Traegt jeder Zustand dieselbe, sehen
-# alle gleich aus - dann ist der Auswahlbalken unsichtbar, Hover tot und
-# der Fortschrittsbalken zeigt keinen Fortschritt. Die Klassen sind die,
-# die KSvg tatsaechlich ersetzt (aus libKF6Svg extrahiert); ein
-# erfundener Name faellt still auf die Ersatzfarbe zurueck.
-ZUSTANDSFARBE = {
-    #                        Ersatzfarbe, Bevel umdrehen, Farbschema-Klasse
+# The class is what matters. If every state carries the same one, they
+# all look the same - then the selection bar is invisible, hover is dead
+# and the progress bar shows no progress. The classes are the ones
+# KSvg actually replaces (extracted from libKF6Svg); an invented name
+# silently falls back to the fallback colour.
+STATE_COLORS = {
+    #                        fallback colour, flip bevel, colour scheme class
     "hover":                ("hover",  False, "ColorScheme-ButtonHover"),
     "toolbutton-hover":     ("hover",  False, "ColorScheme-ButtonHover"),
-    "focus":                ("aktiv",  False, "ColorScheme-ButtonFocus"),
-    "toolbutton-focus":     ("aktiv",  False, "ColorScheme-ButtonFocus"),
-    "pressed":              ("dunkel", True,  "ColorScheme-Background"),
-    "toolbutton-pressed":   ("dunkel", True,  "ColorScheme-Background"),
-    "selected":             ("aktiv",  False, "ColorScheme-Highlight"),
-    "selected+hover":       ("aktiv",  False, "ColorScheme-Highlight"),
-    "active":               ("aktiv",  False, "ColorScheme-Highlight"),
-    "bar-active":           ("aktiv",  False, "ColorScheme-Highlight"),
-    "groove-highlight":     ("aktiv",  False, "ColorScheme-Highlight"),
-    "sunken":               ("dunkel", True,  "ColorScheme-Background"),
-    "sunken-slider-vertical":   ("dunkel", True, "ColorScheme-Background"),
-    "sunken-slider-horizontal": ("dunkel", True, "ColorScheme-Background"),
+    "focus":                ("active",  False, "ColorScheme-ButtonFocus"),
+    "toolbutton-focus":     ("active",  False, "ColorScheme-ButtonFocus"),
+    "pressed":              ("dark", True,  "ColorScheme-Background"),
+    "toolbutton-pressed":   ("dark", True,  "ColorScheme-Background"),
+    "selected":             ("active",  False, "ColorScheme-Highlight"),
+    "selected+hover":       ("active",  False, "ColorScheme-Highlight"),
+    "active":               ("active",  False, "ColorScheme-Highlight"),
+    "bar-active":           ("active",  False, "ColorScheme-Highlight"),
+    "groove-highlight":     ("active",  False, "ColorScheme-Highlight"),
+    "sunken":               ("dark", True,  "ColorScheme-Background"),
+    "sunken-slider-vertical":   ("dark", True, "ColorScheme-Background"),
+    "sunken-slider-horizontal": ("dark", True, "ColorScheme-Background"),
     "mouseover-slider":     ("hover",  False, "ColorScheme-ButtonHover"),
 }
 
-# Zuordnung Farbklasse -> Palettenschluessel, mit Ersatzkette.
-# Der erste vorhandene Schluessel gewinnt, damit einfache Paletten mit
-# wenigen Farben genauso funktionieren wie ausfuehrliche.
-STYLESHEET_KLASSEN = [
+# Mapping colour class -> palette key, with a fallback chain.
+# The first key present wins, so that simple palettes with few colours
+# work just as well as detailed ones.
+STYLESHEET_CLASSES = [
     ("ColorScheme-Text",             ["text"]),
-    ("ColorScheme-Background",       ["flaeche"]),
-    ("ColorScheme-Highlight",        ["aktiv"]),
+    ("ColorScheme-Background",       ["surface"]),
+    ("ColorScheme-Highlight",        ["active"]),
     ("ColorScheme-ViewText",         ["text"]),
-    ("ColorScheme-ViewBackground",   ["fenster", "flaeche"]),
-    ("ColorScheme-ViewHover",        ["hover", "aktiv"]),
-    ("ColorScheme-ViewFocus",        ["aktiv"]),
+    ("ColorScheme-ViewBackground",   ["window", "surface"]),
+    ("ColorScheme-ViewHover",        ["hover", "active"]),
+    ("ColorScheme-ViewFocus",        ["active"]),
     ("ColorScheme-ButtonText",       ["text"]),
-    ("ColorScheme-ButtonBackground", ["flaeche"]),
-    ("ColorScheme-ButtonHover",      ["hover", "aktiv"]),
-    ("ColorScheme-ButtonFocus",      ["aktiv"]),
-    ("ColorScheme-HighlightedText",  ["auswahl_text", "fenster"]),
-    ("ColorScheme-ComplementaryBackground", ["panel", "flaeche"]),
-    ("ColorScheme-NegativeText",     ["fehler", "text"]),
-    ("ColorScheme-NeutralText",      ["warnung", "text"]),
-    ("ColorScheme-PositiveText",     ["positiv", "text"]),
+    ("ColorScheme-ButtonBackground", ["surface"]),
+    ("ColorScheme-ButtonHover",      ["hover", "active"]),
+    ("ColorScheme-ButtonFocus",      ["active"]),
+    ("ColorScheme-HighlightedText",  ["selection_text", "window"]),
+    ("ColorScheme-ComplementaryBackground", ["panel", "surface"]),
+    ("ColorScheme-NegativeText",     ["error", "text"]),
+    ("ColorScheme-NeutralText",      ["warning", "text"]),
+    ("ColorScheme-PositiveText",     ["positive", "text"]),
 ]
 
 
 class Generator:
-    def __init__(self, palette, rahmen=1, rundung=0, stil="bevel",
-                 zelle=32, ecke=6, abstand=12, spalten=4, aussenrahmen=0):
+    def __init__(self, palette, border=1, radius=0, style="bevel",
+                 cell=32, corner=6, gap=12, columns=4, outer_border=0):
         self.p = palette
-        self.aussenrahmen = aussenrahmen
-        self._aussen_override = None
-        self.rahmen = rahmen
-        self.rundung = rundung
-        self.stil = stil          # bevel | flach
-        self.zelle = zelle        # Kantenlaenge eines Zustandssatzes
-        self.ecke = ecke          # Groesse der Eckelemente
-        self.abstand = abstand    # Luft zwischen den Saetzen im Atlas
-        self.spalten = spalten
-        self.teile = []
+        self.outer_border = outer_border
+        self._outer_override = None
+        self.border = border
+        self.radius = radius
+        self.style = style        # bevel | flat
+        self.cell = cell          # edge length of one state set
+        self.corner = corner      # size of the corner elements
+        self.gap = gap            # space between the sets in the atlas
+        self.columns = columns
+        self.parts = []
 
-    def farbe(self, *keys):
-        """Erste vorhandene Farbe aus der Ersatzkette."""
+    def color(self, *keys):
+        """First colour present in the fallback chain."""
         for k in keys:
             if k in self.p:
                 return self.p[k]
         return "#000000"
 
-    # -- Bausteine ---------------------------------------------------------
+    # -- Building blocks ---------------------------------------------------
 
-    def _rect(self, eid, x, y, w, h, fill, klasse=None, rx=0, extra=""):
-        # Nullflaechen weglassen - sie wuerden nur den Linter beschaeftigen
+    def _rect(self, eid, x, y, w, h, fill, cls=None, rx=0, extra=""):
+        # Leave out zero-area rects - they would only keep the linter busy
         if w <= 0 or h <= 0:
             return
-        k = f' class="{klasse}"' if klasse else ""
+        k = f' class="{cls}"' if cls else ""
         r = f' rx="{rx}" ry="{rx}"' if rx else ""
-        farbe = 'currentColor' if klasse else fill
-        self.teile.append(
+        color = 'currentColor' if cls else fill
+        self.parts.append(
             f'    <rect id="{eid}" x="{x:g}" y="{y:g}" '
-            f'width="{w:g}" height="{h:g}"{r}{k} fill="{farbe}"{extra}/>'
+            f'width="{w:g}" height="{h:g}"{r}{k} fill="{color}"{extra}/>'
         )
 
-    def _hint(self, eid, x, y, w, h, farbe="#ff00ff"):
-        """Hints sind Marker, keine Grafik. Breeze zeichnet sie in Magenta
-        und macht sie unsichtbar - Plasma liest nur ihre Geometrie."""
-        self.teile.append(
+    def _hint(self, eid, x, y, w, h, color="#ff00ff"):
+        """Hints are markers, not graphics. Breeze draws them in magenta
+        and makes them invisible - Plasma only reads their geometry."""
+        self.parts.append(
             f'    <rect id="{eid}" x="{x:g}" y="{y:g}" '
-            f'width="{w:g}" height="{h:g}" fill="{farbe}" opacity="0"/>'
+            f'width="{w:g}" height="{h:g}" fill="{color}" opacity="0"/>'
         )
 
-    def _neun_patch(self, praefix, ox, oy, flaeche_key="flaeche",
-                    invertiert=False, klasse="ColorScheme-Background",
-                    nur_rahmen=False, dither=False):
-        """Erzeugt einen vollstaendigen 9-Patch-Satz an Position (ox, oy).
+    def _nine_patch(self, prefix, ox, oy, surface_key="surface",
+                    inverted=False, cls="ColorScheme-Background",
+                    frame_only=False, dither=False):
+        """Generates a complete 9-patch set at position (ox, oy).
 
-        Ein 9-Patch teilt die Flaeche restlos auf: alle neun Felder sind
-        so breit bzw. hoch wie die Ecken. Rahmen werden INNEN in das
-        jeweilige Feld gezeichnet, nicht anstelle der Flaeche - sonst
-        klaffte zwischen Ecke und Kante eine Luecke.
+        A 9-patch divides the surface completely: all nine fields are as
+        wide or as tall as the corners. Borders are drawn INSIDE the
+        respective field, not in place of the surface - otherwise a gap
+        would open between corner and edge.
 
-        Je Aussenkante liegen bis zu zwei Linien uebereinander:
-        aussen der dunkle Rahmen (NT/Win95), innen davon die 3D-Kante.
+        Up to two lines lie on top of each other along each outer edge:
+        outside the dark border (NT/Win95), inside it the 3D edge.
 
-        invertiert dreht den 3D-Rahmen um - aus einer herausstehenden
-        Schaltflaeche wird eine eingedrueckte.
+        inverted flips the 3D border - a raised button becomes a
+        pressed-in one.
         """
-        def n(teil):
-            return f"{praefix}-{teil}" if praefix else teil
+        def n(part):
+            return f"{prefix}-{part}" if prefix else part
 
-        z, e, b = self.zelle, self.ecke, self.rahmen
-        # Ein Widget kann den Aussenrahmen abschalten - das Panel tut
-        # das, weil NTs Taskleiste nur eine einzelne helle Linie hat.
-        a = (self._aussen_override if self._aussen_override is not None
-             else self.aussenrahmen)
-        flaeche = self.p[flaeche_key]
-        hell = self.p["dunkel" if invertiert else "hell"]
-        dunkel = self.p["hell" if invertiert else "dunkel"]
-        rahmenfarbe = self.p.get("rahmen", "#000000")
+        z, e, b = self.cell, self.corner, self.border
+        # A widget can switch off the outer border - the panel does
+        # that, because NT's taskbar has only a single light line.
+        a = (self._outer_override if self._outer_override is not None
+             else self.outer_border)
+        surface = self.p[surface_key]
+        light = self.p["dark" if inverted else "light"]
+        dark = self.p["light" if inverted else "dark"]
+        border_color = self.p.get("border", "#000000")
 
-        if self.stil == "bevel":
-            kante = {"t": hell, "l": hell, "b": dunkel, "r": dunkel}
+        if self.style == "bevel":
+            edge = {"t": light, "l": light, "b": dark, "r": dark}
         else:
-            kante = {s: rahmenfarbe for s in "tlbr"}
+            edge = {s: border_color for s in "tlbr"}
 
-        m = z - 2 * e      # Laenge der mittleren Felder
-        r = z - e          # Beginn der rechten/unteren Randspalte
+        m = z - 2 * e      # length of the middle fields
+        r = z - e          # start of the right/bottom edge column
 
-        #  Feld          x  y  w  h   welche Seiten sind Aussenkante
-        felder = [
+        #  field          x  y  w  h   which sides are outer edges
+        fields = [
             ("topleft",     0, 0, e, e, "tl"),
             ("top",         e, 0, m, e, "t"),
             ("topright",    r, 0, e, e, "tr"),
@@ -534,406 +574,406 @@ class Generator:
             ("bottomright", r, r, e, e, "br"),
         ]
 
-        for teil, fx, fy, fw, fh, seiten in felder:
+        for part, fx, fy, fw, fh, sides in fields:
             if fw <= 0 or fh <= 0:
                 continue
             x, y = ox + fx, oy + fy
-            self.teile.append(f'    <g id="{n(teil)}">')
+            self.parts.append(f'    <g id="{n(part)}">')
 
-            # Flaeche. Nur sie traegt die Farbschema-Klasse - die Kanten
-            # bleiben fest, sonst wechselte der Lichteinfall mit jedem
-            # Farbschema.
-            # Nur fill:currentColor plus Klasse - KEIN inline color:.
+            # Surface. Only it carries the colour scheme class - the edges
+            # stay fixed, otherwise the direction of the light would change
+            # with every colour scheme.
+            # Only fill:currentColor plus class - NO inline color:.
             #
-            # Frueher stand hier zusaetzlich color:<farbe> im style, mit
-            # der Begruendung, Breeze mache das auch. Das war falsch:
-            # von 42 Breeze-Widget-SVGs haben genau zwei ein echtes
-            # inline color:, der Rest verlaesst sich auf die Klasse.
-            # Und eine Inline-Deklaration schlaegt in der CSS-Kaskade
-            # jede Klassenregel - der Austausch des
-            # <style id="current-color-scheme">-Blocks durch KSvg lief
-            # damit ins Leere. Folge waren: keine Akzentfarbe des
-            # Nutzers und keine Farbvarianten ohne SVG-Duplikate.
+            # This used to also put color:<colour> in the style, on the
+            # grounds that Breeze does that too. That was wrong:
+            # of 42 Breeze widget SVGs exactly two have a real
+            # inline color:, the rest rely on the class.
+            # And an inline declaration beats every class rule in the CSS
+            # cascade - KSvg's replacement of the
+            # <style id="current-color-scheme"> block thus came to
+            # nothing. The consequences were: no user accent colour and
+            # no colour variants without duplicate SVGs.
             #
-            # Die Ersatzfarbe steht weiterhin im Stylesheet-Block oben,
-            # greift also, solange KSvg nichts ersetzt.
-            if nur_rahmen:
-                # Die Flaeche bleibt unsichtbar, das Rechteck aber steht
-                # da. Ein leeres <g> haette eine Bounding Box von 0x0,
-                # und KSvg berechnet die Feldgroessen des 9-Patch genau
-                # daraus - der Rahmen skalierte dann falsch. Deshalb
-                # opacity:0.01 statt nichts, wie Breeze es im selben
-                # Element auch macht.
-                self.teile.append(
+            # The fallback colour is still in the stylesheet block at the
+            # top, so it applies as long as KSvg replaces nothing.
+            if frame_only:
+                # The surface stays invisible, but the rectangle is still
+                # there. An empty <g> would have a bounding box of 0x0,
+                # and KSvg computes the 9-patch field sizes from exactly
+                # that - the border then scaled wrongly. Hence
+                # opacity:0.01 instead of nothing, as Breeze does in the
+                # same element too.
+                self.parts.append(
                     f'      <rect x="{x:g}" y="{y:g}" width="{fw:g}" '
-                    f'height="{fh:g}" fill="{flaeche}" opacity="0.01"/>')
-            elif klasse:
-                # Die Ersatzfarbe steht im style-Block oben je Klasse.
-                # Damit sich die Zustaende auch dann unterscheiden, wenn
-                # KSvg nichts ersetzt, bekommt jede Klasse ihren eigenen
-                # Wert - siehe stylesheet_fuer().
-                self.teile.append(
+                    f'height="{fh:g}" fill="{surface}" opacity="0.01"/>')
+            elif cls:
+                # The fallback colour is in the style block at the top,
+                # per class. So that the states also differ when KSvg
+                # replaces nothing, every class gets its own value - see
+                # stylesheet_for().
+                self.parts.append(
                     f'      <rect x="{x:g}" y="{y:g}" width="{fw:g}" '
-                    f'height="{fh:g}" class="{klasse}" '
+                    f'height="{fh:g}" class="{cls}" '
                     f'style="fill:currentColor;fill-opacity:1;stroke:none"/>')
             else:
-                self.teile.append(
+                self.parts.append(
                     f'      <rect x="{x:g}" y="{y:g}" width="{fw:g}" '
-                    f'height="{fh:g}" fill="{flaeche}"/>')
+                    f'height="{fh:g}" fill="{surface}"/>')
 
-            # Das Karo der Rinne. Gezeichnet als gestrichelte Linien, eine
-            # je Bildzeile, nicht als einzelne Rechtecke: Ein Feld von
-            # 26x26 haette sonst 338 Rechtecke, so sind es 26 Linien.
-            # Ein SVG-<pattern> waere noch kuerzer, aber QtSvg kennt
-            # keine Patterns - es rendert sie ersatzlos weg.
-            if dither and teil == "center":
-                # Gezeichnet wurde das Karo zuerst in der 3D-Lichtkante
-                # ("hell"). In den Nachtfassungen war es damit deutlich zu
-                # sehen, in den hellen nicht - aus der Community gemeldet.
-                # Nachgerechnet: #f4f4ee auf #d8d8d0 sind 28 Stufen, also
-                # 13 Prozent ueber dem Grund. Nacht sind es 32 Stufen auf
-                # einem Grund von 42 - 76 Prozent. Dasselbe absolute Delta,
-                # der sechsfache wahrgenommene Unterschied. Windows selbst
-                # lag bei 33 Prozent (Weiss auf #c0c0c0).
+            # The checkerboard of the groove. Drawn as dashed lines, one
+            # per pixel row, not as individual rectangles: a field of
+            # 26x26 would otherwise have 338 rectangles, this way it is 26 lines.
+            # An SVG <pattern> would be even shorter, but QtSvg does not
+            # know patterns - it drops them without replacement.
+            if dither and part == "center":
+                # The checkerboard was first drawn in the 3D light edge
+                # ("light"). In the night variants it was clearly
+                # visible that way, in the light ones not - reported by the community.
+                # Worked out: #f4f4ee on #d8d8d0 is 28 steps, i.e.
+                # 13 percent above the ground. At night it is 32 steps on
+                # a ground of 42 - 76 percent. The same absolute delta,
+                # six times the perceived difference. Windows itself
+                # was at 33 percent (white on #c0c0c0).
                 #
-                # Zwei Aenderungen bringen die helle Fassung dorthin:
-                # ein eigener Palettenwert fuer die Karofarbe statt der
-                # Lichtkante, und eine leichte Abdunklung der Rinne. Die
-                # Abdunklung liegt als halbdurchlaessige Schicht ueber der
-                # Flaeche, nicht als feste Farbe - so bleibt die Rinne an
-                # das Farbschema des Nutzers gebunden.
-                self.teile.append(
+                # Two changes bring the light variant there:
+                # a palette value of its own for the checkerboard colour
+                # instead of the light edge, and a slight darkening of the
+                # groove. The darkening lies as a semi-transparent layer
+                # over the surface, not as a fixed colour - so the groove
+                # stays tied to the user's colour scheme.
+                self.parts.append(
                     f'      <rect x="{x:g}" y="{y:g}" width="{fw:g}" '
                     f'height="{fh:g}" fill="#000000" opacity="0.07"/>')
-                hell_farbe = self.p.get("karo", self.p.get("hell", "#ffffff"))
-                for zeile in range(int(fh)):
-                    versatz = zeile % 2
-                    # In y die halbe Stufe, in x keine. Das ist kein
-                    # Schoenheitsfehler, sondern der Unterschied zwischen
-                    # Muster und Grauschleier: Die Strichstaerke misst
-                    # quer zur Linie, dort zentriert y+0.5 auf genau eine
-                    # Bildzeile. Der Strichel dagegen misst laengs, und
-                    # ein Start bei x+0.5 legt jeden Punkt haelftig auf
-                    # zwei Spalten. Gerendert (QtSvg, mit Kantenglaettung)
-                    # kamen so 227 statt 252 heraus - das Karo verwaschen
-                    # zu einer Flaeche. Mit ganzen x-Werten: 202/252 im
-                    # sauberen Wechsel, ueber das ganze Feld.
-                    self.teile.append(
-                        f'      <line x1="{x + versatz:g}" '
-                        f'y1="{y + zeile + 0.5:g}" x2="{x + fw:g}" '
-                        f'y2="{y + zeile + 0.5:g}" stroke="{hell_farbe}" '
+                light_color = self.p.get("checker", self.p.get("light", "#ffffff"))
+                for row in range(int(fh)):
+                    offset = row % 2
+                    # Half a step in y, none in x. That is not a cosmetic
+                    # flaw but the difference between a pattern and a grey
+                    # haze: the stroke width measures across the line,
+                    # where y+0.5 centres on exactly one pixel row. The
+                    # dash, by contrast, measures along it, and a start at
+                    # x+0.5 puts each dot half on two columns. Rendered
+                    # (QtSvg, with antialiasing) this came out at 227
+                    # instead of 252 - the checkerboard washed out into a
+                    # flat surface. With whole x values: 202/252 in a clean
+                    # alternation, across the whole field.
+                    self.parts.append(
+                        f'      <line x1="{x + offset:g}" '
+                        f'y1="{y + row + 0.5:g}" x2="{x + fw:g}" '
+                        f'y2="{y + row + 0.5:g}" stroke="{light_color}" '
                         f'stroke-width="1" stroke-dasharray="1 1"/>')
 
-            def linie(seite, breite, farbe, versatz):
-                if breite <= 0:
+            def line(side, width, color, offset):
+                if width <= 0:
                     return
-                # Ecken beruecksichtigen: an einem Feld, das zwei
-                # Aussenkanten hat, muss die Linie um die andere
-                # eingerueckt werden, damit sich beide nicht ueberlagern.
-                ein_l = versatz if "l" in seiten else 0
-                ein_r = versatz if "r" in seiten else 0
-                ein_t = versatz if "t" in seiten else 0
-                ein_b = versatz if "b" in seiten else 0
-                if seite == "t":
-                    self.teile.append(
-                        f'      <rect x="{x + ein_l:g}" y="{y + versatz:g}" '
-                        f'width="{fw - ein_l - ein_r:g}" height="{breite:g}" fill="{farbe}"/>')
-                elif seite == "b":
-                    self.teile.append(
-                        f'      <rect x="{x + ein_l:g}" y="{y + fh - versatz - breite:g}" '
-                        f'width="{fw - ein_l - ein_r:g}" height="{breite:g}" fill="{farbe}"/>')
-                elif seite == "l":
-                    self.teile.append(
-                        f'      <rect x="{x + versatz:g}" y="{y + ein_t:g}" '
-                        f'width="{breite:g}" height="{fh - ein_t - ein_b:g}" fill="{farbe}"/>')
-                elif seite == "r":
-                    self.teile.append(
-                        f'      <rect x="{x + fw - versatz - breite:g}" y="{y + ein_t:g}" '
-                        f'width="{breite:g}" height="{fh - ein_t - ein_b:g}" fill="{farbe}"/>')
+                # Take the corners into account: on a field that has two
+                # outer edges, the line has to be indented by the other one
+                # so that the two do not overlap.
+                in_l = offset if "l" in sides else 0
+                in_r = offset if "r" in sides else 0
+                in_t = offset if "t" in sides else 0
+                in_b = offset if "b" in sides else 0
+                if side == "t":
+                    self.parts.append(
+                        f'      <rect x="{x + in_l:g}" y="{y + offset:g}" '
+                        f'width="{fw - in_l - in_r:g}" height="{width:g}" fill="{color}"/>')
+                elif side == "b":
+                    self.parts.append(
+                        f'      <rect x="{x + in_l:g}" y="{y + fh - offset - width:g}" '
+                        f'width="{fw - in_l - in_r:g}" height="{width:g}" fill="{color}"/>')
+                elif side == "l":
+                    self.parts.append(
+                        f'      <rect x="{x + offset:g}" y="{y + in_t:g}" '
+                        f'width="{width:g}" height="{fh - in_t - in_b:g}" fill="{color}"/>')
+                elif side == "r":
+                    self.parts.append(
+                        f'      <rect x="{x + fw - offset - width:g}" y="{y + in_t:g}" '
+                        f'width="{width:g}" height="{fh - in_t - in_b:g}" fill="{color}"/>')
 
-            for seite in seiten:
-                linie(seite, a, rahmenfarbe, 0)       # aussen
-                linie(seite, b, kante[seite], a)      # 3D-Kante darunter
+            for side in sides:
+                line(side, a, border_color, 0)       # outside
+                line(side, b, edge[side], a)         # 3D edge beneath
 
-            self.teile.append('    </g>')
+            self.parts.append('    </g>')
 
-    def _hints(self, praefix, ox, oy, arten):
-        def n(teil):
-            return f"{praefix}-{teil}" if praefix else teil
+    def _hints(self, prefix, ox, oy, kinds):
+        def n(part):
+            return f"{prefix}-{part}" if prefix else part
 
-        z, e, b = self.zelle, self.ecke, self.rahmen
-        # Innenabstand. Unser Rahmen ist selbst 2px (Aussenrahmen +
-        # Bevel) - bei margin=2 begaenne der Text exakt am ersten freien
-        # Pixel und klebte am Rand. Breeze nimmt 4 fuer Rahmen und
-        # Panels, 6 fuer Listen, Knoepfe und Eingabefelder.
-        rand = self._margin
+        z, e, b = self.cell, self.corner, self.border
+        # Padding. Our border is itself 2px (outer border + bevel) -
+        # with margin=2 the text would start exactly at the first free
+        # pixel and stick to the edge. Breeze uses 4 for frames and
+        # panels, 6 for lists, buttons and input fields.
+        pad = self._margin
 
-        if "margin" in arten:
-            # Innenabstand: wieviel Platz der Inhalt vom Rand haelt
-            self._hint(n("hint-top-margin"),    ox + z / 2, oy,             2, rand)
-            self._hint(n("hint-bottom-margin"), ox + z / 2, oy + z - rand,  2, rand)
-            self._hint(n("hint-left-margin"),   ox,         oy + z / 2,     rand, 2)
-            self._hint(n("hint-right-margin"),  ox + z - rand, oy + z / 2,  rand, 2)
+        if "margin" in kinds:
+            # Padding: how much room the content keeps from the edge
+            self._hint(n("hint-top-margin"),    ox + z / 2, oy,            2, pad)
+            self._hint(n("hint-bottom-margin"), ox + z / 2, oy + z - pad,  2, pad)
+            self._hint(n("hint-left-margin"),   ox,         oy + z / 2,    pad, 2)
+            self._hint(n("hint-right-margin"),  ox + z - pad, oy + z / 2,  pad, 2)
 
-        if "inset" in arten:
-            # Insets trennen gezeichnete Flaeche von beanspruchtem Platz -
-            # noetig fuer Schatten und schwebende Panels (Plasma 6).
-            # Inset = 0, weil wir keinen Schatten in die Flaeche zeichnen.
-            # Ein Inset von 1 wuerde einen Pixel als "nicht gezeichnet"
-            # beanspruchen - sichtbar als toter Rand um Panel und Popups.
-            # Breeze setzt hier 1e-8 (praktisch 0); nur background.svg hat
-            # echte 8px, weil dort ein Schatten liegt.
+        if "inset" in kinds:
+            # Insets separate the drawn surface from the claimed space -
+            # needed for shadows and floating panels (Plasma 6).
+            # Inset = 0, because we draw no shadow into the surface.
+            # An inset of 1 would claim one pixel as "not drawn" -
+            # visible as a dead edge around the panel and popups.
+            # Breeze sets 1e-8 here (practically 0); only background.svg has
+            # a real 8px, because a shadow lies there.
             iw = 0.00000001
-            for seite, (hx, hy) in {
+            for side, (hx, hy) in {
                 "top":    (ox + z / 4, oy),
                 "bottom": (ox + z / 4, oy + z),
                 "left":   (ox, oy + z / 4),
                 "right":  (ox + z, oy + z / 4),
             }.items():
-                self._hint(n(f"hint-{seite}-inset"), hx, hy, iw, iw)
+                self._hint(n(f"hint-{side}-inset"), hx, hy, iw, iw)
 
-        if "tile-center" in arten:
+        if "tile-center" in kinds:
             self._hint(n("hint-tile-center"), ox + 1, oy + 1, 1, 1, "#00ff00")
-        if "compose-over-border" in arten:
+        if "compose-over-border" in kinds:
             self._hint(n("hint-compose-over-border"), ox + 3, oy + 1, 1, 1, "#00ff00")
-        if "scrollbar-size" in arten:
-            # Breeze: 6x6 - die Breite der Bildlaufleiste
+        if "scrollbar-size" in kinds:
+            # Breeze: 6x6 - the width of the scrollbar
             self._hint(n("hint-scrollbar-size"), ox + 1, oy + 3, 6, 6, "#00ff00")
-        if "handle-size" in arten:
-            # Breeze: 20x20 - die Groesse des Schieberegler-Griffs
+        if "handle-size" in kinds:
+            # Breeze: 20x20 - the size of the slider handle
             self._hint(n("hint-handle-size"), ox + 1, oy + 3, 20, 20, "#00ff00")
-        if "preferred-icon-size" in arten:
-            # Die Breite dieses Markers transportiert die gewuenschte
-            # Symbolgroesse in Pixeln. 26 statt der Plasma-Vorgabe (32)
-            # sind rund 80 Prozent.
+        if "preferred-icon-size" in kinds:
+            # The width of this marker carries the desired icon size in
+            # pixels. 26 instead of the Plasma default (32) is about
+            # 80 percent.
             self._hint(n("hint-preferred-icon-size"), ox + 7, oy + 1, 26, 1, "#00ff00")
-        if "focus-over-base" in arten:
+        if "focus-over-base" in kinds:
             self._hint(n("hint-focus-over-base"), ox + 5, oy + 1, 1, 1, "#00ff00")
 
-    def _form(self, eid, art, farbe, ox, oy, gr):
-        """Zeichnet eine Einzelform (Haken, Pfeil, Kreis, Linie).
+    def _shape(self, eid, kind, color, ox, oy, size):
+        """Draws a single shape (checkmark, arrow, circle, line).
 
-        Anders als beim 9-Patch schneidet Plasma diese Elemente als
-        Ganzes aus - sie brauchen kein Raster, nur eine eindeutige ID.
+        Unlike with the 9-patch, Plasma cuts these elements out as a
+        whole - they need no grid, only a unique ID.
         """
-        m = gr / 2
-        d = gr * 0.34          # halbe Kantenlaenge der inneren Form
-        s = max(1.5, gr * 0.12)
+        m = size / 2
+        d = size * 0.34        # half the edge length of the inner shape
+        s = max(1.5, size * 0.12)
 
-        self.teile.append(f'    <g id="{eid}">')
-        if art == "kreis":
-            self.teile.append(
+        self.parts.append(f'    <g id="{eid}">')
+        if kind == "circle":
+            self.parts.append(
                 f'      <circle cx="{ox+m:g}" cy="{oy+m:g}" r="{d:g}" '
-                f'fill="{farbe}" stroke="{self.p["rahmen"]}" stroke-width="1"/>')
-        elif art == "ring":
-            self.teile.append(
+                f'fill="{color}" stroke="{self.p["border"]}" stroke-width="1"/>')
+        elif kind == "ring":
+            self.parts.append(
                 f'      <circle cx="{ox+m:g}" cy="{oy+m:g}" r="{d:g}" '
-                f'fill="none" stroke="{farbe}" stroke-width="{s:g}"/>')
-        elif art == "punkt":
-            self.teile.append(
+                f'fill="none" stroke="{color}" stroke-width="{s:g}"/>')
+        elif kind == "dot":
+            self.parts.append(
                 f'      <circle cx="{ox+m:g}" cy="{oy+m:g}" r="{d*0.5:g}" '
-                f'fill="{farbe}"/>')
-        elif art == "haken":
-            # Der klassische Haken: kurzer Abstrich, langer Aufstrich
-            self.teile.append(
+                f'fill="{color}"/>')
+        elif kind == "check":
+            # The classic checkmark: short downstroke, long upstroke
+            self.parts.append(
                 f'      <path d="M{ox+m-d:g},{oy+m:g} L{ox+m-d*0.3:g},{oy+m+d*0.7:g} '
-                f'L{ox+m+d:g},{oy+m-d*0.7:g}" fill="none" stroke="{farbe}" '
+                f'L{ox+m+d:g},{oy+m-d*0.7:g}" fill="none" stroke="{color}" '
                 f'stroke-width="{s:g}" stroke-linecap="square"/>')
-        elif art == "plus":
-            self.teile.append(
+        elif kind == "plus":
+            self.parts.append(
                 f'      <path d="M{ox+m:g},{oy+m-d:g} V{oy+m+d:g} '
-                f'M{ox+m-d:g},{oy+m:g} H{ox+m+d:g}" stroke="{farbe}" '
+                f'M{ox+m-d:g},{oy+m:g} H{ox+m+d:g}" stroke="{color}" '
                 f'stroke-width="{s:g}"/>')
-        elif art == "hlinie":
-            self.teile.append(
-                f'      <rect x="{ox:g}" y="{oy+m:g}" width="{gr:g}" '
-                f'height="1" fill="{farbe}"/>')
-        elif art == "vlinie":
-            self.teile.append(
+        elif kind == "hline":
+            self.parts.append(
+                f'      <rect x="{ox:g}" y="{oy+m:g}" width="{size:g}" '
+                f'height="1" fill="{color}"/>')
+        elif kind == "vline":
+            self.parts.append(
                 f'      <rect x="{ox+m:g}" y="{oy:g}" width="1" '
-                f'height="{gr:g}" fill="{farbe}"/>')
-        elif art.startswith("dreieck"):
-            r = art.split("-")[1]
-            pkt = {
-                "o": f"{ox+m:g},{oy+m-d:g} {ox+m-d:g},{oy+m+d*0.6:g} {ox+m+d:g},{oy+m+d*0.6:g}",
-                "u": f"{ox+m:g},{oy+m+d:g} {ox+m-d:g},{oy+m-d*0.6:g} {ox+m+d:g},{oy+m-d*0.6:g}",
+                f'height="{size:g}" fill="{color}"/>')
+        elif kind.startswith("triangle"):
+            r = kind.split("-")[1]
+            pts = {
+                "u": f"{ox+m:g},{oy+m-d:g} {ox+m-d:g},{oy+m+d*0.6:g} {ox+m+d:g},{oy+m+d*0.6:g}",
+                "d": f"{ox+m:g},{oy+m+d:g} {ox+m-d:g},{oy+m-d*0.6:g} {ox+m+d:g},{oy+m-d*0.6:g}",
                 "l": f"{ox+m-d:g},{oy+m:g} {ox+m+d*0.6:g},{oy+m-d:g} {ox+m+d*0.6:g},{oy+m+d:g}",
                 "r": f"{ox+m+d:g},{oy+m:g} {ox+m-d*0.6:g},{oy+m-d:g} {ox+m-d*0.6:g},{oy+m+d:g}",
             }[r]
-            self.teile.append(f'      <polygon points="{pkt}" fill="{farbe}"/>')
-        self.teile.append('    </g>')
+            self.parts.append(f'      <polygon points="{pts}" fill="{color}"/>')
+        self.parts.append('    </g>')
 
-    # -- Zusammenbau -------------------------------------------------------
+    # -- Assembly ----------------------------------------------------------
 
-    def erzeuge(self, name, spec):
-        self.teile = []
-        self._aussen_override = spec.get("aussenrahmen")
-        # Eckgroesse je Widget: eine 6px-Ecke in einem 6px hohen
-        # Fortschrittsbalken laesst oben und unten nichts uebrig, KSvg
-        # staucht dann die Raender und die 1px-Linien verschmieren.
-        self._ecke_original = self.ecke
-        self.ecke = spec.get("ecke", self.ecke)
+    def generate(self, name, spec):
+        self.parts = []
+        self._outer_override = spec.get("outer_border")
+        # Corner size per widget: a 6px corner in a 6px tall progress
+        # bar leaves nothing at the top and bottom, KSvg then squashes
+        # the edges and the 1px lines smear.
+        self._corner_original = self.corner
+        self.corner = spec.get("corner", self.corner)
         self._margin = spec.get("margin", 4)
-        praefixe = spec["praefixe"]
-        masken = spec.get("masken", [])
+        prefixes = spec["prefixes"]
+        masks = spec.get("masks", [])
         hints = spec.get("hints", [])
 
-        saetze = [(p, False) for p in praefixe] + [(f"mask-{m}" if m else "mask", True)
-                                                   for m in masken]
+        sets = [(p, False) for p in prefixes] + [(f"mask-{m}" if m else "mask", True)
+                                                 for m in masks]
 
-        formen = list(spec.get("formen", {}).items())
-        schritt = self.zelle + self.abstand
-        gesamt = len(saetze) + len(formen)
-        spalten = min(self.spalten, max(1, gesamt))
-        zeilen = (gesamt + spalten - 1) // spalten
-        breite = spalten * schritt + self.abstand
-        hoehe = zeilen * schritt + self.abstand
+        shapes = list(spec.get("shapes", {}).items())
+        step = self.cell + self.gap
+        total = len(sets) + len(shapes)
+        columns = min(self.columns, max(1, total))
+        rows = (total + columns - 1) // columns
+        width = columns * step + self.gap
+        height = rows * step + self.gap
 
-        kopf = [
+        head = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             f'<svg xmlns="http://www.w3.org/2000/svg" '
-            f'width="{breite:g}" height="{hoehe:g}" '
-            f'viewBox="0 0 {breite:g} {hoehe:g}">',
-            f'  <!-- {name}.svg — {spec["beschreibung"]} -->',
-            '  <!-- Erzeugt von tools/gen-plasma-svg.py. Die Element-IDs sind',
-            '       die Schnittstelle zu Plasma: bitte nicht umbenennen. -->',
+            f'width="{width:g}" height="{height:g}" '
+            f'viewBox="0 0 {width:g} {height:g}">',
+            f'  <!-- {name}.svg — {spec["description"]} -->',
+            '  <!-- Generated by tools/gen-plasma-svg.py. The element IDs are',
+            '       the interface to Plasma: please do not rename them. -->',
             '  <defs>',
             '    <style id="current-color-scheme" type="text/css">',
         ]
-        for klasse, keys in STYLESHEET_KLASSEN:
-            f = self.farbe(*keys)
-            # stop-color mitgeben, damit auch Gradienten umgefaerbt werden
-            kopf.append(f'      .{klasse} {{ color:{f}; stop-color:{f}; }}')
-        kopf += ['    </style>', '  </defs>']
+        for cls, keys in STYLESHEET_CLASSES:
+            f = self.color(*keys)
+            # Include stop-color so that gradients get recoloured too
+            head.append(f'      .{cls} {{ color:{f}; stop-color:{f}; }}')
+        head += ['    </style>', '  </defs>']
 
-        for i, (praefix, ist_maske) in enumerate(saetze):
-            ox = self.abstand + (i % spalten) * schritt
-            oy = self.abstand + (i // spalten) * schritt
+        for i, (prefix, is_mask) in enumerate(sets):
+            ox = self.gap + (i % columns) * step
+            oy = self.gap + (i // columns) * step
 
-            basis = praefix[5:] if praefix.startswith("mask-") else praefix
-            standard = spec.get("farbe", "flaeche")
-            # Ein Widget darf einzelne Zustaende anders faerben als die
-            # allgemeine Tabelle. Die Taskleiste braucht das: dort waere
-            # die Akzentfarbe des Fokuszustands zwar richtig gemeint,
-            # aber der Fenstertitel darauf nicht mehr lesbar.
-            farb_key, invertiert, zustandsklasse = spec.get(
-                "zustaende", {}).get(basis) or ZUSTANDSFARBE.get(
-                basis, (standard, False, "ColorScheme-Background"))
-            # Das Panel bekommt seine Farbe fest, nicht ueber das
-            # Farbschema. Grund: Plasma faerbt Shell-Elemente aus der
-            # Gruppe Colors:Window ein, nicht aus Complementary - ein
-            # Panel, das sich von den Plasmoid-Flaechen abheben soll,
-            # laesst sich darueber nicht getrennt steuern. Gemessen:
-            # mit Klasse wurde das Panel #d8d8d0 statt #b8c4c4.
-            klasse_hier = None if spec.get("fest") else zustandsklasse
+            base = prefix[5:] if prefix.startswith("mask-") else prefix
+            default = spec.get("color", "surface")
+            # A widget may colour individual states differently from the
+            # general table. The taskbar needs that: there the accent
+            # colour of the focus state would be meant correctly, but the
+            # window title on it would no longer be readable.
+            color_key, inverted, state_class = spec.get(
+                "states", {}).get(base) or STATE_COLORS.get(
+                base, (default, False, "ColorScheme-Background"))
+            # The panel gets its colour fixed, not through the colour
+            # scheme. Reason: Plasma colours shell elements from the
+            # Colors:Window group, not from Complementary - a panel that
+            # is meant to stand out from the plasmoid surfaces cannot be
+            # controlled separately that way. Measured: with the class the
+            # panel became #d8d8d0 instead of #b8c4c4.
+            class_here = None if spec.get("fixed") else state_class
 
-            self.teile.append(f'  <!-- {praefix or "(Standardzustand)"} -->')
-            if ist_maske:
-                # Masken definieren nur die Form, nicht das Aussehen.
-                # Deshalb weiss und ohne Farbschema-Klasse.
-                alt_stil, self.stil = self.stil, "flach"
-                alt_rahmen = self.p["rahmen"]
-                self.p = dict(self.p, rahmen="#ffffff")
-                self._neun_patch(praefix, ox, oy, "flaeche", klasse=None)
-                self.p["rahmen"] = alt_rahmen
-                self.stil = alt_stil
+            self.parts.append(f'  <!-- {prefix or "(default state)"} -->')
+            if is_mask:
+                # Masks only define the shape, not the appearance.
+                # Hence white and without a colour scheme class.
+                old_style, self.style = self.style, "flat"
+                old_border = self.p["border"]
+                self.p = dict(self.p, border="#ffffff")
+                self._nine_patch(prefix, ox, oy, "surface", cls=None)
+                self.p["border"] = old_border
+                self.style = old_style
             else:
-                self._neun_patch(praefix, ox, oy, farb_key, invertiert,
-                                 klasse=klasse_hier,
-                                 nur_rahmen=spec.get("nur_rahmen", False),
-                                 dither=basis in spec.get("dither", ()))
-                self._hints(praefix, ox, oy, hints)
+                self._nine_patch(prefix, ox, oy, color_key, inverted,
+                                 cls=class_here,
+                                 frame_only=spec.get("frame_only", False),
+                                 dither=base in spec.get("dither", ()))
+                self._hints(prefix, ox, oy, hints)
 
-        for j, (fid, (art, farbkey)) in enumerate(formen):
-            i = len(saetze) + j
-            ox = self.abstand + (i % spalten) * schritt
-            oy = self.abstand + (i // spalten) * schritt
-            self._form(fid, art, self.farbe(farbkey, "text"), ox, oy, self.zelle)
+        for j, (sid, (kind, color_key)) in enumerate(shapes):
+            i = len(sets) + j
+            ox = self.gap + (i % columns) * step
+            oy = self.gap + (i // columns) * step
+            self._shape(sid, kind, self.color(color_key, "text"), ox, oy, self.cell)
 
-        # Der Kachel-Hinweis gilt fuer die ganze Datei, nicht je Zustand.
-        # Er liegt ausserhalb der sichtbaren Flaeche - KSvg fragt nur, ob
-        # das Element existiert, und zeichnet es nie. Breeze legt es in
-        # derselben Datei ebenso ins Negative.
+        # The tiling hint applies to the whole file, not per state.
+        # It lies outside the visible area - KSvg only asks whether
+        # the element exists, and never draws it. Breeze places it in
+        # negative coordinates in the same file too.
         if spec.get("tile_center"):
-            self.teile.append(
-                '  <!-- Mittelteil kacheln statt strecken -->\n'
+            self.parts.append(
+                '  <!-- Tile the center instead of stretching it -->\n'
                 '    <rect id="hint-tile-center" x="0" y="-4" '
                 'width="2" height="2" opacity="0"/>')
 
-        self.ecke = self._ecke_original
-        return "\n".join(kopf + self.teile + ['</svg>', ''])
+        self.corner = self._corner_original
+        return "\n".join(head + self.parts + ['</svg>', ''])
 
 
-# Reine Formen-Widgets verhalten sich sonst wie die anderen
-WIDGETS.update({n: {**s, "praefixe": [], "hints": [], "masken": []}
-                for n, s in FORM_WIDGETS.items()})
+# Pure shape widgets otherwise behave like the others
+WIDGETS.update({n: {**s, "prefixes": [], "hints": [], "masks": []}
+                for n, s in SHAPE_WIDGETS.items()})
 
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Erzeugt Plasma-Style-SVGs mit korrekter Element-Struktur.",
+        description="Generates Plasma style SVGs with the correct element structure.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="Verfuegbare Widgets:  " + ", ".join(sorted(WIDGETS)))
-    ap.add_argument("widget", nargs="?", help="Name des Widgets, z.B. button")
-    ap.add_argument("--alle", action="store_true", help="alle Widgets erzeugen")
-    ap.add_argument("--liste", action="store_true", help="Widgets auflisten")
-    ap.add_argument("-o", "--ausgabe", type=Path,
-                    help="Zielverzeichnis (sonst nach stdout)")
-    ap.add_argument("--palette", default="platinum", choices=sorted(PALETTEN))
-    ap.add_argument("--stil", default="bevel", choices=["bevel", "flach"],
-                    help="bevel = 3D-Rahmen wie Mac OS 9, flach = einfarbig")
-    ap.add_argument("--rahmen", type=int, default=1, help="Rahmenbreite in px")
-    ap.add_argument("--rundung", type=int, default=0, help="Eckenradius in px")
-    ap.add_argument("--aussenrahmen", type=int, default=0,
-                    help="dunkler Rahmen um den 3D-Bevel (NT/Win95-Stil)")
-    ap.add_argument("--zelle", type=int, default=32, help="Groesse eines Zustandssatzes")
-    ap.add_argument("--ecke", type=int, default=6, help="Groesse der Eckelemente")
+        epilog="Available widgets:  " + ", ".join(sorted(WIDGETS)))
+    ap.add_argument("widget", nargs="?", help="name of the widget, e.g. button")
+    ap.add_argument("--all", action="store_true", help="generate all widgets")
+    ap.add_argument("--list", action="store_true", help="list the widgets")
+    ap.add_argument("-o", "--output", type=Path,
+                    help="target directory (otherwise to stdout)")
+    ap.add_argument("--palette", default="platinum", choices=sorted(PALETTES))
+    ap.add_argument("--style", default="bevel", choices=["bevel", "flat"],
+                    help="bevel = 3D border like Mac OS 9, flat = single colour")
+    ap.add_argument("--border", type=int, default=1, help="border width in px")
+    ap.add_argument("--radius", type=int, default=0, help="corner radius in px")
+    ap.add_argument("--outer-border", type=int, default=0,
+                    help="dark border around the 3D bevel (NT/Win95 style)")
+    ap.add_argument("--cell", type=int, default=32, help="size of one state set")
+    ap.add_argument("--corner", type=int, default=6, help="size of the corner elements")
     args = ap.parse_args()
 
-    if args.liste:
-        print(f"{'Widget':<20} {'Zustaende':>10}  Beschreibung")
+    if args.list:
+        print(f"{'Widget':<20} {'States':>10}  Description")
         for n, s in sorted(WIDGETS.items()):
-            print(f"{n:<20} {len(s['praefixe']):>10}  {s['beschreibung']}")
+            print(f"{n:<20} {len(s['prefixes']):>10}  {s['description']}")
         return 0
 
-    if not args.alle and not args.widget:
-        ap.error("Widget-Name oder --alle angeben (--liste zeigt alle).")
+    if not args.all and not args.widget:
+        ap.error("give a widget name or --all (--list shows them all).")
     if args.widget and args.widget not in WIDGETS:
-        ap.error(f"Unbekanntes Widget '{args.widget}'. --liste zeigt alle.")
+        ap.error(f"Unknown widget '{args.widget}'. --list shows them all.")
 
-    g = Generator(PALETTEN[args.palette], rahmen=args.rahmen,
-                  rundung=args.rundung, stil=args.stil,
-                  zelle=args.zelle, ecke=args.ecke,
-                  aussenrahmen=args.aussenrahmen)
+    g = Generator(PALETTES[args.palette], border=args.border,
+                  radius=args.radius, style=args.style,
+                  cell=args.cell, corner=args.corner,
+                  outer_border=args.outer_border)
 
-    namen = sorted(WIDGETS) if args.alle else [args.widget]
-    for name in namen:
-        svg = g.erzeuge(name, WIDGETS[name])
-        if args.ausgabe:
+    names = sorted(WIDGETS) if args.all else [args.widget]
+    for name in names:
+        svg = g.generate(name, WIDGETS[name])
+        if args.output:
             spec = WIDGETS[name]
-            unter = spec.get("ordner", "widgets")
-            dateiname = spec.get("datei", name)
-            ziele = [args.ausgabe / unter / f"{dateiname}.svg"]
+            sub = spec.get("folder", "widgets")
+            filename = spec.get("file", name)
+            targets = [args.output / sub / f"{filename}.svg"]
 
-            # Plasma waehlt je nach Umgebung einen Variantensatz:
-            # solid (kein Blur), translucent (mit Blur), opaque. Fehlt
-            # die passende Datei, faellt NUR sie auf Breeze zurueck -
-            # das Panel wird dann transparent und mischt sich mit dem
-            # Hintergrund, obwohl widgets/ vorhanden ist. Gemessen:
-            # Panelflaeche #80807b statt #b8c4c4.
+            # Plasma picks a variant set depending on the environment:
+            # solid (no blur), translucent (with blur), opaque. If the
+            # matching file is missing, ONLY it falls back to Breeze -
+            # the panel then turns transparent and blends with the
+            # background, even though widgets/ exists. Measured:
+            # panel surface #80807b instead of #b8c4c4.
             if name in ("panel-background", "background", "background-dialog",
                         "tooltip"):
-                # Breeze kennt fuer background nur solid und translucent -
-                # opaque/widgets/background existiert dort nicht.
-                varianten = ("solid", "translucent") if name == "background" \
+                # Breeze only has solid and translucent for background -
+                # opaque/widgets/background does not exist there.
+                variants = ("solid", "translucent") if name == "background" \
                     else ("solid", "translucent", "opaque")
-                for variante in varianten:
-                    ziele.append(args.ausgabe / variante / unter / f"{dateiname}.svg")
+                for variant in variants:
+                    targets.append(args.output / variant / sub / f"{filename}.svg")
 
-            for ziel in ziele:
-                ziel.parent.mkdir(parents=True, exist_ok=True)
-                ziel.write_text(svg)
-                print(f"  {ziel}")
+            for target in targets:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(svg)
+                print(f"  {target}")
         else:
             sys.stdout.write(svg)
 

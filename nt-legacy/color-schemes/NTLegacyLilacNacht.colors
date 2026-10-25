@@ -1,6 +1,7 @@
 [General]
-ColorScheme=NT Legacy Flieder Nacht
-Name=NT Legacy Flieder Nacht
+ColorScheme=NT Legacy Lilac Night
+Name=NT Legacy Lilac Night
+Name[de]=NT Legacy Flieder Nacht
 shadeSortColumn=true
 
 [KDE]
@@ -11,13 +12,13 @@ BackgroundNormal=42,50,52
 BackgroundAlternate=30,38,40
 ForegroundNormal=218,224,224
 ForegroundInactive=154,146,166
-ForegroundActive=107,85,144
-ForegroundLink=107,85,144
+ForegroundActive=131,105,174
+ForegroundLink=131,105,174
 ForegroundVisited=68,62,82
 ForegroundNegative=168,50,50
 ForegroundNeutral=200,121,34
 ForegroundPositive=57,115,74
-DecorationFocus=107,85,144
+DecorationFocus=131,105,174
 DecorationHover=200,168,58
 
 [Colors:Button]
@@ -25,13 +26,13 @@ BackgroundNormal=42,50,52
 BackgroundAlternate=30,38,40
 ForegroundNormal=218,224,224
 ForegroundInactive=154,146,166
-ForegroundActive=107,85,144
-ForegroundLink=107,85,144
+ForegroundActive=131,105,174
+ForegroundLink=131,105,174
 ForegroundVisited=68,62,82
 ForegroundNegative=168,50,50
 ForegroundNeutral=200,121,34
 ForegroundPositive=57,115,74
-DecorationFocus=107,85,144
+DecorationFocus=131,105,174
 DecorationHover=200,168,58
 
 [Colors:View]
@@ -39,27 +40,27 @@ BackgroundNormal=30,38,40
 BackgroundAlternate=30,38,40
 ForegroundNormal=218,224,224
 ForegroundInactive=154,146,166
-ForegroundActive=107,85,144
-ForegroundLink=107,85,144
+ForegroundActive=131,105,174
+ForegroundLink=131,105,174
 ForegroundVisited=68,62,82
 ForegroundNegative=168,50,50
 ForegroundNeutral=200,121,34
 ForegroundPositive=57,115,74
-DecorationFocus=107,85,144
+DecorationFocus=131,105,174
 DecorationHover=200,168,58
 
 [Colors:Selection]
-BackgroundNormal=107,85,144
-BackgroundAlternate=107,85,144
+BackgroundNormal=131,105,174
+BackgroundAlternate=131,105,174
 ForegroundNormal=255,255,255
 ForegroundInactive=154,146,166
-ForegroundActive=107,85,144
-ForegroundLink=107,85,144
+ForegroundActive=131,105,174
+ForegroundLink=131,105,174
 ForegroundVisited=68,62,82
 ForegroundNegative=168,50,50
 ForegroundNeutral=200,121,34
 ForegroundPositive=57,115,74
-DecorationFocus=107,85,144
+DecorationFocus=131,105,174
 DecorationHover=200,168,58
 
 [Colors:Tooltip]
@@ -67,13 +68,13 @@ BackgroundNormal=30,38,40
 BackgroundAlternate=30,38,40
 ForegroundNormal=218,224,224
 ForegroundInactive=154,146,166
-ForegroundActive=107,85,144
-ForegroundLink=107,85,144
+ForegroundActive=131,105,174
+ForegroundLink=131,105,174
 ForegroundVisited=68,62,82
 ForegroundNegative=168,50,50
 ForegroundNeutral=200,121,34
 ForegroundPositive=57,115,74
-DecorationFocus=107,85,144
+DecorationFocus=131,105,174
 DecorationHover=200,168,58
 
 [Colors:Complementary]
@@ -81,13 +82,13 @@ BackgroundNormal=43,40,51
 BackgroundAlternate=30,38,40
 ForegroundNormal=218,224,224
 ForegroundInactive=154,146,166
-ForegroundActive=107,85,144
-ForegroundLink=107,85,144
+ForegroundActive=131,105,174
+ForegroundLink=131,105,174
 ForegroundVisited=68,62,82
 ForegroundNegative=168,50,50
 ForegroundNeutral=200,121,34
 ForegroundPositive=57,115,74
-DecorationFocus=107,85,144
+DecorationFocus=131,105,174
 DecorationHover=200,168,58
 
 [Colors:Header]
@@ -95,13 +96,13 @@ BackgroundNormal=42,50,52
 BackgroundAlternate=30,38,40
 ForegroundNormal=218,224,224
 ForegroundInactive=154,146,166
-ForegroundActive=107,85,144
-ForegroundLink=107,85,144
+ForegroundActive=131,105,174
+ForegroundLink=131,105,174
 ForegroundVisited=68,62,82
 ForegroundNegative=168,50,50
 ForegroundNeutral=200,121,34
 ForegroundPositive=57,115,74
-DecorationFocus=107,85,144
+DecorationFocus=131,105,174
 DecorationHover=200,168,58
 
 [Colors:Header][Inactive]
@@ -123,7 +124,7 @@ activeBackground=92,74,120
 activeForeground=255,255,255
 inactiveBackground=68,62,82
 inactiveForeground=30,38,40
-activeBlend=107,85,144
+activeBlend=131,105,174
 inactiveBlend=68,62,82
 
 [ColorEffects:Disabled]

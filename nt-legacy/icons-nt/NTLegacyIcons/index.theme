@@ -1,7 +1,8 @@
 [Icon Theme]
 Name=NT Legacy Icons
-Comment=Symbole im Stil von Windows NT 4.0, vollstaendig erzeugt
+Comment=Icons in the style of Windows NT 4.0, fully generated
 Inherits=breeze,hicolor
+FollowsColorScheme=true
 Directories=actions/16,actions/22,actions/32,actions/48,actions/64,actions/96,actions/128,actions/256,apps/16,apps/22,apps/32,apps/48,apps/64,apps/96,apps/128,apps/256,devices/16,devices/22,devices/32,devices/48,devices/64,devices/96,devices/128,devices/256,mimetypes/16,mimetypes/22,mimetypes/32,mimetypes/48,mimetypes/64,mimetypes/96,mimetypes/128,mimetypes/256,places/16,places/22,places/32,places/48,places/64,places/96,places/128,places/256,status/16,status/22,status/32,status/48,status/64,status/96,status/128,status/256,actions/scalable,apps/scalable,devices/scalable,mimetypes/scalable,places/scalable,status/scalable
 
 [actions/16]

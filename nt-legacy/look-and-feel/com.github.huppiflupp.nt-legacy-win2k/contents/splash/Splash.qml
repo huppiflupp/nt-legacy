@@ -5,7 +5,7 @@ Rectangle {
     color: "#3a6ea5"
     property int stage
 
-    // NT zeigte beim Start ein schlichtes Feld mit Produktnamen.
+    // At startup NT showed a plain box with the product name.
     Rectangle {
         anchors.centerIn: parent
         width: Math.min(parent.width * 0.5, 460)
@@ -29,7 +29,7 @@ Rectangle {
             }
         }
 
-        // Fortschritt: stage laeuft von 1 bis 6
+        // Progress: stage runs from 1 to 6
         Rectangle {
             anchors { left: parent.left; right: parent.right; bottom: parent.bottom
                        margins: 14 }
@@ -42,7 +42,7 @@ Rectangle {
                 anchors { left: parent.left; top: parent.top; bottom: parent.bottom
                            margins: 2 }
                 width: Math.max(0, (parent.width - 4) * Math.min(root.stage, 6) / 6)
-                color: "#0a246a"
+                color: "#6174aa"
                 Behavior on width { NumberAnimation { duration: 180 } }
             }
         }

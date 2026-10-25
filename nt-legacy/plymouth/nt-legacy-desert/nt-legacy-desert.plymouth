@@ -1,6 +1,6 @@
 [Plymouth Theme]
-Name=NT Legacy Wueste
-Description=Startbildschirm im Stil von Windows NT
+Name=NT Legacy Desert
+Description=Boot screen in the style of Windows NT
 ModuleName=script
 
 [script]

@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-flaeche",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy (Flaeche)"
+        "Name": "NT Legacy (Plain)",
+        "Name[de]": "NT Legacy (Flaeche)"
     }
 }

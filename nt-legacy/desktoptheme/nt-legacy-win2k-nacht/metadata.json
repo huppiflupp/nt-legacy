@@ -11,8 +11,9 @@
         "EnabledByDefault": true,
         "Id": "nt-legacy-win2k-nacht",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy 2000 Nacht",
-        "Version": "0.2.14",
+        "Name": "NT Legacy 2000 Night",
+        "Name[de]": "NT Legacy 2000 Nacht",
+        "Version": "0.3.1",
         "Website": "https://github.com/huppiflupp/nt-legacy"
     },
     "X-Plasma-API": "5.0"

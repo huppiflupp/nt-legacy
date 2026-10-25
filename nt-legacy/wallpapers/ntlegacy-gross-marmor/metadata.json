@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-gross-marmor",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - Marmor"
+        "Name": "NT Legacy - Marble",
+        "Name[de]": "NT Legacy - Marmor"
     }
 }

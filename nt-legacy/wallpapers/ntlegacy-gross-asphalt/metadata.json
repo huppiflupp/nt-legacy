@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-gross-asphalt",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy - Asphalt, gross"
+        "Name": "NT Legacy - Asphalt, large",
+        "Name[de]": "NT Legacy - Asphalt, gross"
     }
 }

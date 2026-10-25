@@ -14,7 +14,7 @@ Item {
     property string mode
     property var currentAction
 
-    // Uebersetzung aus Plasmas Katalog, ohne den Kuerzel-Marker.
+    // Translation from Plasma's catalog, without the shortcut marker.
     function nt_i18n(text) {
         return i18nd("plasma_lookandfeel_org.kde.lookandfeel", text)
                    .replace("&", "")

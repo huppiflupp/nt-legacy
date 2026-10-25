@@ -6,25 +6,25 @@
   <kcfgfile name=""/>
   <group name="General">
     <entry name="TitleHeight" type="Int">
-      <label>Hoehe der Titelleiste</label>
+      <label>Title bar height</label>
       <default>24</default>
       <min>16</min>
       <max>48</max>
     </entry>
     <entry name="ButtonHeight" type="Int">
-      <label>Groesse der Knoepfe</label>
+      <label>Button size</label>
       <default>18</default>
       <min>10</min>
       <max>40</max>
     </entry>
     <entry name="BorderLeft" type="Int">
-      <label>Rahmenbreite</label>
+      <label>Border width</label>
       <default>4</default>
       <min>0</min>
       <max>12</max>
     </entry>
     <entry name="TitleAlignment" type="String">
-      <label>Ausrichtung des Titels</label>
+      <label>Title alignment</label>
       <default>Left</default>
     </entry>
   </group>

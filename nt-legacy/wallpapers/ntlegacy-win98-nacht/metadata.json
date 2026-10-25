@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-win98-nacht",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy 98 Nacht"
+        "Name": "NT Legacy 98 Night",
+        "Name[de]": "NT Legacy 98 Nacht"
     }
 }

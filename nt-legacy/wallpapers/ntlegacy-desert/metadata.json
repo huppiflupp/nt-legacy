@@ -7,6 +7,7 @@
         ],
         "Id": "ntlegacy-desert",
         "License": "GPL-2.0-or-later",
-        "Name": "NT Legacy Wueste"
+        "Name": "NT Legacy Desert",
+        "Name[de]": "NT Legacy Wueste"
     }
 }
